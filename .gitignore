@@ -23,3 +23,5 @@ yarn-error.log*
 # IDE
 .vscode/
 .DS_Store
+.vercel
+.env*.local
