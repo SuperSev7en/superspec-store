@@ -2,50 +2,63 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShoppingCart, ArrowLeft, Trash2, Plus, Minus } from 'lucide-react';
+import { readCart, writeCart } from '@/components/store/cart';
 
-interface CartItem {
-  id: string;
-  product: {
-    id: string;
-    title: string;
-    price: number;
-    images: string[];
-  };
+type CartItemView = {
+  handle: string;
+  title: string;
+  price: number;
+  image?: string | null;
   quantity: number;
-}
+  variantId?: string;
+};
 
 export default function CartPage() {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItemView[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-    setLoading(false);
+    const lines = readCart();
+    Promise.all(
+      lines.map(async (l) => {
+        const res = await fetch(`/api/products/${encodeURIComponent(l.handle)}`);
+        if (!res.ok) return null;
+        const json = (await res.json()) as { product: { handle: string; title: string; images: string[]; variants: { id: string; price: number }[] } };
+        const product = json.product;
+        const variant = l.variantId ? product.variants.find((v) => v.id === l.variantId) : product.variants[0];
+        return {
+          handle: product.handle,
+          title: product.title,
+          price: variant?.price ?? 0,
+          image: product.images?.[0] ?? null,
+          quantity: l.quantity,
+          variantId: l.variantId,
+        } satisfies CartItemView;
+      }),
+    ).then((items) => {
+      setCart(items.filter(Boolean) as CartItemView[]);
+      setLoading(false);
+    });
   }, []);
 
-  const updateQuantity = (id: string, delta: number) => {
-    const updated = cart.map(item => {
-      if (item.id === id) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
+  const updateQuantity = (handle: string, delta: number) => {
+    const updated = cart.map((item) => {
+      if (item.handle === handle) {
+        return { ...item, quantity: Math.max(1, item.quantity + delta) };
       }
       return item;
     });
     setCart(updated);
-    localStorage.setItem('cart', JSON.stringify(updated));
+    writeCart(updated.map((u) => ({ handle: u.handle, variantId: u.variantId, quantity: u.quantity })));
   };
 
-  const removeItem = (id: string) => {
-    const updated = cart.filter(item => item.id !== id);
+  const removeItem = (handle: string) => {
+    const updated = cart.filter((item) => item.handle !== handle);
     setCart(updated);
-    localStorage.setItem('cart', JSON.stringify(updated));
+    writeCart(updated.map((u) => ({ handle: u.handle, variantId: u.variantId, quantity: u.quantity })));
   };
 
-  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   if (loading) {
     return (
@@ -56,94 +69,62 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Continue Shopping
-          </Link>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-8 flex items-center">
-          <ShoppingCart className="w-8 h-8 mr-3" />
-          Shopping Cart
-        </h1>
+    <div className="Cart">
+      <div className="Container">
+        <header className="PageHeader">
+          <h1 className="PageHeader__Title Heading u-h1">Cart</h1>
+        </header>
 
         {cart.length === 0 ? (
-          <div className="text-center py-16">
-            <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg mb-4">Your cart is empty</p>
-            <Link href="/products" className="text-gray-900 hover:underline">
-              Browse Products
+          <div className="EmptyState">
+            <p className="EmptyState__Description Heading Text--subdued">Your cart is empty</p>
+            <Link href="/products" className="Button Button--primary">
+              Browse products
             </Link>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="Cart__Content">
             {cart.map((item) => (
-              <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
-                <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                  {item.product.images?.[0] ? (
-                    <img 
-                      src={item.product.images[0]} 
-                      alt={item.product.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                      No Image
-                    </div>
-                  )}
+              <div key={item.handle} className="CartItem">
+                <div className="CartItem__ImageWrapper">
+                  {item.image ? <img className="CartItem__Image" src={item.image} alt={item.title} /> : null}
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold">{item.product.title}</h3>
-                  <p className="text-gray-600">${item.product.price.toFixed(2)}</p>
+
+                <div className="CartItem__Info">
+                  <p className="CartItem__Title Heading">
+                    <Link href={`/products/${item.handle}`}>{item.title}</Link>
+                  </p>
+                  <p className="CartItem__Price Heading Text--subdued">${item.price.toFixed(2)}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => updateQuantity(item.id, -1)}
-                    className="p-1 hover:bg-gray-100 rounded"
-                    disabled={item.quantity <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
+
+                <div className="CartItem__QuantitySelector">
+                  <button className="QuantitySelector__Button Link Link--secondary" onClick={() => updateQuantity(item.handle, -1)} disabled={item.quantity <= 1}>
+                    -
                   </button>
-                  <span className="w-8 text-center">{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.id, 1)}
-                    className="p-1 hover:bg-gray-100 rounded"
-                  >
-                    <Plus className="w-4 h-4" />
+                  <input className="QuantitySelector__CurrentQuantity" value={item.quantity} readOnly />
+                  <button className="QuantitySelector__Button Link Link--secondary" onClick={() => updateQuantity(item.handle, 1)}>
+                    +
                   </button>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700 text-sm mt-1"
-                  >
-                    <Trash2 className="w-4 h-4" />
+
+                <div className="CartItem__Total">
+                  <span className="Heading">${(item.price * item.quantity).toFixed(2)}</span>
+                  <button className="Link Link--secondary" onClick={() => removeItem(item.handle)}>
+                    Remove
                   </button>
                 </div>
               </div>
             ))}
 
-            <div className="border-t pt-6 flex justify-between items-center">
-              <div>
-                <p className="text-gray-600">Subtotal</p>
-                <p className="text-2xl font-bold">${subtotal.toFixed(2)}</p>
-              </div>
-              <Link
-                href="/checkout"
-                className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Proceed to Checkout
+            <div className="Cart__Summary">
+              <p className="Heading">Subtotal: ${subtotal.toFixed(2)}</p>
+              <Link href="/checkout" className="Button Button--primary">
+                Proceed to checkout
               </Link>
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

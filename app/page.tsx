@@ -1,89 +1,89 @@
-import Link from 'next/link';
-import { Package, ShoppingBag, ArrowRight } from 'lucide-react';
+import { getHomePageSectionOrder, getThemeSections } from '@/lib/shopify/themeConfig';
+import { CollectionList } from '@/components/shopify/sections/CollectionList';
+import { Slideshow } from '@/components/shopify/sections/Slideshow';
+import { FeaturedCollections } from '@/components/shopify/sections/FeaturedCollections';
+import { FeaturedProduct } from '@/components/shopify/sections/FeaturedProduct';
+import { Timeline } from '@/components/shopify/sections/Timeline';
+import { BlogPosts } from '@/components/shopify/sections/BlogPosts';
+import { ShopTheLook } from '@/components/shopify/sections/ShopTheLook';
 
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-gray-900 text-white py-24 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-            SUPER Spec
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Art prints that speak to the soul. Limited editions for the extraordinary.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/products" 
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <ShoppingBag className="w-5 h-5 mr-2" />
-              Shop Collection
-            </Link>
-            <Link 
-              href="/admin" 
-              className="inline-flex items-center justify-center px-8 py-4 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
-            >
-              <Package className="w-5 h-5 mr-2" />
-              Admin
-            </Link>
-          </div>
-        </div>
-      </section>
+export const revalidate = 0;
 
-      {/* Features Section */}
-      <section className="py-16 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Package className="w-6 h-6 text-gray-700" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Premium Quality</h3>
-              <p className="text-gray-600">Museum-grade archival paper and expert framing</p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag className="w-6 h-6 text-gray-700" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Limited Editions</h3>
-              <p className="text-gray-600">Exclusive prints with numbered certificates</p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <ArrowRight className="w-6 h-6 text-gray-700" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Fast Shipping</h3>
-              <p className="text-gray-600">Secure delivery to your door</p>
-            </div>
-          </div>
-        </div>
-      </section>
+type SectionData = {
+  type?: string;
+  disabled?: boolean;
+  settings?: Record<string, unknown>;
+  blocks?: Record<string, { type?: string; settings?: Record<string, unknown> }>;
+  block_order?: string[];
+};
 
-      {/* CTA Section */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to elevate your space?</h2>
-          <p className="text-gray-600 mb-8">
-            Browse our curated collection of extraordinary art prints.
-          </p>
-          <Link 
-            href="/products" 
-            className="inline-flex items-center px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            View All Products
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Link>
-        </div>
-      </section>
+async function renderSection(key: string, section: SectionData | undefined) {
+  if (!section) return null;
+  if (section.disabled === true) return null;
 
-      {/* Footer */}
-      <footer className="py-8 px-6 border-t">
-        <div className="max-w-6xl mx-auto text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} SUPER Spec. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+  const type = section.type ?? key;
+  const settings = section.settings;
+  const blocks = section.blocks;
+  const blockOrder = section.block_order;
+
+  if (type === 'slideshow') {
+    if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
+    return <Slideshow id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+  }
+
+  if (type === 'collection-list') {
+    if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
+    return (
+      <CollectionList
+        id={key}
+        settings={settings}
+        blocks={blocks}
+        blockOrder={blockOrder}
+        template="index"
+      />
+    );
+  }
+
+  if (type === 'featured-collections') {
+    if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
+    return <FeaturedCollections id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+  }
+
+  if (type === 'featured-product') {
+    if (!settings) return null;
+    return <FeaturedProduct id={key} settings={settings} />;
+  }
+
+  if (type === 'timeline') {
+    if (!blocks || !Array.isArray(blockOrder)) return null;
+    const textColor =
+      typeof settings?.text_color === 'string' ? settings.text_color : '#ffffff';
+    return <Timeline id={key} textColor={textColor} blocks={blocks} blockOrder={blockOrder} />;
+  }
+
+  if (type === 'blog-posts') {
+    if (!settings) return null;
+    return <BlogPosts id={key} settings={settings} />;
+  }
+
+  if (type === 'shop-the-look') {
+    if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
+    return <ShopTheLook id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+  }
+
+  return null;
+}
+
+export default async function HomePage() {
+  const sections = (await getThemeSections()) as Record<string, SectionData>;
+  const order = await getHomePageSectionOrder();
+
+  const fragments = await Promise.all(
+    order.map(async (key) => {
+      const node = await renderSection(key, sections[key]);
+      return <div key={key}>{node}</div>;
+    }),
   );
+
+  return <div>{fragments}</div>;
 }

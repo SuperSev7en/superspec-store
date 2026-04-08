@@ -1,1 +1,6 @@
-@import "tailwindcss";
+/* Intentionally minimal: Shopify theme ships its own CSS in `/public/assets/theme.css`. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
