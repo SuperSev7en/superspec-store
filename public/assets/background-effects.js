@@ -4,6 +4,17 @@
   let mouseX = 0;
   let mouseY = 0;
 
+  /* Full spectrum — drawn with NormalBlending so colors stay visible on a white backdrop (AdditiveBlending washes out on white). */
+  const spectrumColors = [
+    { r: 1.0, g: 0.15, b: 0.2 },
+    { r: 1.0, g: 0.45, b: 0.05 },
+    { r: 1.0, g: 0.85, b: 0.1 },
+    { r: 0.2, g: 0.85, b: 0.35 },
+    { r: 0.15, g: 0.45, b: 1.0 },
+    { r: 0.45, g: 0.2, b: 0.95 },
+    { r: 0.9, g: 0.25, b: 1.0 },
+  ];
+
   function initBackgroundEffects() {
     if (typeof THREE === 'undefined') {
       return false;
@@ -42,21 +53,20 @@
       positions[i + 1] = (Math.random() - 0.5) * 10;
       positions[i + 2] = (Math.random() - 0.5) * 10;
 
-      /* Neutral light gray sparkles on white (no rainbow / green cast). */
-      const t = 0.72 + Math.random() * 0.26;
-      colors[i] = t;
-      colors[i + 1] = t;
-      colors[i + 2] = t;
+      const c = spectrumColors[Math.floor(Math.random() * spectrumColors.length)];
+      colors[i] = c.r;
+      colors[i + 1] = c.g;
+      colors[i + 2] = c.b;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const particleMaterial = new THREE.PointsMaterial({
-      size: 0.045,
+      size: 0.062,
       vertexColors: true,
       transparent: true,
-      opacity: 0.28,
+      opacity: 0.82,
       depthWrite: false,
       blending: THREE.NormalBlending,
     });
