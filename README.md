@@ -10,6 +10,7 @@ Next.js storefront for **SUPER Spec**, migrated from a Shopify (Prestige theme) 
 | [docs/PROGRESS.md](docs/PROGRESS.md) | Progress tracker (Shopify → Next parity) |
 | [docs/RESOURCES.md](docs/RESOURCES.md) | Official docs & reference links |
 | [docs/SHOPIFY_THEME_PARITY.md](docs/SHOPIFY_THEME_PARITY.md) | Liquid theme ↔ Next.js mapping |
+| [docs/ADMIN_MOBILE_PLAN.md](docs/ADMIN_MOBILE_PLAN.md) | **Plan:** Expo (iOS/Android/web) admin app + Supabase live sync |
 
 ## Quick start
 

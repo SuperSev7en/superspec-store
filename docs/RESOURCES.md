@@ -28,11 +28,13 @@ Curated links for maintaining and extending this project.
 - [Supabase + Next.js](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs)
 - Used for auth in this project (`@supabase/ssr`)
 
-## Real-time admin (future)
+## Admin mobile (Expo) — see `docs/ADMIN_MOBILE_PLAN.md`
 
-- [Supabase Realtime](https://supabase.com/docs/guides/realtime)
-- [Shopify Admin API](https://shopify.dev/docs/api/admin-rest) (if re-integrating Shopify backend)
+- [Expo documentation](https://docs.expo.dev/) — including [Expo Go vs development builds](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Supabase + Expo (tutorial)](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native)
+- [Supabase Realtime](https://supabase.com/docs/guides/realtime) — optional live collaboration
+- [Shopify Admin API](https://shopify.dev/docs/api/admin-rest) — only if re-integrating Shopify backend
 
 ## Design parity
 
-- Polaris / admin patterns: [Shopify Polaris](https://polaris.shopify.com/) (for a future Expo or web admin)
+- [Shopify Polaris](https://polaris.shopify.com/) — admin UX patterns for web + mobile admin shells

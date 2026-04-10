@@ -88,21 +88,23 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full" />
+      <div className="Cart Cart--opaqueShell min-h-screen flex items-center justify-center">
+        <div className="Cart__LoadingPanel">
+          <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="Cart">
+    <div className="Cart Cart--opaqueShell">
       <div className="Container">
-        <header className="PageHeader">
+        <header className="PageHeader Cart__PageHeaderPanel">
           <h1 className="PageHeader__Title Heading u-h1">Cart</h1>
         </header>
 
         {cart.length === 0 ? (
-          <div className="EmptyState">
+          <div className="EmptyState Cart__EmptyPanel">
             <p className="EmptyState__Description Heading Text--subdued">Your cart is empty</p>
             <Link href="/products" className="Button Button--primary">
               Browse products
@@ -111,7 +113,7 @@ export default function CartPage() {
         ) : (
           <div className="Cart__Content">
             {cart.map((item) => (
-              <div key={item.key} className="CartItem">
+              <div key={item.key} className="CartItem CartItem--panel">
                 <Link href={`/products/${item.handle}`} className="CartItem__ImageWrapper" aria-label={`View ${item.title}`}>
                   {item.image ? <img className="CartItem__Image" src={item.image} alt="" /> : null}
                 </Link>
@@ -154,7 +156,7 @@ export default function CartPage() {
               </div>
             ))}
 
-            <div className="Cart__Summary">
+            <div className="Cart__Summary Cart__Summary--panel">
               <p className="Heading">Subtotal: ${subtotal.toFixed(2)}</p>
               <Link href="/checkout" className="Button Button--primary">
                 Proceed to checkout

@@ -26,6 +26,8 @@ npm run dev
 
 Visit `/products`, `/collections/{handle}`, `/about`, `/contact`, `/mission-and-sustainability`, `/search?q=`.
 
+**Multi-platform admin (Expo / iOS / Android / web):** roadmap and env strategy live in [ADMIN_MOBILE_PLAN.md](./ADMIN_MOBILE_PLAN.md) (scaffold the Expo app when you are ready to execute that phase).
+
 ## Product images (offline / no Shopify CDN)
 
 1. **Automatic download** (while source URLs still respond):

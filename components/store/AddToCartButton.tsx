@@ -18,7 +18,7 @@ export function AddToCartButton({
 
   return (
     <button
-      className={`Button Button--primary ${className}`.trim()}
+      className={`Button Button--primary AddToCartButton--storefront ${className}`.trim()}
       type="button"
       onClick={() => {
         addToCart({ handle, variantId, quantity: 1 });

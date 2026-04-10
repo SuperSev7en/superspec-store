@@ -168,3 +168,78 @@ main#main {
   background-repeat: no-repeat !important;
   background-color: #000000;
 }
+
+/**
+ * Add to cart — remove Prestige ::before fill + hover color inversion (reads as a second “button”).
+ * Solid theme fill with a spectrum gradient border only.
+ */
+main#main button.AddToCartButton--storefront.Button.Button--primary {
+  position: relative;
+  isolation: isolate;
+  color: #ffffff !important;
+  border: 2px solid transparent !important;
+  border-radius: 2px;
+  background:
+    linear-gradient(var(--button-background), var(--button-background)) padding-box,
+    linear-gradient(135deg, #f97316, #ec4899, #a855f7, #3b82f6, #22d3ee, #f97316) border-box;
+  background-origin: border-box;
+  box-shadow: none;
+}
+
+main#main button.AddToCartButton--storefront.Button.Button--primary::before {
+  display: none !important;
+  content: none !important;
+}
+
+@media (-moz-touch-enabled: 0), (hover: hover) {
+  main#main
+    .features--show-button-transition
+    button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):hover {
+    color: #ffffff !important;
+    filter: brightness(1.07);
+  }
+
+  main#main
+    .features--show-button-transition
+    button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):hover::before {
+    transform: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/**
+ * Cart: opaque panels so particle field doesn’t compete with line items.
+ */
+main#main .Cart--opaqueShell .CartItem--panel,
+main#main .Cart--opaqueShell .Cart__Summary--panel,
+main#main .Cart--opaqueShell .Cart__EmptyPanel,
+main#main .Cart--opaqueShell .Cart__PageHeaderPanel,
+main#main .Cart--opaqueShell .Cart__LoadingPanel {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+}
+
+main#main .Cart--opaqueShell .CartItem--panel {
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+main#main .Cart--opaqueShell .Cart__Summary--panel {
+  padding: 22px 24px;
+  margin-top: 8px;
+}
+
+main#main .Cart--opaqueShell .Cart__PageHeaderPanel {
+  padding: 18px 22px;
+  margin-bottom: 18px;
+}
+
+main#main .Cart--opaqueShell .Cart__EmptyPanel {
+  padding: 40px 24px;
+  text-align: center;
+}
+
+main#main .Cart--opaqueShell .Cart__LoadingPanel {
+  padding: 48px;
+}

@@ -20,6 +20,7 @@ Last updated: 2026-04-09
 | Checkout | Basic | `app/checkout/page.tsx` |
 | Search | Done | `app/search/page?q=` (catalog search) |
 | Static pages | Done | About, Mission & Sustainability, Contact |
+| Admin mobile (Expo) | **Planned** | See [ADMIN_MOBILE_PLAN.md](./ADMIN_MOBILE_PLAN.md); scaffold `apps/admin-mobile` when executing |
 | Account | Stub | Redirects to `/login?next=/account` |
 | Admin UI | Stub | `app/admin/page.tsx` — future: uploads / management |
 
