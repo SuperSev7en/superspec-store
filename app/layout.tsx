@@ -5,6 +5,7 @@ import { ThemeLayout } from '@/components/shopify/ThemeLayout';
 import { getThemeBodyClassName } from '@/lib/shopify/themeUtils';
 import { getThemeSettings, getThemeSections, getThemeBrandAssets } from '@/lib/shopify/themeConfig';
 import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'SUPER Spec',
@@ -107,6 +108,7 @@ document.documentElement.style.setProperty("--window-height", window.innerHeight
         <ThemeLayout settings={settings} sections={sections}>
           {children}
         </ThemeLayout>
+        <Analytics />
         <Script src="/assets/theme-toggle.js" strategy="afterInteractive" />
       </body>
     </html>
