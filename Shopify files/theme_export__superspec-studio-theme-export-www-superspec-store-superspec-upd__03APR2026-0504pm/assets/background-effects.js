@@ -4,7 +4,7 @@
   let mouseX = 0;
   let mouseY = 0;
 
-  /* Full spectrum — drawn with NormalBlending so colors stay visible on a white backdrop (AdditiveBlending washes out on white). */
+  /* Full spectrum — NormalBlending reads on white (AdditiveBlending vanishes on white). */
   const spectrumColors = [
     { r: 1.0, g: 0.15, b: 0.2 },
     { r: 1.0, g: 0.45, b: 0.05 },
@@ -15,11 +15,38 @@
     { r: 0.9, g: 0.25, b: 1.0 },
   ];
 
+  /**
+   * One fixed stack: solid white on the bottom, WebGL above it (same z-index layer as page chrome).
+   * Previously `.holographic-bg` was appended after the canvas with the same z-index as the canvas,
+   * which painted an opaque white sheet on top of the particles.
+   */
+  function ensureAmbientStack() {
+    if (document.getElementById('superspec-ambient-stack')) return;
+
+    const stack = document.createElement('div');
+    stack.id = 'superspec-ambient-stack';
+
+    const white = document.createElement('div');
+    white.className = 'superspec-ambient-white';
+    white.setAttribute('aria-hidden', 'true');
+
+    const canvasHost = document.createElement('div');
+    canvasHost.id = 'background-canvas';
+
+    stack.appendChild(white);
+    stack.appendChild(canvasHost);
+    document.body.prepend(stack);
+  }
+
   function initBackgroundEffects() {
     if (typeof THREE === 'undefined') {
       return false;
     }
-    if (document.getElementById('background-canvas')) {
+
+    ensureAmbientStack();
+    const canvasHost = document.getElementById('background-canvas');
+    if (!canvasHost) return false;
+    if (canvasHost.querySelector('canvas')) {
       return true;
     }
 
@@ -34,12 +61,11 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setClearColor(0xffffff, 0);
 
-    const container = document.createElement('div');
-    container.id = 'background-canvas';
-    container.style.cssText =
-      'position:fixed;top:0;left:0;z-index:0;width:100vw;height:100vh;pointer-events:none;';
-    container.appendChild(renderer.domElement);
-    document.body.prepend(container);
+    const canvasEl = renderer.domElement;
+    canvasEl.style.display = 'block';
+    canvasEl.style.width = '100%';
+    canvasEl.style.height = '100%';
+    canvasHost.appendChild(canvasEl);
 
     camera.position.z = 5;
 
@@ -105,22 +131,8 @@
     return true;
   }
 
-  function ensureAmbientDivs() {
-    if (!document.querySelector('.holographic-bg')) {
-      const holographicBg = document.createElement('div');
-      holographicBg.className = 'holographic-bg';
-      document.body.prepend(holographicBg);
-    }
-    if (!document.querySelector('.gold-foil')) {
-      const foilEffect = document.createElement('div');
-      foilEffect.className = 'gold-foil';
-      document.body.prepend(foilEffect);
-    }
-  }
-
   function tryInitThree(attempt) {
     attempt = attempt || 0;
-    ensureAmbientDivs();
     if (initBackgroundEffects()) {
       return;
     }

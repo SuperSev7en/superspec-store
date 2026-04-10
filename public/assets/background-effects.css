@@ -1,27 +1,39 @@
-/* Ambient layers sit behind content (z-index 0). Pure white base; motion stays subtle and neutral. */
-.holographic-bg {
-  background: #ffffff;
+/**
+ * Ambient stack: white fill is behind the WebGL layer only (no sibling overlay with the same z-index).
+ * Content sits in `.PageContainer` (z-index: 2, transparent) so particles show through the page.
+ */
+#superspec-ambient-stack {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   z-index: 0;
+  pointer-events: none;
+  contain: strict;
+}
+
+.superspec-ambient-white {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ffffff;
+}
+
+#background-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
-/* Very light neutral grain — no hue rotation (avoids green/color cast). */
+#background-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Legacy class names — no longer injected; kept empty-safe if old HTML cached. */
+.holographic-bg,
 .gold-foil {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.4"/></svg>');
-  opacity: 0.04;
-  mix-blend-mode: multiply;
-  z-index: 0;
-  pointer-events: none;
+  display: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -30,11 +42,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .gold-foil {
-    opacity: 0.025;
   }
 }

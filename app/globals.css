@@ -147,11 +147,17 @@ body {
 }
 
 /**
- * Stack page content above fixed ambient layers (`#background-canvas`, `.holographic-bg`, `.gold-foil`).
+ * Above `#superspec-ambient-stack` (z-index 0). Transparent so Three.js particles show through;
+ * header/footer use their own theme backgrounds.
  */
 .PageContainer {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  background: transparent;
+}
+
+main#main {
+  background: transparent;
 }
 
 /**
