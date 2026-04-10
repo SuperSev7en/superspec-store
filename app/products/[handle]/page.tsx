@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getProductByHandle } from '@/lib/catalog/catalog';
+import { getProductByHandleFromSupabase } from '@/lib/catalog/supabaseCatalog';
 import { stripHtml } from '@/lib/catalog/htmlUtils';
 import { AddToCartButton } from '@/components/store/AddToCartButton';
 import { ProductImageFrame } from '@/components/store/ProductImageFrame';
@@ -8,7 +9,7 @@ export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
-  const product = await getProductByHandle(handle);
+  const product = (await getProductByHandleFromSupabase(handle)) ?? (await getProductByHandle(handle));
   if (!product) {
     return { title: 'Not found' };
   }
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 
 export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
-  const product = await getProductByHandle(handle);
+  const product = (await getProductByHandleFromSupabase(handle)) ?? (await getProductByHandle(handle));
 
   if (!product) {
     return (

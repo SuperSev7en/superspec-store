@@ -1,4 +1,5 @@
 import { getProductsForCollectionHandle } from '@/lib/catalog/catalog';
+import { getProductsForCollectionHandleFromSupabase } from '@/lib/catalog/supabaseCatalog';
 import { FeaturedCollectionsClient, type FeaturedCollectionTab } from '@/components/shopify/sections/FeaturedCollectionsClient';
 
 export async function FeaturedCollections({
@@ -27,7 +28,11 @@ export async function FeaturedCollections({
     const handle = typeof block.settings.collection === 'string' ? block.settings.collection.trim() : '';
     const limit = Number(block.settings.grid_items_count) || 8;
     const blockTitle = typeof block.settings.title === 'string' ? block.settings.title.trim() : '';
-    const products = handle ? await getProductsForCollectionHandle(handle, limit) : [];
+    const products = handle
+      ? await getProductsForCollectionHandleFromSupabase(handle, limit).then((db) =>
+          db.length > 0 ? db : getProductsForCollectionHandle(handle, limit),
+        )
+      : [];
     const displayTitle =
       blockTitle ||
       (handle ? handle.replace(/-/g, ' ') : sectionTitle || 'Featured collection');

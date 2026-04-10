@@ -1,11 +1,13 @@
 import { loadCatalog } from '@/lib/catalog/catalog';
+import { loadCatalogFromSupabase } from '@/lib/catalog/supabaseCatalog';
 import { stripHtml } from '@/lib/catalog/htmlUtils';
 import { ProductImageFrame } from '@/components/store/ProductImageFrame';
 
 export const revalidate = 0;
 
 export default async function ProductsPage() {
-  const products = await loadCatalog();
+  const fromDb = await loadCatalogFromSupabase();
+  const products = fromDb.length > 0 ? fromDb : await loadCatalog();
 
   return (
     <div className="Collection">

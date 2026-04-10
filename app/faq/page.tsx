@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Icon } from '@/components/shopify/icons/Icon';
+import { FaqAccordion } from '@/components/store/FaqAccordion';
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -40,27 +40,7 @@ export default function FaqPage() {
       <section data-section-type="faq" data-section-id="static-faq">
         <div className="Container">
           <div className="PageContent PageContent--narrow">
-            <div className="Faq">
-              {FAQ_ITEMS.map((item, i) => (
-                <div
-                  key={i}
-                  className={`Faq__Item ${i === FAQ_ITEMS.length - 1 ? 'Faq__Item--lastOfSection' : ''}`.trim()}
-                  aria-expanded="false"
-                >
-                  <span className="Faq__Icon">
-                    <Icon icon="select-arrow" />
-                  </span>
-                  <div className="Faq__ItemWrapper">
-                    <button type="button" className="Faq__Question">
-                      {item.q}
-                    </button>
-                    <div className="Faq__AnswerWrapper" aria-hidden="true">
-                      <div className="Faq__Answer Rte" dangerouslySetInnerHTML={{ __html: item.aHtml }} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <FaqAccordion items={FAQ_ITEMS} />
           </div>
         </div>
       </section>

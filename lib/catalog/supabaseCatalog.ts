@@ -130,3 +130,28 @@ export async function getProductByHandleFromSupabase(handle: string): Promise<Db
   } satisfies DbProduct;
 }
 
+function normalizeTag(t: string) {
+  return t.trim().toLowerCase().replace(/\s+/g, '-');
+}
+
+export async function getProductsForCollectionHandleFromSupabase(collectionHandle: string, limit: number): Promise<DbProduct[]> {
+  const h = collectionHandle.trim().toLowerCase();
+  if (!h) return [];
+  const catalog = await loadCatalogFromSupabase();
+
+  const matched = catalog.filter((p) => {
+    const tags = p.tags.map(normalizeTag);
+    if (tags.includes(h) || tags.includes(`collection:${h}`) || tags.some((t) => t.replace(/^collection:/, '') === h)) {
+      return true;
+    }
+
+    // Heuristic fallback: many imported catalogs don't preserve collection tags.
+    // Try handle keyword matching over title/vendor/type and tags.
+    const keywords = h.split('-').filter(Boolean);
+    const hay = normalizeTag([p.title, p.vendor ?? '', p.productType ?? '', p.productCategory ?? '', p.tags.join(' ')].join(' '));
+    return keywords.every((k) => hay.includes(k));
+  });
+
+  return matched.slice(0, Math.max(0, limit));
+}
+
