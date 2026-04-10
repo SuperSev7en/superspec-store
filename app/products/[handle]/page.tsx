@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                     alt={i === 0 ? product.title : `${product.title} ${i + 1}`}
                     maxWidth="1200px"
                     aspectRatio={1}
-                    imgClassName="Image--fadeIn"
+                    imgClassName="Image--fadeIn Image--zoomOut"
                   />
                 </div>
               ))}

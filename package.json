@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "images:download": "node scripts/download-product-images.mjs",
+    "deploy:vercel": "bash scripts/deploy-vercel.sh"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.0.1",

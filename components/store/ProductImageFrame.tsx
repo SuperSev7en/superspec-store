@@ -22,14 +22,17 @@ export function ProductImageFrame({
   aspectRatio?: number;
   imgClassName?: string;
 }) {
+  const classes = [imgClassName.trim(), 'Image--lazyLoaded'].filter(Boolean).join(' ');
+
   return (
     <div className="AspectRatio AspectRatio--withFallback" style={aspectBoxStyle(maxWidth, aspectRatio)}>
       <img
-        className={imgClassName.trim()}
+        className={classes}
         src={src}
         alt={alt}
         loading="lazy"
         decoding="async"
+        style={{ objectFit: 'contain' }}
       />
     </div>
   );

@@ -26,6 +26,16 @@ export function CollectionItem({
   const buttonLink = typeof blockSettings.button_link === 'string' ? resolveShopifyLink(blockSettings.button_link) : '#';
   const applyOverlay = Boolean(blockSettings.apply_overlay ?? false);
 
+  const imageLayerClass = [
+    'CollectionItem__Image',
+    'CollectionItem__Image--containFit',
+    applyOverlay ? 'Image--contrast' : '',
+    image ? 'Image--lazyLoaded Image--zoomOut' : 'Image--lazyLoad Image--zoomOut',
+    'hide-no-js',
+  ]
+    .join(' ')
+    .trim();
+
   return (
     <a
       href={buttonLink || '#'}
@@ -34,14 +44,14 @@ export function CollectionItem({
       }`.trim()}
       data-slide-index={blockIndex}
     >
-      <div
-        className={`CollectionItem__Wrapper CollectionItem__Wrapper--${sectionSettings.image_size}`}
-        style={image ? { backgroundImage: `url(${image})` } : undefined}
-      >
+      <div className={`CollectionItem__Wrapper CollectionItem__Wrapper--${sectionSettings.image_size}`}>
         <div className="CollectionItem__ImageWrapper">
           <div
-            className={`CollectionItem__Image ${applyOverlay ? 'Image--contrast' : ''} Image--lazyLoad Image--zoomOut hide-no-js`.trim()}
-            style={{ backgroundPosition: imageAlignment, ...(image ? { backgroundImage: `url(${image})` } : {}) }}
+            className={imageLayerClass}
+            style={{
+              backgroundPosition: imageAlignment,
+              ...(image ? { backgroundImage: `url(${image})` } : {}),
+            }}
           >
             {!image ? (
               <div className="PlaceholderBackground PlaceholderSvg--dark">

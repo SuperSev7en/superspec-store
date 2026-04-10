@@ -1,5 +1,6 @@
 import type { ThemeSettings } from '@/lib/shopify/themeSettings';
 import { Icon } from '@/components/shopify/icons/Icon';
+import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
 
 type FooterBlock =
   | { type: 'text'; title?: string; contentHtml?: string; showSocialMedia?: boolean }
@@ -41,12 +42,7 @@ export function Footer({
       blocks.push({
         type: 'links',
         title: 'Quick links',
-        links: [
-          { title: 'Shop', url: '/products' },
-          { title: 'About', url: '/about' },
-          { title: 'Contact', url: '/contact' },
-          { title: 'FAQ', url: '/faq' },
-        ],
+        links: [...MAIN_NAV_LINKS],
       });
       continue;
     }
@@ -66,12 +62,7 @@ export function Footer({
       {
         type: 'links',
         title: 'Quick links',
-        links: [
-          { title: 'Shop', url: '/products' },
-          { title: 'About', url: '/about' },
-          { title: 'Contact', url: '/contact' },
-          { title: 'FAQ', url: '/faq' },
-        ],
+        links: [...MAIN_NAV_LINKS],
       },
       {
         type: 'newsletter',

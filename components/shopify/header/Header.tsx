@@ -1,6 +1,7 @@
 import type { ThemeSettings } from '@/lib/shopify/themeSettings';
 import { Icon } from '@/components/shopify/icons/Icon';
 import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
+import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
 
 type MenuLink = { title: string; url: string; active?: boolean };
 
@@ -8,12 +9,7 @@ export function Header({
   settings,
   sectionSettings,
   shopName = 'SUPER Spec',
-  menu = [
-    { title: 'Shop', url: '/products' },
-    { title: 'About', url: '/about' },
-    { title: 'Contact', url: '/contact' },
-    { title: 'FAQ', url: '/faq' },
-  ],
+  menu = [...MAIN_NAV_LINKS],
   cartItemCount = 0,
 }: {
   settings: ThemeSettings;

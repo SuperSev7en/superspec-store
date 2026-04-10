@@ -4,3 +4,29 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/**
+ * Prestige hides `.ProductList--grid .ProductItem` when `features--show-element-staggering` is enabled,
+ * then reveals them from `CollectionSection` / `FeaturedCollectionsSection`. Next.js catalog routes
+ * reuse the grid markup without those section roots, so items (and their images) never un-hide.
+ */
+.js.features--show-element-staggering main#main .Collection .ProductList--grid .ProductItem {
+  visibility: visible !important;
+}
+
+/**
+ * Stack page content above fixed ambient layers (`#background-canvas`, `.holographic-bg`, `.gold-foil`).
+ */
+.PageContainer {
+  position: relative;
+  z-index: 1;
+}
+
+/**
+ * Home collection-list panels: show full artwork inside the tile (letterboxed) instead of cropping.
+ */
+.CollectionItem__Image.CollectionItem__Image--containFit {
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-color: #000000;
+}
