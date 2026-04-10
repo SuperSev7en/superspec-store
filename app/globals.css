@@ -7,11 +7,51 @@ body {
 
 /**
  * Prestige hides `.ProductList--grid .ProductItem` when `features--show-element-staggering` is enabled,
- * then reveals them from `CollectionSection` / `FeaturedCollectionsSection`. Next.js catalog routes
- * reuse the grid markup without those section roots, so items (and their images) never un-hide.
+ * then reveals them from section JavaScript. In this app `js` is on `<html>` while
+ * `features--show-element-staggering` lives on `<body>`, so the selector must be descendant-based
+ * (not `.js.features--show-element-staggering` on one element). Grids also appear outside `.Collection`
+ * (e.g. featured collections), so target `main` product lists broadly.
  */
-.js.features--show-element-staggering main#main .Collection .ProductList--grid .ProductItem {
+.js .features--show-element-staggering main#main .ProductList--grid .ProductItem {
   visibility: visible !important;
+}
+
+/**
+ * Product template: theme uses `position:absolute` + `height:100%` on `.Product__InfoWrapper` with
+ * sticky `.Product__Info`. Gallery height alone sets `.Product` height, so long descriptions + CTA
+ * overflow and overlap the footer. Use a simple two-column grid so the section grows with content.
+ */
+@media screen and (min-width: 1008px) {
+  main#main .Product .Product__Wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    column-gap: 50px;
+    align-items: start;
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  main#main .Product .Product__InfoWrapper {
+    position: static;
+    height: auto;
+    width: auto;
+  }
+
+  main#main .Product .Product__Info {
+    position: static;
+    top: auto;
+    right: auto;
+    width: auto;
+    max-width: 500px;
+    margin: 0;
+    padding-bottom: 0;
+  }
+
+  main#main .Product .Product__Gallery {
+    margin-bottom: 0;
+    max-width: 100%;
+  }
 }
 
 /**

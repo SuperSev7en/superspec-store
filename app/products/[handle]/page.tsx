@@ -62,30 +62,32 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
           <div className="Product__InfoWrapper">
             <div className="Product__Info">
-              {product.vendor ? (
-                <p className="ProductMeta__Vendor Heading u-h6 Text--subdued">{product.vendor}</p>
-              ) : null}
-              <h1 className="ProductMeta__Title Heading u-h2">{product.title}</h1>
+              <div className="Container">
+                {product.vendor ? (
+                  <p className="ProductMeta__Vendor Heading u-h6 Text--subdued">{product.vendor}</p>
+                ) : null}
+                <h1 className="ProductMeta__Title Heading u-h2">{product.title}</h1>
 
-              {product.productType ? (
-                <p className="Text--subdued" style={{ marginTop: 4 }}>
-                  {product.productType}
-                </p>
-              ) : null}
+                {product.productType ? (
+                  <p className="Text--subdued" style={{ marginTop: 4 }}>
+                    {product.productType}
+                  </p>
+                ) : null}
 
-              <div className="ProductMeta__PriceList Heading">
-                <span className="ProductMeta__Price Price Text--subdued">${firstVariant?.price?.toFixed(2)}</span>
-              </div>
-
-              {product.descriptionHtml ? (
-                <div className="ProductMeta__Description Rte">
-                  {/* eslint-disable-next-line react/no-danger */}
-                  <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+                <div className="ProductMeta__PriceList Heading">
+                  <span className="ProductMeta__Price Price Text--subdued">${firstVariant?.price?.toFixed(2)}</span>
                 </div>
-              ) : null}
 
-              <div className="ProductForm">
-                <AddToCartButton handle={product.handle} variantId={firstVariant?.id} />
+                {product.descriptionHtml ? (
+                  <div className="ProductMeta__Description Rte">
+                    {/* eslint-disable-next-line react/no-danger */}
+                    <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+                  </div>
+                ) : null}
+
+                <div className="ProductForm">
+                  <AddToCartButton handle={product.handle} variantId={firstVariant?.id} />
+                </div>
               </div>
             </div>
           </div>
