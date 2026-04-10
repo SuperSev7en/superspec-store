@@ -50,7 +50,7 @@ export const defaultThemeSettings: ThemeSettings = {
   text_color: '#1c1b1b',
   text_light_color: '#6a6a6a',
   link_color: '#6a6a6a',
-  background: '#eaeaea',
+  background: '#ffffff',
   light_background: '#ffffff',
   product_on_sale_color: '#f94c43',
   button_background: '#1c1b1b',

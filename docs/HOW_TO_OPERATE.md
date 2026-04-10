@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-Visit `/products`, `/collections/{handle}`, `/about`, `/contact`, `/faq`, `/mission-and-sustainability`, `/search?q=`.
+Visit `/products`, `/collections/{handle}`, `/about`, `/contact`, `/mission-and-sustainability`, `/search?q=`.
 
 ## Product images (offline / no Shopify CDN)
 

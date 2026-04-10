@@ -4,16 +4,6 @@
   let mouseX = 0;
   let mouseY = 0;
 
-  const spectrumColors = [
-    { r: 1.0, g: 0.0, b: 0.0 },
-    { r: 1.0, g: 0.5, b: 0.0 },
-    { r: 1.0, g: 1.0, b: 0.0 },
-    { r: 0.0, g: 1.0, b: 0.0 },
-    { r: 0.0, g: 0.0, b: 1.0 },
-    { r: 0.4, g: 0.0, b: 0.8 },
-    { r: 0.8, g: 0.0, b: 1.0 },
-  ];
-
   function initBackgroundEffects() {
     if (typeof THREE === 'undefined') {
       return false;
@@ -31,7 +21,7 @@
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0xffffff, 0);
 
     const container = document.createElement('div');
     container.id = 'background-canvas';
@@ -52,22 +42,23 @@
       positions[i + 1] = (Math.random() - 0.5) * 10;
       positions[i + 2] = (Math.random() - 0.5) * 10;
 
-      const colorIndex = Math.floor(Math.random() * spectrumColors.length);
-      const color = spectrumColors[colorIndex];
-      colors[i] = color.r;
-      colors[i + 1] = color.g;
-      colors[i + 2] = color.b;
+      /* Neutral light gray sparkles on white (no rainbow / green cast). */
+      const t = 0.72 + Math.random() * 0.26;
+      colors[i] = t;
+      colors[i + 1] = t;
+      colors[i + 2] = t;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const particleMaterial = new THREE.PointsMaterial({
-      size: 0.05,
+      size: 0.045,
       vertexColors: true,
       transparent: true,
-      opacity: 0.6,
-      blending: THREE.AdditiveBlending,
+      opacity: 0.28,
+      depthWrite: false,
+      blending: THREE.NormalBlending,
     });
 
     const particleSystem = new THREE.Points(geometry, particleMaterial);

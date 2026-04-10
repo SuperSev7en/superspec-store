@@ -1,17 +1,6 @@
-/* Holographic gradient background */
+/* Ambient layers sit behind content (z-index 0). Pure white base; motion stays subtle and neutral. */
 .holographic-bg {
-  background: linear-gradient(
-    45deg,
-    rgba(255, 0, 0, 0.1),    /* Red */
-    rgba(255, 127, 0, 0.1),  /* Orange */
-    rgba(255, 255, 0, 0.1),  /* Yellow */
-    rgba(0, 255, 0, 0.1),    /* Green */
-    rgba(0, 0, 255, 0.1),    /* Blue */
-    rgba(75, 0, 130, 0.1),   /* Indigo */
-    rgba(148, 0, 211, 0.1)   /* Violet */
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background: #ffffff;
   position: fixed;
   top: 0;
   left: 0;
@@ -21,40 +10,20 @@
   pointer-events: none;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Spectrum foil effect */
+/* Very light neutral grain — no hue rotation (avoids green/color cast). */
 .gold-foil {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.15"/></svg>');
-  mask-image: linear-gradient(45deg, transparent 30%, white 70%);
-  animation: spectrumShimmer 10s linear infinite;
+  background-image: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.4"/></svg>');
+  opacity: 0.04;
+  mix-blend-mode: multiply;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.1;
-  mix-blend-mode: screen;
 }
 
-@keyframes spectrumShimmer {
-  0% {
-    filter: hue-rotate(0deg);
-    mask-position: 100% 100%;
-  }
-  100% {
-    filter: hue-rotate(360deg);
-    mask-position: 0% 0%;
-  }
-}
-
-/* Performance optimizations */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -64,51 +33,8 @@
   }
 }
 
-/* Mobile optimizations */
 @media screen and (max-width: 768px) {
-  .holographic-bg,
   .gold-foil {
-    opacity: 0.05;
+    opacity: 0.025;
   }
-} 
-/* 7-Color Spectrum Animated Background */
-@keyframes spectrumGlitch {
-  0% { filter: hue-rotate(0deg); }
-  16% { filter: hue-rotate(45deg); } /* Red */
-  32% { filter: hue-rotate(90deg); } /* Orange */
-  48% { filter: hue-rotate(180deg); } /* Yellow */
-  64% { filter: hue-rotate(240deg); } /* Green */
-  80% { filter: hue-rotate(300deg); } /* Blue */
-  100% { filter: hue-rotate(360deg); } /* Indigo/Violet */
-}
-
-.spectrum-glitch-bg {
-    animation: spectrumGlitch 8s infinite linear;
-}
-
-/* Smooth background transition */
-.spectrum-lightwaves {
-    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-    animation: lightwaveAnimation 10s infinite alternate;
-}
-
-@keyframes lightwaveAnimation {
-    0% { opacity: 0.8; }
-    50% { opacity: 0.6; }
-    100% { opacity: 0.8; }
-}
-
-/* Floating Particles */
-.spectrum-particles {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: url('/assets/particles.svg') repeat;
-    animation: floatingParticles 10s infinite alternate;
-}
-
-@keyframes floatingParticles {
-    0% { opacity: 0.7; transform: translateY(0px); }
-    50% { opacity: 0.9; transform: translateY(-5px); }
-    100% { opacity: 0.7; transform: translateY(0px); }
 }

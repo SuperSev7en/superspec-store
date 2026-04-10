@@ -21,9 +21,9 @@ This document maps **Liquid** building blocks to **this repo**. Goal: one clear 
 | `templates/product.liquid` | `/products/[handle]` | `app/products/[handle]/page.tsx` |
 | `templates/collection.liquid` | `/collections/[handle]` | `app/collections/[handle]/page.tsx` |
 | `templates/cart.liquid` | `/cart` | `app/cart/page.tsx` |
-| `templates/page.liquid` | — | **Replaced** by explicit routes (about, mission, contact, FAQ) |
+| `templates/page.liquid` | — | **Replaced** by explicit routes (about, mission, contact) |
 | `templates/page.contact.liquid` | `/contact` | `app/contact/page.tsx` + `ContactForm` |
-| `templates/page.faq.liquid` | `/faq` | `app/faq/page.tsx` + Prestige `Faq` markup + theme JS |
+| `templates/page.faq.liquid` | — | **Not ported** (FAQ route removed from storefront) |
 | `templates/search.liquid` | `/search` | `app/search/page.tsx` (catalog search, not Shopify Search) |
 | `templates/blog.liquid`, `article.liquid` | — | **Not implemented** (no blog pipeline in Next yet) |
 | `templates/customers/*.liquid` | `/login`, `/register`, `/account` | Supabase auth; account redirects until session UI exists |
@@ -51,7 +51,7 @@ This document maps **Liquid** building blocks to **this repo**. Goal: one clear 
 ## Behaviors preserved via theme JS/CSS
 
 - Prestige **element staggering** on catalog routes is overridden in `app/globals.css` where the theme section JS does not mount.
-- **FAQ** accordion uses `data-section-type="faq"` so `theme.js` registers `FaqSection`.
+- Theme `FaqSection` remains in `theme.js` for parity with the Liquid export; the storefront no longer ships an `/faq` route.
 - **Product images** use `Image--lazyLoaded` where lazySizes is not driving the tag.
 
 ## Intentional differences

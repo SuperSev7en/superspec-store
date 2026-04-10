@@ -19,7 +19,7 @@ Last updated: 2026-04-09
 | Cart | Basic | `app/cart/page.tsx` |
 | Checkout | Basic | `app/checkout/page.tsx` |
 | Search | Done | `app/search/page?q=` (catalog search) |
-| Static pages | Done | About, Mission & Sustainability, Contact, FAQ |
+| Static pages | Done | About, Mission & Sustainability, Contact |
 | Account | Stub | Redirects to `/login?next=/account` |
 | Admin UI | Stub | `app/admin/page.tsx` — future: uploads / management |
 
