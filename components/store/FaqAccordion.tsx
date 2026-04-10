@@ -5,8 +5,15 @@ import { Icon } from '@/components/shopify/icons/Icon';
 
 type Item = { q: string; aHtml: string };
 
-export function FaqAccordion({ items }: { items: Item[] }) {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+export function FaqAccordion({
+  items,
+  initialOpenIndex = 0,
+}: {
+  items: Item[];
+  /** `null` = all collapsed */
+  initialOpenIndex?: number | null;
+}) {
+  const [openIdx, setOpenIdx] = useState<number | null>(initialOpenIndex ?? null);
 
   return (
     <div className="Faq">

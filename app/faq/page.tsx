@@ -1,30 +1,11 @@
 import type { Metadata } from 'next';
 import { FaqAccordion } from '@/components/store/FaqAccordion';
+import { FAQ_SECTIONS } from '@/lib/faqContent';
 
 export const metadata: Metadata = {
   title: 'FAQ',
   description: 'Frequently asked questions about SUPER Spec.',
 };
-
-const FAQ_ITEMS: { q: string; aHtml: string }[] = [
-  {
-    q: 'How do I contact customer service?',
-    aHtml: '<p>Email <a href="mailto:service@superspec.store">service@superspec.store</a> or use the form on our <a href="/contact">Contact</a> page. Include your order number when applicable.</p>',
-  },
-  {
-    q: 'What are your operating hours?',
-    aHtml: '<p>10 am – 5 pm, Monday – Friday.</p>',
-  },
-  {
-    q: 'Where can I learn about shipping and returns?',
-    aHtml:
-      '<p>Policies are shown at checkout and in order communications. For questions, reach out to customer service with your order number.</p>',
-  },
-  {
-    q: 'Do you offer wholesale or business partnerships?',
-    aHtml: '<p>Business inquiries: <a href="mailto:sales@superspec.store">sales@superspec.store</a>.</p>',
-  },
-];
 
 export default function FaqPage() {
   return (
@@ -40,7 +21,14 @@ export default function FaqPage() {
       <section data-section-type="faq" data-section-id="static-faq">
         <div className="Container">
           <div className="PageContent PageContent--narrow">
-            <FaqAccordion items={FAQ_ITEMS} />
+            {FAQ_SECTIONS.map((section, i) => (
+              <div key={section.heading} style={{ marginTop: i > 0 ? 48 : 0 }}>
+                <h2 className="Faq__Section Heading u-h1" style={{ marginBottom: 24 }}>
+                  {section.heading}
+                </h2>
+                <FaqAccordion items={section.items} initialOpenIndex={i === 0 ? 0 : null} />
+              </div>
+            ))}
           </div>
         </div>
       </section>

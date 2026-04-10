@@ -12,30 +12,47 @@ function labelFromTags(tags: string[]) {
   return null;
 }
 
+function priceLabelForProduct(product: CatalogProduct) {
+  const first = product.variants[0];
+  const prices = product.variants.map((v) => v.price).filter((n) => Number.isFinite(n));
+  if (prices.length === 0) return '$0.00';
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+  if (prices.length > 1 && minP !== maxP) {
+    return `From $${minP.toFixed(2)}`;
+  }
+  return `$${(first?.price ?? minP).toFixed(2)}`;
+}
+
 export function ProductItem({
   product,
   showProductInfo = true,
   showVendor = false,
   showLabels = true,
   cellClassName = '',
+  subtext,
+  listLayout = false,
 }: {
   product: CatalogProduct;
   showProductInfo?: boolean;
   showVendor?: boolean;
   showLabels?: boolean;
   cellClassName?: string;
+  subtext?: string;
+  listLayout?: boolean;
 }) {
   const first = product.variants[0];
   const compareAt = first?.compareAtPrice;
   const onSale = compareAt != null && compareAt > (first?.price ?? 0);
   const customLabel = labelFromTags(product.tags);
+  const priceText = priceLabelForProduct(product);
 
   const wrap = (inner: ReactNode) =>
     cellClassName ? <div className={cellClassName}>{inner}</div> : inner;
 
   return wrap(
-    <div className="ProductItem">
-      <div className="ProductItem__Wrapper">
+    <div className={`ProductItem ${listLayout ? 'ProductItem--listRow' : ''}`.trim()}>
+      <div className={`ProductItem__Wrapper ${listLayout ? 'ProductItem__Wrapper--listRow' : ''}`.trim()}>
         <a href={`/products/${product.handle}`} className="ProductItem__ImageWrapper">
           {product.images[0] ? (
             <ProductImageFrame
@@ -64,8 +81,13 @@ export function ProductItem({
               <a href={`/products/${product.handle}`}>{product.title}</a>
             </h2>
             <div className="ProductItem__PriceList Heading">
-              <span className="ProductItem__Price Price Text--subdued">${first?.price?.toFixed(2)}</span>
+              <span className="ProductItem__Price Price Text--subdued">{priceText}</span>
             </div>
+            {subtext ? (
+              <p className="Text--subdued" style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5 }}>
+                {subtext}
+              </p>
+            ) : null}
           </div>
         ) : null}
       </div>

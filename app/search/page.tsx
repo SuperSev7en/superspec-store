@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { loadCatalog } from '@/lib/catalog/catalog';
+import { loadCatalogFromSupabase } from '@/lib/catalog/supabaseCatalog';
 import { stripHtml } from '@/lib/catalog/htmlUtils';
+import { ProductCatalogClient, type CatalogRowProduct } from '@/components/store/ProductCatalogClient';
 
 export const metadata: Metadata = {
   title: 'Search',
@@ -17,12 +18,13 @@ function normalize(s: string) {
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   const query = typeof q === 'string' ? normalize(q) : '';
-  const products = await loadCatalog();
+  const fromDb = await loadCatalogFromSupabase();
+  const catalog = fromDb.length > 0 ? fromDb : await loadCatalog();
 
   const results =
     query.length === 0
       ? []
-      : products.filter((p) => {
+      : catalog.filter((p) => {
           const hay = normalize(
             [
               p.title,
@@ -36,6 +38,12 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           const words = query.split(/\s+/).filter(Boolean);
           return words.every((w) => hay.includes(w));
         });
+
+  const rows: CatalogRowProduct[] = results.map((product) => {
+    const excerpt = stripHtml(product.descriptionHtml);
+    const short = excerpt.length > 140 ? `${excerpt.slice(0, 140)}…` : excerpt;
+    return { ...product, listingExcerpt: short || undefined };
+  });
 
   return (
     <div className="Collection">
@@ -65,15 +73,11 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         ) : results.length === 0 ? (
           <p className="Text--subdued">No products matched &ldquo;{q}&rdquo;.</p>
         ) : (
-          <ul className="Linklist" style={{ marginTop: 24 }}>
-            {results.map((p) => (
-              <li key={p.handle} className="Linklist__Item">
-                <Link href={`/products/${p.handle}`} className="Link Link--primary">
-                  {p.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <ProductCatalogClient
+            products={rows}
+            layout="shop"
+            collectionCellClassName="Grid__Cell 1/2--phone 1/2--tablet 1/3--lap-and-up"
+          />
         )}
       </div>
     </div>

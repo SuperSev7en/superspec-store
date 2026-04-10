@@ -8,6 +8,17 @@ export type CartLine = {
 
 const KEY = 'cart-v1';
 
+export const CART_UPDATED_EVENT = 'superspec:cart-updated';
+
+function emitCartUpdated() {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT));
+}
+
+export function cartTotalQuantity(lines: CartLine[]): number {
+  return lines.reduce((sum, l) => sum + Math.max(0, l.quantity), 0);
+}
+
 export function readCart(): CartLine[] {
   try {
     const raw = localStorage.getItem(KEY);
@@ -28,6 +39,7 @@ export function readCart(): CartLine[] {
 
 export function writeCart(lines: CartLine[]) {
   localStorage.setItem(KEY, JSON.stringify(lines));
+  emitCartUpdated();
 }
 
 export function addToCart(line: CartLine) {

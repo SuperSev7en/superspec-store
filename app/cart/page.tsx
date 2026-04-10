@@ -1,61 +1,87 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { readCart, writeCart } from '@/components/store/cart';
+import { readCart, writeCart, type CartLine } from '@/components/store/cart';
+
+function lineKey(line: Pick<CartLine, 'handle' | 'variantId'>) {
+  return `${line.handle}::${line.variantId ?? ''}`;
+}
 
 type CartItemView = {
+  key: string;
   handle: string;
   title: string;
   price: number;
   image?: string | null;
   quantity: number;
   variantId?: string;
+  variantTitle?: string;
 };
 
 export default function CartPage() {
   const [cart, setCart] = useState<CartItemView[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const hydrate = useCallback(async () => {
     const lines = readCart();
-    Promise.all(
+    const rows = await Promise.all(
       lines.map(async (l) => {
         const res = await fetch(`/api/products/${encodeURIComponent(l.handle)}`);
         if (!res.ok) return null;
-        const json = (await res.json()) as { product: { handle: string; title: string; images: string[]; variants: { id: string; price: number }[] } };
+        const json = (await res.json()) as {
+          product: {
+            handle: string;
+            title: string;
+            images: string[];
+            variants: { id: string; title: string; price: number }[];
+          };
+        };
         const product = json.product;
         const variant = l.variantId ? product.variants.find((v) => v.id === l.variantId) : product.variants[0];
         return {
+          key: lineKey(l),
           handle: product.handle,
           title: product.title,
           price: variant?.price ?? 0,
           image: product.images?.[0] ?? null,
           quantity: l.quantity,
           variantId: l.variantId,
+          variantTitle: variant?.title,
         } satisfies CartItemView;
       }),
-    ).then((items) => {
-      setCart(items.filter(Boolean) as CartItemView[]);
-      setLoading(false);
-    });
+    );
+    setCart(rows.filter(Boolean) as CartItemView[]);
+    setLoading(false);
   }, []);
 
-  const updateQuantity = (handle: string, delta: number) => {
-    const updated = cart.map((item) => {
-      if (item.handle === handle) {
-        return { ...item, quantity: Math.max(1, item.quantity + delta) };
-      }
-      return item;
-    });
-    setCart(updated);
-    writeCart(updated.map((u) => ({ handle: u.handle, variantId: u.variantId, quantity: u.quantity })));
+  useEffect(() => {
+    void hydrate();
+  }, [hydrate]);
+
+  const persistLines = (views: CartItemView[]) => {
+    writeCart(
+      views.map((u) => ({
+        handle: u.handle,
+        variantId: u.variantId,
+        quantity: u.quantity,
+      })),
+    );
   };
 
-  const removeItem = (handle: string) => {
-    const updated = cart.filter((item) => item.handle !== handle);
+  const updateQuantity = (key: string, delta: number) => {
+    const updated = cart.map((item) => {
+      if (item.key !== key) return item;
+      return { ...item, quantity: Math.max(1, item.quantity + delta) };
+    });
     setCart(updated);
-    writeCart(updated.map((u) => ({ handle: u.handle, variantId: u.variantId, quantity: u.quantity })));
+    persistLines(updated);
+  };
+
+  const removeItem = (key: string) => {
+    const updated = cart.filter((item) => item.key !== key);
+    setCart(updated);
+    persistLines(updated);
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -85,31 +111,43 @@ export default function CartPage() {
         ) : (
           <div className="Cart__Content">
             {cart.map((item) => (
-              <div key={item.handle} className="CartItem">
-                <div className="CartItem__ImageWrapper">
-                  {item.image ? <img className="CartItem__Image" src={item.image} alt={item.title} /> : null}
-                </div>
+              <div key={item.key} className="CartItem">
+                <Link href={`/products/${item.handle}`} className="CartItem__ImageWrapper" aria-label={`View ${item.title}`}>
+                  {item.image ? <img className="CartItem__Image" src={item.image} alt="" /> : null}
+                </Link>
 
                 <div className="CartItem__Info">
                   <p className="CartItem__Title Heading">
-                    <Link href={`/products/${item.handle}`}>{item.title}</Link>
+                    <Link href={`/products/${item.handle}`} className="Link Link--primary">
+                      {item.title}
+                    </Link>
                   </p>
+                  {item.variantTitle ? (
+                    <p className="Text--subdued" style={{ marginTop: 4, fontSize: 14 }}>
+                      {item.variantTitle}
+                    </p>
+                  ) : null}
                   <p className="CartItem__Price Heading Text--subdued">${item.price.toFixed(2)}</p>
                 </div>
 
                 <div className="CartItem__QuantitySelector">
-                  <button className="QuantitySelector__Button Link Link--secondary" onClick={() => updateQuantity(item.handle, -1)} disabled={item.quantity <= 1}>
+                  <button
+                    className="QuantitySelector__Button Link Link--secondary"
+                    type="button"
+                    onClick={() => updateQuantity(item.key, -1)}
+                    disabled={item.quantity <= 1}
+                  >
                     -
                   </button>
-                  <input className="QuantitySelector__CurrentQuantity" value={item.quantity} readOnly />
-                  <button className="QuantitySelector__Button Link Link--secondary" onClick={() => updateQuantity(item.handle, 1)}>
+                  <input className="QuantitySelector__CurrentQuantity" value={item.quantity} readOnly aria-label="Quantity" />
+                  <button className="QuantitySelector__Button Link Link--secondary" type="button" onClick={() => updateQuantity(item.key, 1)}>
                     +
                   </button>
                 </div>
 
                 <div className="CartItem__Total">
                   <span className="Heading">${(item.price * item.quantity).toFixed(2)}</span>
-                  <button className="Link Link--secondary" onClick={() => removeItem(item.handle)}>
+                  <button className="Link Link--secondary" type="button" onClick={() => removeItem(item.key)}>
                     Remove
                   </button>
                 </div>

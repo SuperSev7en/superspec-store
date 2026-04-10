@@ -2,6 +2,7 @@ import type { ThemeSettings } from '@/lib/shopify/themeSettings';
 import { Icon } from '@/components/shopify/icons/Icon';
 import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
 import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
+import { HeaderCartLink } from '@/components/store/HeaderCartLink';
 
 type MenuLink = { title: string; url: string; active?: boolean };
 
@@ -10,13 +11,11 @@ export function Header({
   sectionSettings,
   shopName = 'SUPER Spec',
   menu = [...MAIN_NAV_LINKS],
-  cartItemCount = 0,
 }: {
   settings: ThemeSettings;
   sectionSettings: Record<string, unknown>;
   shopName?: string;
   menu?: MenuLink[];
-  cartItemCount?: number;
 }) {
   const useStickyHeader = Boolean(sectionSettings.use_sticky_header ?? true);
   const navigationStyle = String(sectionSettings.navigation_style ?? 'inline');
@@ -119,19 +118,7 @@ export function Header({
               <Icon icon="search" />
             </a>
 
-            <a
-              href="/cart"
-              className={`Header__Icon Icon-Wrapper Icon-Wrapper--clickable ${
-                settings.cart_type === 'drawer' ? 'js-drawer-open-cart' : ''
-              }`.trim()}
-              {...(settings.cart_type === 'drawer' ? { 'aria-controls': 'sidebar-cart' } : {})}
-              data-action={settings.cart_type === 'drawer' ? 'open-drawer' : undefined}
-              aria-expanded="false"
-              aria-label="Open cart"
-            >
-              <Icon icon="cart" />
-              <span className={`Header__CartDot ${cartItemCount > 0 ? 'is-visible' : ''}`.trim()}></span>
-            </a>
+            <HeaderCartLink cartType={settings.cart_type} />
           </div>
         </div>
       </header>

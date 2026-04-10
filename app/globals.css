@@ -12,8 +12,99 @@ body {
  * (not `.js.features--show-element-staggering` on one element). Grids also appear outside `.Collection`
  * (e.g. featured collections), so target `main` product lists broadly.
  */
-.js .features--show-element-staggering main#main .ProductList--grid .ProductItem {
+.js .features--show-element-staggering main#main .ProductList--grid .ProductItem,
+.js .features--show-element-staggering main#main .ProductList--viewList .ProductItem {
   visibility: visible !important;
+}
+
+.ProductViewToggle__btn--active {
+  box-shadow: 0 0 0 2px var(--link-color);
+}
+
+/**
+ * List layout for catalog (grid/list toggle).
+ */
+.ProductList--viewList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+}
+
+.ProductList--viewList .ProductItem--listRow .ProductItem__Wrapper--listRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ProductList--viewList .ProductItem--listRow .ProductItem__ImageWrapper {
+  flex: 0 0 100px;
+  width: 100px;
+  max-width: 100px;
+}
+
+.ProductList--viewList .ProductItem--listRow .ProductItem__Info {
+  margin-top: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ProductList--viewList .ProductItem--listRow .ProductItem__LabelList {
+  left: 6px;
+  top: 4px;
+}
+
+@media screen and (min-width: 641px) {
+  .ProductList--viewList .ProductItem--listRow .ProductItem__ImageWrapper {
+    flex-basis: 140px;
+    width: 140px;
+    max-width: 140px;
+  }
+}
+
+.Header__Icon--cartLink {
+  position: relative;
+}
+
+.Header__CartBadge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--button-background);
+  color: var(--button-text-color);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--header-background);
+  transform: scale(1);
+  transition: transform 0.25s ease;
+}
+
+.Header__CartBadge--pop {
+  animation: superspec-cart-badge-pop 0.55s ease;
+}
+
+@keyframes superspec-cart-badge-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /**

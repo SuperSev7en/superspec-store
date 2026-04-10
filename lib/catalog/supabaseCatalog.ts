@@ -146,10 +146,11 @@ export async function getProductsForCollectionHandleFromSupabase(collectionHandl
     }
 
     // Heuristic fallback: many imported catalogs don't preserve collection tags.
-    // Try handle keyword matching over title/vendor/type and tags.
-    const keywords = h.split('-').filter(Boolean);
+    // Match if any handle segment appears in title/vendor/type/tags (OR), so e.g. super-spectrum still surfaces art SKUs.
+    const keywords = h.split('-').filter((k) => k.length >= 3);
     const hay = normalizeTag([p.title, p.vendor ?? '', p.productType ?? '', p.productCategory ?? '', p.tags.join(' ')].join(' '));
-    return keywords.every((k) => hay.includes(k));
+    if (keywords.length === 0) return false;
+    return keywords.some((k) => hay.includes(k));
   });
 
   return matched.slice(0, Math.max(0, limit));

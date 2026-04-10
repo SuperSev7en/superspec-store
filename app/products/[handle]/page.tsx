@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { getProductByHandle } from '@/lib/catalog/catalog';
 import { getProductByHandleFromSupabase } from '@/lib/catalog/supabaseCatalog';
 import { stripHtml } from '@/lib/catalog/htmlUtils';
-import { AddToCartButton } from '@/components/store/AddToCartButton';
 import { ProductImageFrame } from '@/components/store/ProductImageFrame';
+import { ProductPurchaseClient } from '@/components/store/ProductPurchaseClient';
 
 export const revalidate = 0;
 
@@ -37,8 +37,14 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
     );
   }
 
-  const firstVariant = product.variants[0];
   const images = product.images.length > 0 ? product.images : [];
+  const purchaseVariants = product.variants.map((v) => ({
+    id: v.id,
+    title: v.title,
+    price: v.price,
+    compareAtPrice: v.compareAtPrice ?? null,
+  }));
+  const canPurchase = purchaseVariants.length > 0;
 
   return (
     <div className="Product">
@@ -74,20 +80,20 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                   </p>
                 ) : null}
 
-                <div className="ProductMeta__PriceList Heading">
-                  <span className="ProductMeta__Price Price Text--subdued">${firstVariant?.price?.toFixed(2)}</span>
-                </div>
+                {canPurchase ? (
+                  <ProductPurchaseClient handle={product.handle} variants={purchaseVariants} />
+                ) : (
+                  <p className="Text--subdued" style={{ marginTop: 16 }}>
+                    This product is not available for purchase.
+                  </p>
+                )}
 
                 {product.descriptionHtml ? (
-                  <div className="ProductMeta__Description Rte">
+                  <div className="ProductMeta__Description Rte" style={{ marginTop: 28 }}>
                     {/* eslint-disable-next-line react/no-danger */}
                     <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
                   </div>
                 ) : null}
-
-                <div className="ProductForm">
-                  <AddToCartButton handle={product.handle} variantId={firstVariant?.id} />
-                </div>
               </div>
             </div>
           </div>
