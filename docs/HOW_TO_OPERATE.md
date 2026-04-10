@@ -40,22 +40,36 @@ Visit `/products`, `/collections/{handle}`, `/about`, `/contact`, `/faq`, `/miss
 
 ## Production deploy to Vercel
 
+**Live site:** [https://superspec.studio](https://superspec.studio) (production alias on Vercel project `superspec-store`).
+
 1. Install CLI: `npm i -g vercel`
-2. Link the repo: `vercel link` (once per machine)
-3. Deploy with version tag:
+2. Log in: `vercel login` (once per machine)
+3. Link this repo to the Vercel project (once per clone; `.vercel/` is gitignored):
+
+   ```bash
+   vercel link
+   ```
+
+   Choose your Vercel team and project **superspec-store** (or the project shown in the Vercel dashboard).
+
+4. Deploy with version tag + production:
 
    ```bash
    npm run deploy:vercel
    ```
 
+   Or: `vercel deploy --prod --yes`
+
 The script (`scripts/deploy-vercel.sh`) attempts to:
 
-- Commit staged changes (if any)
+- Commit uncommitted changes (if any)
 - Create an annotated git tag `v/<timestamp-or-name>`
 - Push branch and tags to `origin` (if configured)
-- Run `vercel deploy --prod`
+- Run `vercel deploy --prod --yes`
 
-**Rollback:** In the Vercel dashboard, promote a previous deployment, or revert git and redeploy. Git tags record deploy markers.
+**Also:** Pushes to `main` on GitHub trigger Vercel builds when the repo is connected in project settings.
+
+**Rollback:** Vercel dashboard → Deployments → promote a previous deployment. Git tags record deploy markers locally.
 
 ## Animated background
 

@@ -43,7 +43,8 @@ if ! command -v vercel >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "==> vercel deploy --prod"
-vercel deploy --prod
+echo "==> vercel deploy --prod --yes"
+# Requires prior `vercel login`. First time in a repo: `vercel link` and pick project (e.g. superspec-store).
+vercel deploy --prod --yes
 
 echo "==> Done. Rollback: Vercel dashboard → Deployments → Promote previous."

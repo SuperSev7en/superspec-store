@@ -29,13 +29,18 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run lint` | ESLint |
 | `npm run images:download` | Download product images from CSV URLs into `public/assets/product-images/` and refresh `manifest.json` |
 
+## Production
+
+- **Live:** [superspec.studio](https://superspec.studio)
+
 ## Deploy (Vercel)
 
 ```bash
+vercel login && vercel link   # first time per machine/clone
 npm run deploy:vercel
 ```
 
-Requires [Vercel CLI](https://vercel.com/docs/cli) and a linked project. The script creates a git tag per deploy for rollback reference. See [docs/HOW_TO_OPERATE.md](docs/HOW_TO_OPERATE.md).
+Details: [docs/HOW_TO_OPERATE.md](docs/HOW_TO_OPERATE.md).
 
 ## Repository layout (short)
 

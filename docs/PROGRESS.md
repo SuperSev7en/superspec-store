@@ -2,6 +2,12 @@
 
 Last updated: 2026-04-09
 
+## Deployment
+
+| Area | Status | Notes |
+|------|--------|--------|
+| Vercel production | Done | Alias **superspec.studio** — project `superspec-store`; CLI `vercel deploy --prod --yes` |
+
 ## Core storefront
 
 | Area | Status | Notes |
