@@ -45,19 +45,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   const sidebar = (
-    <div className="flex flex-col flex-grow bg-white border-r border-gray-200 h-full">
-      <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900">SUPER Spec</h1>
+    <div className="flex flex-col flex-grow bg-[#f1f2f4] border-r border-[#e1e3e5] h-full">
+      <div className="flex items-center justify-between h-14 px-4">
+        <h1 className="text-xl font-bold text-[#1a1a1a] tracking-tight">SUPER Spec</h1>
         <button
           type="button"
-          className="md:hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          className="md:hidden rounded-md p-2 text-[#616a75] hover:bg-[#ebebeb] hover:text-[#1a1a1a]"
           aria-label="Close menu"
           onClick={() => setMobileNavOpen(false)}
         >
           <X className="h-5 w-5" />
         </button>
       </div>
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = navItemActive(item.href);
           return (
@@ -65,26 +65,26 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               key={item.name}
               href={item.href}
               onClick={() => setMobileNavOpen(false)}
-              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md group transition-colors ${
-                isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors ${
+                isActive ? 'bg-[#ebebeb] text-[#1a1a1a] font-semibold' : 'text-[#4a5568] hover:bg-[#ebebeb] hover:text-[#1a1a1a] font-medium'
               }`}
             >
-              <item.icon className="mr-3 h-5 w-5" />
+              <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-[#1a1a1a]' : 'text-[#616a75]'}`} />
               {item.name}
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-gray-200 p-4">
+      <div className="p-3">
         <button
           type="button"
           onClick={() => {
             setMobileNavOpen(false);
             void onLogout();
           }}
-          className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900"
+          className="flex items-center w-full px-3 py-2 text-sm font-medium text-[#4a5568] rounded-md hover:bg-[#ebebeb] hover:text-[#1a1a1a]"
         >
-          <LogOut className="mr-3 h-5 w-5" />
+          <LogOut className="mr-3 h-5 w-5 text-[#616a75]" />
           Logout
         </button>
       </div>
@@ -92,13 +92,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#f4f6f8]">
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4">
-        <span className="text-lg font-bold text-gray-900">Admin</span>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex h-14 items-center justify-between border-b border-[#e1e3e5] bg-[#f1f2f4] px-4">
+        <span className="text-lg font-bold text-[#1a1a1a]">Admin</span>
         <button
           type="button"
-          className="rounded-md p-2 text-gray-700 hover:bg-gray-100"
+          className="rounded-md p-2 text-[#616a75] hover:bg-[#ebebeb]"
           aria-label="Open menu"
           onClick={() => setMobileNavOpen(true)}
         >
@@ -110,7 +110,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       {mobileNavOpen ? (
         <button
           type="button"
-          className="md:hidden fixed inset-0 z-40 bg-black/40"
+          className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
           aria-label="Close menu"
           onClick={() => setMobileNavOpen(false)}
         />
@@ -127,8 +127,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex flex-1 flex-col pt-14 md:pt-0 md:pl-64">
         <main className="flex-1">
-          <div className="py-6">
-            <div className="mx-auto px-4 sm:px-6 md:px-8">{children}</div>
+          <div className="py-8">
+            <div className="mx-auto px-4 sm:px-6 md:px-8 max-w-5xl">{children}</div>
           </div>
         </main>
       </div>

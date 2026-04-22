@@ -10,6 +10,7 @@
     "lint": "next lint",
     "images:download": "node scripts/download-product-images.mjs",
     "deploy:vercel": "bash scripts/deploy-vercel.sh",
+    "push-update": "bash scripts/push-update.sh",
     "mobile": "npm run start --prefix apps/admin-mobile",
     "mobile:lint": "npm run lint --prefix apps/admin-mobile",
     "mobile:typecheck": "npm run typecheck --prefix apps/admin-mobile"
