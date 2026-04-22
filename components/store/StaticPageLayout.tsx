@@ -4,12 +4,14 @@ import type { ReactNode } from 'react';
 export function StaticPageLayout({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="Container">
-      <header className="PageHeader">
-        <div className="SectionHeader SectionHeader--center">
-          <h1 className="SectionHeader__Heading Heading u-h1">{title}</h1>
-        </div>
-      </header>
-      <div className="PageContent PageContent--narrow Rte">{children}</div>
+      <div className="text-backdrop-sm rounded-xl p-8 max-w-4xl mx-auto mt-8">
+        <header className="PageHeader mb-8">
+          <div className="SectionHeader SectionHeader--center">
+            <h1 className="SectionHeader__Heading Heading u-h1">{title}</h1>
+          </div>
+        </header>
+        <div className="PageContent PageContent--narrow Rte">{children}</div>
+      </div>
     </div>
   );
 }

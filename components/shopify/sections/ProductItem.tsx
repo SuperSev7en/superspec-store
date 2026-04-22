@@ -32,6 +32,7 @@ export function ProductItem({
   cellClassName = '',
   subtext,
   listLayout = false,
+  useTextBackdrop = false,
 }: {
   product: CatalogProduct;
   showProductInfo?: boolean;
@@ -40,6 +41,7 @@ export function ProductItem({
   cellClassName?: string;
   subtext?: string;
   listLayout?: boolean;
+  useTextBackdrop?: boolean;
 }) {
   const first = product.variants[0];
   const compareAt = first?.compareAtPrice;
@@ -75,7 +77,7 @@ export function ProductItem({
         ) : null}
 
         {showProductInfo ? (
-          <div className="ProductItem__Info ProductItem__Info--left text-backdrop-sm">
+          <div className={`ProductItem__Info ProductItem__Info--left ${useTextBackdrop ? 'text-backdrop-sm' : ''}`.trim()}>
             {showVendor && product.vendor ? <p className="ProductItem__Vendor Heading">{product.vendor}</p> : null}
             <h2 className="ProductItem__Title Heading">
               <a href={`/products/${product.handle}`}>{product.title}</a>

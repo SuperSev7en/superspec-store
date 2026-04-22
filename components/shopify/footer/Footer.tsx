@@ -1,7 +1,6 @@
 import type { ThemeSettings } from '@/lib/shopify/themeSettings';
 import { Icon } from '@/components/shopify/icons/Icon';
 import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
-import { FooterNewsletterForm } from '@/components/store/FooterNewsletterForm';
 
 type FooterBlock =
   | { type: 'text'; title?: string; contentHtml?: string; showSocialMedia?: boolean }
@@ -84,7 +83,7 @@ export function Footer({
       >
         <div className="Container">
           {blocks.length > 0 ? (
-            <div className="Footer__Inner text-backdrop" style={{ marginBottom: 20 }}>
+            <div className="Footer__Inner">
               {blocks.map((block, idx) => {
                 if (block.type === 'text') {
                   return (
@@ -129,19 +128,25 @@ export function Footer({
                       />
                     ) : null}
 
-                    <FooterNewsletterForm />
+                    <form id="footer-newsletter" className="Footer__Newsletter Form">
+                      <input type="hidden" name="contact[tags]" value="newsletter" />
+                      <input type="email" name="contact[email]" className="Form__Input" aria-label="Email" placeholder="Email" required />
+                      <button type="submit" className="Form__Submit Button Button--primary">
+                        Subscribe
+                      </button>
+                    </form>
                   </div>
                 );
               })}
             </div>
           ) : null}
 
-          <div className="Footer__Aside text-backdrop-sm flex justify-between items-center">
-            <div className="Footer__Copyright m-0">
+          <div className="Footer__Aside">
+            <div className="Footer__Copyright">
               <a href="/" className="Footer__StoreName Heading u-h7 Link Link--secondary">
                 © {shopName}
               </a>
-              <p className="Footer__ThemeAuthor m-0 text-xs">{poweredBy}</p>
+              <p className="Footer__ThemeAuthor">{poweredBy}</p>
             </div>
 
             <ul className="Footer__PaymentList HorizontalList">
@@ -153,15 +158,14 @@ export function Footer({
         </div>
       </footer>
 
-      <style
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{
-          __html: `
-            .Footer { padding-top: 30px !important; padding-bottom: 30px !important; }
-            ${settings.footer_background === settings.background ? '.Footer { border-top: 1px solid var(--border-color); }' : ''}
-          `,
-        }}
-      />
+      {settings.footer_background === settings.background ? (
+        <style
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: `.Footer{border-top:1px solid var(--border-color);}`,
+          }}
+        />
+      ) : null}
     </>
   );
 }

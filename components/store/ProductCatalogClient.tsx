@@ -91,6 +91,7 @@ export function ProductCatalogClient({
             cellClassName={useGrid ? collectionCellClassName : ''}
             subtext={layout === 'shop' ? product.listingExcerpt : undefined}
             listLayout={!useGrid}
+            useTextBackdrop={true}
           />
         ))}
       </div>
