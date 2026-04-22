@@ -8,6 +8,7 @@ export function HeaderCartLink({ cartType }: { cartType?: string }) {
   const [count, setCount] = useState(0);
   const [pop, setPop] = useState(false);
   const prev = useRef(0);
+  const badgeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const initial = cartTotalQuantity(readCart());
@@ -22,6 +23,12 @@ export function HeaderCartLink({ cartType }: { cartType?: string }) {
       if (next > prev.current) {
         setPop(true);
         window.setTimeout(() => setPop(false), 650);
+
+        // Add flash effect to badge
+        if (badgeRef.current) {
+          badgeRef.current.classList.add('superspec-cart-badge-flash');
+          setTimeout(() => badgeRef.current?.classList.remove('superspec-cart-badge-flash'), 600);
+        }
       }
       prev.current = next;
     };
@@ -42,7 +49,11 @@ export function HeaderCartLink({ cartType }: { cartType?: string }) {
     >
       <Icon icon="cart" />
       {count > 0 ? (
-        <span className={`Header__CartBadge ${pop ? 'Header__CartBadge--pop' : ''}`.trim()} aria-hidden>
+        <span 
+          ref={badgeRef}
+          className={`Header__CartBadge ${pop ? 'Header__CartBadge--pop' : ''}`.trim()} 
+          aria-hidden
+        >
           {count > 99 ? '99+' : count}
         </span>
       ) : null}

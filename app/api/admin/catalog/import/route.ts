@@ -20,7 +20,8 @@ function toNumber(input: unknown): number | null {
 export async function POST(req: Request) {
   const { supabase, user } = await requireAdmin('/admin/products');
 
-  const form = await req.formData();
+  // `Request#formData()` resolves to the DOM FormData at runtime; some TS lib setups type it as Node’s FormData (no `.get`).
+  const form = (await req.formData()) as unknown as { get: (name: string) => FormDataEntryValue | null };
   const file = form.get('file');
   if (!(file instanceof File)) {
     return NextResponse.json({ error: 'Missing file field' }, { status: 400 });

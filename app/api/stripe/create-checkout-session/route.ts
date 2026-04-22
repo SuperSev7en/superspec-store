@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { getProductByHandle } from '@/lib/catalog/catalog';
+import { getProductByHandleFromSupabase } from '@/lib/catalog/supabaseCatalog';
 
 export const runtime = 'nodejs';
 
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
   const lineItems = [];
   for (const line of lines) {
     if (!line?.handle || !line.quantity) continue;
-    const product = await getProductByHandle(line.handle);
+    const product = (await getProductByHandleFromSupabase(line.handle)) ?? (await getProductByHandle(line.handle));
     if (!product) continue;
 
     const variant = line.variantId ? product.variants.find((v) => v.id === line.variantId) : product.variants[0];
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     line_items: lineItems,
-    success_url: `${origin}/checkout/success`,
+    success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/checkout/cancel`,
     shipping_address_collection: { allowed_countries: ['US', 'CA', 'GB', 'JP', 'AU', 'NZ', 'DE', 'FR', 'IT', 'ES'] },
     automatic_tax: { enabled: false },

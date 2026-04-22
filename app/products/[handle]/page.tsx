@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
           </div>
 
           <div className="Product__InfoWrapper">
-            <div className="Product__Info">
+            <div className="Product__Info text-backdrop">
               <div className="Container">
                 {product.vendor ? (
                   <p className="ProductMeta__Vendor Heading u-h6 Text--subdued">{product.vendor}</p>

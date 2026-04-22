@@ -89,11 +89,13 @@ Suggested screens (mirror web admin):
 - Rotate keys if accidentally committed.  
 - Deep links for auth callbacks configured in Supabase dashboard for the Expo scheme.
 
-## Next step (when you say “execute”)
+## Status (implemented)
 
-1. `npx create-expo-app@latest apps/admin-mobile -t expo-template-blank-typescript`  
-2. `npx expo install @supabase/supabase-js` + secure storage deps per Supabase Expo guide.  
-3. Copy env from `.env` into `apps/admin-mobile/.env` (Expo‑prefixed keys only).  
-4. Implement P0/P1 per table above.
+The **`apps/admin-mobile`** Expo Router app (“**Super Spec Hub**”) is scaffolded and wired to Supabase:
 
-This file is the **plan**; implementation will land in `apps/admin-mobile/` and, if needed, small additions to `lib/auth` and `/api/admin/*` for Bearer tokens.
+- **P0/P1/P2 (core)**: email/password auth, admin gate via `profiles.is_admin`, Home / Orders / Products / Analytics / More, order fulfillment + audit insert, product title/status/published save, customers + audit lists, Shopify-style palette, **Realtime + local notifications** on new orders (`hooks/useOrdersRealtime.ts`).
+- **Run**: from repo root, `npm run mobile` (see `apps/admin-mobile/README.md`).
+
+Remaining optional work: **Bearer**-authenticated calls to Next `/api/admin/*` (if you want server-side audit only), **EAS** builds + **remote push**, CSV import inside the app, richer product editor (variants/media).
+
+This file remains the **architecture reference**; day-to-day instructions for the app live in `apps/admin-mobile/README.md`.

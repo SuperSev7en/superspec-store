@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+apps/admin-mobile/node_modules
 
 # next.js
 /.next/

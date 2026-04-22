@@ -31,9 +31,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         {faviconUrl ? <link rel="shortcut icon" href={faviconUrl} type="image/png" /> : null}
 
-        <link rel="stylesheet" href="/assets/theme.css" />
-        <link rel="stylesheet" href="/assets/theme-toggle.css" />
-        <link rel="stylesheet" href="/assets/background-effects.css" />
+<link rel="stylesheet" href="/assets/theme.css" />
+<link rel="stylesheet" href="/assets/theme-toggle.css" />
+<link rel="stylesheet" href="/assets/background-effects.css" />
+<link rel="stylesheet" href="/assets/fixes.css" />
 
         <Script id="disable-context-menu" strategy="beforeInteractive">
           {`document.addEventListener('contextmenu', event => event.preventDefault());`}

@@ -1,0 +1,166 @@
+/* Fix button overlay issue */
+.AddToCartButton--storefront {
+  position: relative;
+  z-index: 10;
+}
+
+/*
+  * Improve text visibility over the animated background.
+  * Scope to main content only so the footer keeps theme colors (see theme.css variables).
+  */
+.PageContainer > main .Heading,
+.PageContainer > main .Text--subdued,
+.PageContainer > main .Link,
+.PageContainer > main .Button,
+.PageContainer > main .ProductItem__Title,
+.PageContainer > main .ProductItem__Price,
+.PageContainer > main .ProductMeta__Title,
+.PageContainer > main .ProductMeta__Price,
+.PageContainer > main .SectionHeader__Heading,
+.PageContainer > main .SectionHeader__Description {
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Add white background for better text visibility */
+.text-with-background {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #1c1b1b;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* ===== Transparent white backgrounds for readable text over particle background ===== */
+
+/* Product info area */
+main#main .Product__Info {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px;
+}
+
+/* Collection headers and descriptions */
+main#main .SectionHeader {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+}
+
+/* Product grid items */
+main#main .ProductItem__Info {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(4px);
+  border-radius: 0 0 8px 8px;
+  padding: 12px;
+}
+
+/* Cart panel backgrounds */
+main#main .Cart__Header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
+
+/* Blog/post content */
+main#main .Article__Content {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 24px 0;
+}
+
+/* Static page content */
+main#main .PageContainer .Container {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 24px auto;
+  max-width: 1200px;
+}
+
+/* Footer newsletter form */
+.Footer__Newsletter {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* Price displays */
+main#main .ProductMeta__PriceList,
+main#main .Price {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: inline-block;
+}
+
+/* Link buttons in content */
+main#main .Linklist a {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 2px;
+  display: inline-block;
+}
+
+/* Footer: tighter spacing than default theme (large padding is in theme.css) */
+.Footer {
+  padding: 24px 0 28px;
+  font-size: 14px;
+}
+
+@media screen and (min-width: 641px) {
+  .Footer {
+    padding: 36px 0 32px;
+  }
+}
+
+.Footer__Inner {
+  margin-bottom: 16px;
+}
+
+.Footer__Aside {
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.Footer__Inner + .Footer__Aside {
+  margin-top: 28px;
+}
+
+.Footer__Block {
+  margin-bottom: 16px;
+}
+
+.Footer__Title {
+  margin-bottom: 8px;
+}
+
+.Footer__Content {
+  margin-bottom: 10px;
+}
+
+.Footer__Newsletter {
+  margin-top: 8px;
+}
+
+.Footer__Copyright {
+  margin-bottom: 8px;
+}
+
+.Footer__ThemeAuthor {
+  margin: 0;
+}
+
+/* Hide empty payment row placeholder (theme expects SVG icons) */
+.Footer__PaymentList {
+  display: none;
+}

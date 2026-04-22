@@ -9,7 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "images:download": "node scripts/download-product-images.mjs",
-    "deploy:vercel": "bash scripts/deploy-vercel.sh"
+    "deploy:vercel": "bash scripts/deploy-vercel.sh",
+    "mobile": "npm run start --prefix apps/admin-mobile",
+    "mobile:lint": "npm run lint --prefix apps/admin-mobile",
+    "mobile:typecheck": "npm run typecheck --prefix apps/admin-mobile"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.0.1",

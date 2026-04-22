@@ -1,6 +1,6 @@
 # SUPER Spec — SuperSpec.store
 
-Next.js storefront for **SUPER Spec**, migrated from a Shopify (Prestige theme) export. Product data is loaded from CSV exports; images can be mirrored under `public/assets/product-images/` via manifest mapping.
+Next.js storefront for **SUPER Spec**, migrated from a Shopify (Prestige theme) export. Product data loads from **Supabase** when configured, otherwise from **CSV** exports; images live under `public/assets/product-images/` with manifest mapping. **Stripe** checkout + webhooks write orders into Supabase; **`/admin`** is the management UI.
 
 ## Single source of truth for project docs
 
@@ -10,7 +10,8 @@ Next.js storefront for **SUPER Spec**, migrated from a Shopify (Prestige theme) 
 | [docs/PROGRESS.md](docs/PROGRESS.md) | Progress tracker (Shopify → Next parity) |
 | [docs/RESOURCES.md](docs/RESOURCES.md) | Official docs & reference links |
 | [docs/SHOPIFY_THEME_PARITY.md](docs/SHOPIFY_THEME_PARITY.md) | Liquid theme ↔ Next.js mapping |
-| [docs/ADMIN_MOBILE_PLAN.md](docs/ADMIN_MOBILE_PLAN.md) | **Plan:** Expo (iOS/Android/web) admin app + Supabase live sync |
+| [docs/ADMIN_MOBILE_PLAN.md](docs/ADMIN_MOBILE_PLAN.md) | Expo admin hub architecture (implemented in `apps/admin-mobile/`) |
+| [apps/admin-mobile/README.md](apps/admin-mobile/README.md) | **Super Spec Hub** — run on iOS/Android/web (`npm run mobile`) |
 
 ## Quick start
 

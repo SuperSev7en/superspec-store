@@ -75,7 +75,7 @@ export function ProductItem({
         ) : null}
 
         {showProductInfo ? (
-          <div className="ProductItem__Info ProductItem__Info--left">
+          <div className="ProductItem__Info ProductItem__Info--left text-backdrop-sm">
             {showVendor && product.vendor ? <p className="ProductItem__Vendor Heading">{product.vendor}</p> : null}
             <h2 className="ProductItem__Title Heading">
               <a href={`/products/${product.handle}`}>{product.title}</a>

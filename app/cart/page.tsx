@@ -22,6 +22,7 @@ type CartItemView = {
 export default function CartPage() {
   const [cart, setCart] = useState<CartItemView[]>([]);
   const [loading, setLoading] = useState(true);
+  const [justUpdatedKey, setJustUpdatedKey] = useState<string | null>(null);
 
   const hydrate = useCallback(async () => {
     const lines = readCart();
@@ -76,6 +77,11 @@ export default function CartPage() {
     });
     setCart(updated);
     persistLines(updated);
+    
+    if (delta > 0) {
+      setJustUpdatedKey(key);
+      setTimeout(() => setJustUpdatedKey(null), 1200);
+    }
   };
 
   const removeItem = (key: string) => {
@@ -113,7 +119,7 @@ export default function CartPage() {
         ) : (
           <div className="Cart__Content">
             {cart.map((item) => (
-              <div key={item.key} className="CartItem CartItem--panel">
+              <div key={item.key} className={`CartItem CartItem--panel ${justUpdatedKey === item.key ? 'superspec-just-added' : ''}`.trim()}>
                 <Link href={`/products/${item.handle}`} className="CartItem__ImageWrapper" aria-label={`View ${item.title}`}>
                   {item.image ? <img className="CartItem__Image" src={item.image} alt="" /> : null}
                 </Link>
