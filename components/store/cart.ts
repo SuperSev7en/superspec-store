@@ -37,9 +37,19 @@ export function readCart(): CartLine[] {
   }
 }
 
+function syncCartToBackend(lines: CartLine[]) {
+  if (typeof window === 'undefined') return;
+  fetch('/api/cart/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cart: lines }),
+  }).catch(() => {});
+}
+
 export function writeCart(lines: CartLine[]) {
   localStorage.setItem(KEY, JSON.stringify(lines));
   emitCartUpdated();
+  syncCartToBackend(lines);
 }
 
 export function addToCart(line: CartLine) {
