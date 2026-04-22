@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseServiceRole } from '@/lib/supabaseServiceRole';
+import { createServiceRoleClient } from '@/lib/supabaseServiceRole';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     // Only save if we know who they are, since we can't email an anonymous user
     if (userId && email && cart.length > 0) {
-      const adminDb = getSupabaseServiceRole();
+      const adminDb = createServiceRoleClient();
       
       // Upsert the cart state for this user
       const { error } = await adminDb
