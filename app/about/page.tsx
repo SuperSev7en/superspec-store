@@ -12,12 +12,9 @@ export default function AboutPage() {
     <div className="Page">
       {/* 1. Hero */}
       <section
-        className="AboutHero"
         style={{
-          background: "#1a1a1a",
           padding: "100px 20px",
           textAlign: "center",
-          color: "#ffffff",
           marginBottom: "60px",
         }}
       >
@@ -34,7 +31,6 @@ export default function AboutPage() {
       <div className="Container">
         {/* 2. Mission */}
         <div
-          className="AboutMission"
           style={{
             maxWidth: "800px",
             margin: "0 auto 80px",
@@ -53,7 +49,6 @@ export default function AboutPage() {
 
         {/* 3. Division Cards */}
         <div
-          className="AboutDivisions"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
@@ -62,8 +57,13 @@ export default function AboutPage() {
           }}
         >
           <div
-            className="DivisionCard text-backdrop"
-            style={{ padding: "40px", textAlign: "center" }}
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              background: "var(--secondary-elements-background)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "6px",
+            }}
           >
             <div style={{ fontSize: "2.5rem", marginBottom: "20px" }}>👕</div>
             <h3 className="Heading u-h4" style={{ marginBottom: "15px" }}>
@@ -76,8 +76,13 @@ export default function AboutPage() {
           </div>
 
           <div
-            className="DivisionCard text-backdrop"
-            style={{ padding: "40px", textAlign: "center" }}
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              background: "var(--secondary-elements-background)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "6px",
+            }}
           >
             <div style={{ fontSize: "2.5rem", marginBottom: "20px" }}>🎨</div>
             <h3 className="Heading u-h4" style={{ marginBottom: "15px" }}>
@@ -90,24 +95,26 @@ export default function AboutPage() {
           </div>
 
           <div
-            className="DivisionCard text-backdrop"
             style={{
               padding: "40px",
               textAlign: "center",
               position: "relative",
+              background: "var(--secondary-elements-background)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "6px",
             }}
           >
             <span
-              className="Badge"
               style={{
                 position: "absolute",
                 top: "20px",
                 right: "20px",
-                background: "#363636",
-                color: "#fff",
+                background: "var(--link-color)",
+                color: "#000",
                 padding: "4px 8px",
                 fontSize: "10px",
                 borderRadius: "4px",
+                fontWeight: 600,
               }}
             >
               COMING SOON
@@ -125,7 +132,6 @@ export default function AboutPage() {
 
         {/* 4. Values */}
         <div
-          className="AboutValues"
           style={{
             borderTop: "1px solid var(--border-color)",
             paddingTop: "60px",
@@ -169,10 +175,7 @@ export default function AboutPage() {
         </div>
 
         {/* 5. CTA */}
-        <div
-          className="AboutCTA"
-          style={{ textAlign: "center", marginBottom: "100px" }}
-        >
+        <div style={{ textAlign: "center", marginBottom: "100px" }}>
           <Link
             href="/products"
             className="Button Button--primary"

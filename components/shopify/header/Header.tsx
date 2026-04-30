@@ -1,17 +1,24 @@
 import type { ThemeSettings } from "@/lib/shopify/themeSettings";
 import { Icon } from "@/components/shopify/icons/Icon";
 import Image from "next/image";
-import { resolveShopifyAssetUrl } from "@/lib/shopify/assetUrls";
 import { MAIN_NAV_LINKS } from "@/lib/siteNavigation";
 import { HeaderCartLink } from "@/components/store/HeaderCartLink";
-import { HeaderWishlistLink } from "@/components/store/HeaderWishlistLink";
 import { HeaderSidebarToggle } from "@/components/store/HeaderSidebarToggle";
+
 type MenuLink = { title: string; url: string; active?: boolean };
 
+/**
+ * Header component — matches `sections/header.liquid` from the Prestige theme.
+ *
+ * Layout: "center" navigation style.
+ * - Logo is centered.
+ * - Nav links centered below or beside.
+ * - Account / search / cart icons on the right.
+ */
 export function Header({
   settings,
   sectionSettings,
-  shopName = "SUPER Spec",
+  shopName = "SUPER Spec.",
   menu = [...MAIN_NAV_LINKS],
 }: {
   settings: ThemeSettings;
@@ -19,16 +26,16 @@ export function Header({
   shopName?: string;
   menu?: MenuLink[];
 }) {
-  const useStickyHeader = Boolean(sectionSettings.use_sticky_header ?? true);
-  const navigationStyle = String(sectionSettings.navigation_style ?? "inline");
+  const useStickyHeader = Boolean(sectionSettings.use_sticky_header ?? false);
+  const navigationStyle = String(sectionSettings.navigation_style ?? "center");
   const logo =
-    typeof sectionSettings.logo === "string"
-      ? resolveShopifyAssetUrl(sectionSettings.logo)
-      : null;
-  const logoMaxWidth = Number(sectionSettings.logo_max_width ?? 140);
+    typeof sectionSettings.logo === "string" ? sectionSettings.logo : null;
+  const logoMaxWidth = Number(sectionSettings.logo_max_width ?? 305);
+  const mobileLogoMaxWidth = Number(sectionSettings.mobile_logo_max_width ?? 90);
 
   return (
     <>
+      {/* ── Search overlay (matches header.liquid) ── */}
       <div id="Search" className="Search" aria-hidden="true">
         <div className="Search__Inner">
           <div className="Search__SearchBar">
@@ -81,6 +88,7 @@ export function Header({
         </div>
       </div>
 
+      {/* ── Header (matches header.liquid) ── */}
       <header
         id="section-header"
         className="Header"
@@ -93,10 +101,12 @@ export function Header({
         })}
       >
         <div className="Header__Wrapper">
+          {/* Mobile sidebar toggle */}
           <div className="Header__FlexItem Header__FlexItem--logo">
             <HeaderSidebarToggle />
           </div>
 
+          {/* Logo — centered */}
           <div className="Header__LogoContainer">
             <a href="/" className="Header__Logo">
               {logo ? (
@@ -105,9 +115,10 @@ export function Header({
                   src={logo}
                   alt={shopName}
                   width={logoMaxWidth}
-                  height={logoMaxWidth / 2} // Estimate aspect ratio
+                  height={Math.round(logoMaxWidth / 3)}
                   style={{ maxWidth: `${logoMaxWidth}px`, height: "auto" }}
                   priority
+                  unoptimized
                 />
               ) : (
                 <span className="Heading u-h4">{shopName}</span>
@@ -115,6 +126,7 @@ export function Header({
             </a>
           </div>
 
+          {/* Main Navigation — matches Prestige "center" style */}
           <nav className="Header__MainNav" aria-label="Main navigation">
             <ul className="HorizontalList">
               {menu.map((link) => (
@@ -130,6 +142,7 @@ export function Header({
             </ul>
           </nav>
 
+          {/* Secondary Nav: Account, Search, Cart */}
           <div className="Header__SecondaryNav">
             <a
               href="/account"
@@ -138,8 +151,6 @@ export function Header({
             >
               <Icon icon="account" />
             </a>
-
-            <HeaderWishlistLink />
 
             <a
               href="/search"
@@ -155,10 +166,22 @@ export function Header({
         </div>
       </header>
 
+      {/* Mobile logo max-width + sticky header CSS vars */}
       <style
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
-          __html: `:root{--use-sticky-header:${useStickyHeader ? 1 : 0};--use-unsticky-header:${useStickyHeader ? 0 : 1};--header-is-not-transparent:1;--header-is-transparent:0;}`,
+          __html: `
+            :root {
+              --use-sticky-header: ${useStickyHeader ? 1 : 0};
+              --use-unsticky-header: ${useStickyHeader ? 0 : 1};
+              --header-is-not-transparent: 1;
+              --header-is-transparent: 0;
+            }
+            @media screen and (max-width: 640px) {
+              .Header__LogoImage {
+                max-width: ${mobileLogoMaxWidth}px !important;
+              }
+            }
+          `,
         }}
       />
     </>

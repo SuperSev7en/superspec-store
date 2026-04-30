@@ -1,30 +1,216 @@
-/* Intentionally minimal: Shopify theme ships its own CSS in `/public/assets/theme.css`. */
+/* ================================================================
+   SuperSpec Store – globals.css
+   Matches the Prestige v4 Shopify theme (black/gold palette).
+   The Shopify theme.css in /public/assets/ provides nearly all styles.
+   This file supplies only project-specific overrides.
+   ================================================================ */
+
 html,
-body {
+body,
+#main,
+.PageContainer,
+.PageContent,
+.Section,
+.Collection,
+.Page {
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+  background-color: #000000 !important;
+  color: #ffffff;
 }
 
-/**
- * Prestige hides `.ProductList--grid .ProductItem` when `features--show-element-staggering` is enabled,
- * then reveals them from section JavaScript. In this app `js` is on `<html>` while
- * `features--show-element-staggering` lives on `<body>`, so the selector must be descendant-based
- * (not `.js.features--show-element-staggering` on one element). Grids also appear outside `.Collection`
- * (e.g. featured collections), so target `main` product lists broadly.
- */
+/* ----------------------------------------------------------------
+   Element-staggering fix: Prestige hides grid items then reveals
+   via JS.  In Next.js the class split lives on <html> vs <body>.
+   Force-reveal so products always show.
+   ---------------------------------------------------------------- */
 .js .features--show-element-staggering main#main .ProductList--grid .ProductItem,
 .js .features--show-element-staggering main#main .ProductList--viewList .ProductItem {
   visibility: visible !important;
 }
 
+/* ----------------------------------------------------------------
+   Cart badge on header icon
+   ---------------------------------------------------------------- */
+.Header__Icon--cartLink {
+  position: relative;
+}
+
+.Header__CartBadge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--button-background);
+  color: var(--button-text-color);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--header-background);
+  transform: scale(1);
+  transition: transform 0.25s ease;
+}
+
+.Header__CartBadge--pop {
+  animation: superspec-cart-badge-pop 0.55s ease;
+}
+
+@keyframes superspec-cart-badge-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* ----------------------------------------------------------------
+   Product page layout fix: two-column grid on desktop so content
+   never overflows under the footer.
+   ---------------------------------------------------------------- */
+@media screen and (min-width: 1008px) {
+  main#main .Product .Product__Wrapper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    column-gap: 50px;
+    align-items: start;
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  main#main .Product .Product__InfoWrapper {
+    position: static;
+    height: auto;
+    width: auto;
+  }
+
+  main#main .Product .Product__Info {
+    position: static;
+    top: auto;
+    right: auto;
+    width: auto;
+    max-width: 500px;
+    margin: 0;
+    padding-bottom: 0;
+  }
+
+  main#main .Product .Product__Gallery {
+    margin-bottom: 0;
+    max-width: 100%;
+  }
+}
+
+/* ----------------------------------------------------------------
+   PageContainer layering (for optional Three.js background canvas)
+   ---------------------------------------------------------------- */
+.PageContainer {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+main#main {
+  background: transparent;
+}
+
+/* ----------------------------------------------------------------
+   Collection-list tile images: letterbox inside the tile
+   ---------------------------------------------------------------- */
+.CollectionItem__Image.CollectionItem__Image--containFit {
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-color: #000000;
+}
+
+/* ----------------------------------------------------------------
+   Add-to-cart button: solid, clean, matches the Prestige style
+   ---------------------------------------------------------------- */
+main#main button.AddToCartButton--storefront.Button.Button--primary {
+  position: relative;
+  isolation: isolate;
+  color: #ffffff !important;
+  background: var(--button-background) !important;
+  border: none !important;
+  border-radius: 4px;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+main#main button.AddToCartButton--storefront.Button.Button--primary::before,
+main#main button.AddToCartButton--storefront.Button.Button--primary::after {
+  display: none !important;
+  content: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+@media (-moz-touch-enabled: 0), (hover: hover) {
+  main#main
+    .features--show-button-transition
+    button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):hover {
+    color: #ffffff !important;
+    background-color: #22c55e !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
+  }
+}
+
+main#main
+  button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):active {
+  background-color: #16a34a !important;
+  transform: translateY(0px);
+}
+
+/* ----------------------------------------------------------------
+   Footer compact layout
+   ---------------------------------------------------------------- */
+.Footer {
+  padding: 30px 0 20px !important;
+}
+
+.Footer__Inner {
+  margin-bottom: 16px !important;
+}
+
+.Footer__Block {
+  margin-bottom: 12px !important;
+}
+
+.Footer__Aside {
+  margin-top: 12px !important;
+  padding-top: 12px !important;
+}
+
+/* ----------------------------------------------------------------
+   Slideshow content overlay for text readability
+   ---------------------------------------------------------------- */
+.Slideshow__Content {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  padding: 16px 24px !important;
+  border-radius: 8px !important;
+  max-width: fit-content;
+  margin: 20px;
+}
+
+.Slideshow__Content .SectionHeader__Heading {
+  margin-bottom: 8px;
+}
+
+.Slideshow__Content .SectionHeader__SubHeading {
+  margin-bottom: 12px;
+}
+
+/* ----------------------------------------------------------------
+   List-view toggle (catalog page)
+   ---------------------------------------------------------------- */
 .ProductViewToggle__btn--active {
   box-shadow: 0 0 0 2px var(--link-color);
 }
 
-/**
- * List layout for catalog (grid/list toggle).
- */
 .ProductList--viewList {
   display: flex;
   flex-direction: column;
@@ -68,241 +254,3 @@ body {
     max-width: 140px;
   }
 }
-
-.Header__Icon--cartLink {
-  position: relative;
-}
-
-.Header__CartBadge {
-  position: absolute;
-  top: -6px;
-  right: -10px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: var(--button-background);
-  color: var(--button-text-color);
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 18px;
-  text-align: center;
-  box-shadow: 0 0 0 2px var(--header-background);
-  transform: scale(1);
-  transition: transform 0.25s ease;
-}
-
-.Header__CartBadge--pop {
-  animation: superspec-cart-badge-pop 0.55s ease;
-}
-
-@keyframes superspec-cart-badge-pop {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.35);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/**
- * Product template: theme uses `position:absolute` + `height:100%` on `.Product__InfoWrapper` with
- * sticky `.Product__Info`. Gallery height alone sets `.Product` height, so long descriptions + CTA
- * overflow and overlap the footer. Use a simple two-column grid so the section grows with content.
- */
-@media screen and (min-width: 1008px) {
-  main#main .Product .Product__Wrapper {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
-    column-gap: 50px;
-    align-items: start;
-    max-width: none;
-    width: 100%;
-    margin-left: 0;
-  }
-
-  main#main .Product .Product__InfoWrapper {
-    position: static;
-    height: auto;
-    width: auto;
-  }
-
-  main#main .Product .Product__Info {
-    position: static;
-    top: auto;
-    right: auto;
-    width: auto;
-    max-width: 500px;
-    margin: 0;
-    padding-bottom: 0;
-  }
-
-  main#main .Product .Product__Gallery {
-    margin-bottom: 0;
-    max-width: 100%;
-  }
-}
-
-/**
- * Above `#superspec-ambient-stack` (z-index 0). Transparent so Three.js particles show through;
- * header/footer use their own theme backgrounds.
- */
-.PageContainer {
-  position: relative;
-  z-index: 2;
-  background: transparent;
-}
-
-main#main {
-  background: transparent;
-}
-
-/**
- * Home collection-list panels: show full artwork inside the tile (letterboxed) instead of cropping.
- */
-.CollectionItem__Image.CollectionItem__Image--containFit {
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-color: #000000;
-}
-
-/**
- * Add to cart: clean solid button. No gradient border. No pseudo-element ghosts.
- */
-main#main button.AddToCartButton--storefront.Button.Button--primary {
-  position: relative;
-  isolation: isolate;
-  color: #ffffff !important;
-  background: var(--button-background) !important;
-  border: none !important;
-  border-radius: 4px;
-  box-shadow: none !important;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-main#main button.AddToCartButton--storefront.Button.Button--primary::before,
-main#main button.AddToCartButton--storefront.Button.Button--primary::after {
-  display: none !important;
-  content: none !important;
-  opacity: 0 !important;
-  animation: none !important;
-}
-
-@media (-moz-touch-enabled: 0), (hover: hover) {
-  main#main
-    .features--show-button-transition
-    button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):hover {
-    color: #ffffff !important;
-    background-color: #22c55e !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
-  }
-}
-
-main#main
-  button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):active {
-  background-color: #16a34a !important;
-  transform: translateY(0px);
-}
-
-/**
- * Footer: compact layout.
- */
-.Footer {
-  padding: 30px 0 20px !important;
-}
-
-.Footer__Inner {
-  margin-bottom: 16px !important;
-}
-
-.Footer__Block {
-  margin-bottom: 12px !important;
-}
-
-.Footer__Aside {
-  margin-top: 12px !important;
-  padding-top: 12px !important;
-}
-
-/**
- * Text backdrop for readability over Three.js particles.
- */
-.text-backdrop {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.text-backdrop-sm {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-
-/**
- * Cart: opaque panels.
- */
-main#main .Cart--opaqueShell .CartItem--panel,
-main#main .Cart--opaqueShell .Cart__Summary--panel,
-main#main .Cart--opaqueShell .Cart__EmptyPanel,
-main#main .Cart--opaqueShell .Cart__PageHeaderPanel,
-main#main .Cart--opaqueShell .Cart__LoadingPanel {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-}
-
-main#main .Cart--opaqueShell .CartItem--panel {
-  padding: 18px 20px;
-  margin-bottom: 14px;
-}
-
-main#main .Cart--opaqueShell .Cart__Summary--panel {
-  padding: 22px 24px;
-  margin-top: 8px;
-}
-
-main#main .Cart--opaqueShell .Cart__PageHeaderPanel {
-  padding: 18px 22px;
-  margin-bottom: 18px;
-}
-
-main#main .Cart--opaqueShell .Cart__EmptyPanel {
-  padding: 40px 24px;
-  text-align: center;
-}
-
-main#main .Cart--opaqueShell .Cart__LoadingPanel {
-  padding: 48px;
-}
-
-/**
- * Slideshow content: text overlay with backdrop (FIX 18)
- */
-.Slideshow__Content {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(2px) !important;
-  -webkit-backdrop-filter: blur(2px) !important;
-  padding: 16px 24px !important;
-  border-radius: 8px !important;
-  max-width: fit-content;
-  margin: 20px;
-}
-
-.Slideshow__Content .SectionHeader__Heading {
-  margin-bottom: 8px;
-}
-
-.Slideshow__Content .SectionHeader__SubHeading {
-  margin-bottom: 12px;
-}
-

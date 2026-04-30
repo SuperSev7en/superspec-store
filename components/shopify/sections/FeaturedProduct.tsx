@@ -158,21 +158,20 @@ export async function FeaturedProduct({
               <div className="FeaturedProduct__Info">
                 <div className="ProductMeta">
                   {showVendor ? (
-                    <h2 className="ProductMeta__Vendor Heading u-h6">Vendor</h2>
+                    <h2 className="ProductMeta__Vendor Heading u-h6" style={{ opacity: 0.3 }}>&nbsp;</h2>
                   ) : null}
-                  <h1 className="ProductMeta__Title Heading u-h2">
-                    Sample product
+                  <h1 className="ProductMeta__Title Heading u-h2" style={{ opacity: 0.3 }}>
+                    &nbsp;
                   </h1>
                   <div className="ProductMeta__PriceList Heading">
-                    <span className="ProductMeta__Price Price Text--subdued u-h4">
-                      $45
+                    <span className="ProductMeta__Price Price Text--subdued u-h4" style={{ opacity: 0.3 }}>
+                      &nbsp;
                     </span>
                   </div>
                   {showDescription && !descriptionBelowAtc ? (
-                    <div className="ProductMeta__Description Rte">
+                    <div className="ProductMeta__Description Rte" style={{ opacity: 0.3 }}>
                       <p>
-                        Add a product handle in theme settings to feature a real
-                        catalog item.
+                        &nbsp;
                       </p>
                     </div>
                   ) : null}
@@ -186,14 +185,14 @@ export async function FeaturedProduct({
                     {showPriceInButton ? (
                       <>
                         <span className="Button__SeparatorDot"></span>
-                        <span>$45.00</span>
+                        <span>&nbsp;</span>
                       </>
                     ) : null}
                   </button>
                 </div>
                 {showDescription && descriptionBelowAtc ? (
                   <div className="ProductMeta__Description Rte">
-                    <p>Description appears below the button when enabled.</p>
+                    <p>&nbsp;</p>
                   </div>
                 ) : null}
                 <div className="FeaturedProduct__ViewWrapper">

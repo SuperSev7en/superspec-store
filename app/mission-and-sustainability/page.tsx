@@ -16,7 +16,7 @@ export default function MissionAndSustainabilityPage() {
         style={{
           padding: "80px 20px",
           textAlign: "center",
-          background: "var(--secondary-background, #f9f9f9)",
+          background: "transparent",
           borderBottom: "1px solid var(--border-color)",
           marginBottom: "60px",
         }}
@@ -98,7 +98,7 @@ export default function MissionAndSustainabilityPage() {
 
         {/* 3. Quote Block */}
         <div
-          className="MissionQuote text-backdrop"
+          className="MissionQuote"
           style={{
             padding: "60px 40px",
             textAlign: "center",

@@ -34,8 +34,8 @@ type ImageSlot = { pos: number; url: string };
 
 const ROOT = process.cwd();
 const CSV_PATHS = [
-  path.join(ROOT, 'Shopify files', 'products_export 2.csv'),
-  path.join(ROOT, 'Shopify files', 'products_export 3.csv'),
+  path.join(ROOT, 'shopify files copy', 'products_export 2.csv'),
+  path.join(ROOT, 'shopify files copy', 'products_export 3.csv'),
 ];
 const MANIFEST_PATH = path.join(ROOT, 'public', 'assets', 'product-images', 'manifest.json');
 

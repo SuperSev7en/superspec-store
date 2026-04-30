@@ -12,11 +12,9 @@ export default function ContactPage() {
     <div className="Page">
       {/* 1. Hero */}
       <section
-        className="ContactHero"
         style={{
           padding: "80px 20px",
           textAlign: "center",
-          background: "var(--secondary-background, #f9f9f9)",
           borderBottom: "1px solid var(--border-color)",
           marginBottom: "60px",
         }}
@@ -32,7 +30,6 @@ export default function ContactPage() {
 
       <div className="Container">
         <div
-          className="ContactLayout"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
@@ -42,8 +39,12 @@ export default function ContactPage() {
         >
           {/* 2. Contact Info Card */}
           <div
-            className="ContactInfoCard text-backdrop"
-            style={{ padding: "40px" }}
+            style={{
+              padding: "40px",
+              background: "var(--secondary-elements-background)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "6px",
+            }}
           >
             <h2 className="Heading u-h3" style={{ marginBottom: "30px" }}>
               Contact Information
@@ -119,8 +120,12 @@ export default function ContactPage() {
 
           {/* 3. Contact Form Card */}
           <div
-            className="ContactFormCard text-backdrop"
-            style={{ padding: "40px" }}
+            style={{
+              padding: "40px",
+              background: "var(--secondary-elements-background)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "6px",
+            }}
           >
             <h2 className="Heading u-h3" style={{ marginBottom: "30px" }}>
               Send us a Message

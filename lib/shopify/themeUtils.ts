@@ -75,10 +75,10 @@ export function getCssVariables(settings: ThemeSettings) {
   const footerBorderColor = mix(settings.footer_background, settings.footer_text_color, 85);
 
   return {
-    '--heading-font-family': 'Helvetica, Arial, sans-serif',
+    '--heading-font-family': 'Futura, "Century Gothic", "Apple Gothic", AppleGothic, "URW Gothic L", sans-serif',
     '--heading-font-weight': '400',
     '--heading-font-style': 'normal',
-    '--text-font-family': 'Helvetica, Arial, sans-serif',
+    '--text-font-family': '"Century Gothic", CenturyGothic, Futura, "URW Gothic L", sans-serif',
     '--text-font-weight': '400',
     '--text-font-style': 'normal',
     '--base-text-font-size': `${settings.base_text_font_size}px`,

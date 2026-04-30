@@ -36,7 +36,7 @@ export default async function RootLayout({
   const faviconUrl = resolveShopifyAssetUrl(brandAssets.favicon);
 
   return (
-    <html lang="en" className="no-js" suppressHydrationWarning>
+    <html lang="en" className="no-js" data-theme="dark" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />

@@ -182,12 +182,12 @@ export async function ShopTheLook({
                                 />
                               </span>
                               <div className="ProductItem__Info ProductItem__Info--center">
-                                <h2 className="ProductItem__Title Heading">
-                                  Sample product
+                                <h2 className="ProductItem__Title Heading" style={{ opacity: 0.3 }}>
+                                  &nbsp;
                                 </h2>
                                 <div className="ProductItem__PriceList Heading">
-                                  <span className="ProductItem__Price Price Text--subdued">
-                                    $45
+                                  <span className="ProductItem__Price Price Text--subdued" style={{ opacity: 0.3 }}>
+                                    &nbsp;
                                   </span>
                                 </div>
                               </div>

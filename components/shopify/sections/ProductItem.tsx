@@ -394,14 +394,7 @@ export function ProductItem({
                           {k}: {String(v)}
                         </li>
                       ))
-                  ) : (
-                    <>
-                      <li>Material: 6061 Aluminum</li>
-                      <li>Tolerance: ±0.01mm</li>
-                      <li>Weight: 142g</li>
-                      <li>Finish: Anodized Matte</li>
-                    </>
-                  )}
+                  ) : null}
                 </ul>
               </div>
             )}
