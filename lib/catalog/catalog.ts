@@ -9,6 +9,7 @@ export type CatalogVariant = {
   compareAtPrice?: number | null;
   sku?: string | null;
   option1?: string | null;
+  inventoryQuantity?: number;
 };
 
 export type CatalogProduct = {
@@ -24,6 +25,7 @@ export type CatalogProduct = {
   published: boolean;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  createdAt?: string | null;
 };
 
 type Manifest = Record<string, { localPath: string; filename: string }>;

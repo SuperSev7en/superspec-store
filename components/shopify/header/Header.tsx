@@ -1,9 +1,11 @@
 import type { ThemeSettings } from '@/lib/shopify/themeSettings';
 import { Icon } from '@/components/shopify/icons/Icon';
+import Image from 'next/image';
 import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
 import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
 import { HeaderCartLink } from '@/components/store/HeaderCartLink';
-
+import { HeaderWishlistLink } from '@/components/store/HeaderWishlistLink';
+import { HeaderSidebarToggle } from '@/components/store/HeaderSidebarToggle';
 type MenuLink = { title: string; url: string; active?: boolean };
 
 export function Header({
@@ -79,10 +81,22 @@ export function Header({
         })}
       >
         <div className="Header__Wrapper">
+          <div className="Header__FlexItem Header__FlexItem--logo">
+            <HeaderSidebarToggle />
+          </div>
+          
           <div className="Header__LogoContainer">
             <a href="/" className="Header__Logo">
               {logo ? (
-                <img className="Header__LogoImage" src={logo} alt={shopName} style={{ maxWidth: `${logoMaxWidth}px` }} />
+                <Image 
+                  className="Header__LogoImage" 
+                  src={logo} 
+                  alt={shopName} 
+                  width={logoMaxWidth}
+                  height={logoMaxWidth / 2} // Estimate aspect ratio
+                  style={{ maxWidth: `${logoMaxWidth}px`, height: 'auto' }} 
+                  priority
+                />
               ) : (
                 <span className="Heading u-h4">{shopName}</span>
               )}
@@ -108,6 +122,8 @@ export function Header({
             <a href="/account" className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable" aria-label="Account">
               <Icon icon="account" />
             </a>
+
+            <HeaderWishlistLink />
 
             <a
               href="/search"

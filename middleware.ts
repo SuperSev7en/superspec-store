@@ -1,34 +1,42 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { verifyToken } from '@/lib/auth';
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/account/:path*'],
 };
 
-function unauthorized() {
-  return new NextResponse('Unauthorized', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Admin", charset="UTF-8"',
-    },
-  });
-}
+export async function middleware(req: NextRequest) {
+  const path = req.nextUrl.pathname;
 
-export function middleware(req: NextRequest) {
-  // Protect admin routes in production. Locally, you can still set env vars to test.
-  const isProd = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
-
-  const user = process.env.ADMIN_BASIC_USER || process.env.ADMIN_EMAIL || '';
-  const pass = process.env.ADMIN_BASIC_PASSWORD || process.env.ADMIN_PASSWORD || '';
-
-  if (!user || !pass) {
-    // If you haven't configured credentials, block in prod to avoid accidentally exposing admin.
-    return isProd ? unauthorized() : NextResponse.next();
+  // Protect Account Routes
+  if (path.startsWith('/account')) {
+    const token = req.cookies.get('superspec_token')?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL(`/login?returnUrl=${encodeURIComponent(path)}`, req.url));
+    }
+    const payload = await verifyToken(token);
+    if (!payload) {
+      return NextResponse.redirect(new URL(`/login?returnUrl=${encodeURIComponent(path)}`, req.url));
+    }
+    return NextResponse.next();
   }
 
-  const expected = `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`;
-  const provided = req.headers.get('authorization');
+  // Protect Admin Routes — JWT role check
+  if (path.startsWith('/admin')) {
+    const token = req.cookies.get('superspec_token')?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL(`/login?returnUrl=${encodeURIComponent(path)}`, req.url));
+    }
+    const payload = await verifyToken(token);
+    if (!payload) {
+      return NextResponse.redirect(new URL(`/login?returnUrl=${encodeURIComponent(path)}`, req.url));
+    }
+    // Require admin role
+    if (payload.role !== 'admin') {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+    return NextResponse.next();
+  }
 
-  if (provided !== expected) return unauthorized();
   return NextResponse.next();
 }
-

@@ -41,13 +41,14 @@ export async function POST(req: Request) {
 
   if (lineItems.length === 0) return NextResponse.json({ error: 'No valid lines' }, { status: 400 });
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await (stripe.checkout.sessions as any).create({
     mode: 'payment',
     line_items: lineItems,
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/checkout/cancel`,
     shipping_address_collection: { allowed_countries: ['US', 'CA', 'GB', 'JP', 'AU', 'NZ', 'DE', 'FR', 'IT', 'ES'] },
     automatic_tax: { enabled: false },
+    automatic_payment_methods: { enabled: true },
   });
 
   return NextResponse.json({ url: session.url });

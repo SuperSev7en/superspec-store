@@ -66,6 +66,29 @@ export async function POST(req: Request) {
       console.error('[stripe webhook]', e);
       return NextResponse.json({ error: 'persist_failed' }, { status: 500 });
     }
+  } else if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+    console.log('[stripe webhook] payment_intent.succeeded', paymentIntent.id);
+    // order confirmation is handled in /api/checkout/confirm-order client-side,
+    // but in a fully robust system we'd confirm here as a fallback or source-of-truth.
+  } else if (event.type === 'payment_intent.payment_failed') {
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+    console.error('[stripe webhook] payment_intent.payment_failed', paymentIntent.last_payment_error?.message);
+    // Log failure
+  } else if (event.type === 'charge.refunded') {
+    const charge = event.data.object as Stripe.Charge;
+    console.log('[stripe webhook] charge.refunded', charge.payment_intent);
+    
+    // Attempt to update order status in DB
+    try {
+      const supabase = createServiceRoleClient();
+      await supabase
+        .from('orders')
+        .update({ status: 'refunded' })
+        .eq('stripe_payment_intent_id', charge.payment_intent);
+    } catch (e) {
+      console.error('[stripe webhook] failed to update refunded status', e);
+    }
   }
 
   return NextResponse.json({ received: true });

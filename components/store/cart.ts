@@ -4,6 +4,10 @@ export type CartLine = {
   handle: string;
   variantId?: string;
   quantity: number;
+  title?: string;
+  variantTitle?: string;
+  price?: number;
+  image?: string;
 };
 
 const KEY = 'cart-v1';
@@ -30,6 +34,10 @@ export function readCart(): CartLine[] {
         handle: typeof l?.handle === 'string' ? l.handle : '',
         variantId: typeof l?.variantId === 'string' ? l.variantId : undefined,
         quantity: Number(l?.quantity ?? 1),
+        title: typeof l?.title === 'string' ? l.title : undefined,
+        variantTitle: typeof l?.variantTitle === 'string' ? l.variantTitle : undefined,
+        price: typeof l?.price === 'number' ? l.price : undefined,
+        image: typeof l?.image === 'string' ? l.image : undefined,
       }))
       .filter((l) => l.handle && Number.isFinite(l.quantity) && l.quantity > 0);
   } catch {

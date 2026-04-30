@@ -1,5 +1,4 @@
 import type { ThemeSettings } from '@/lib/shopify/themeSettings';
-import { Icon } from '@/components/shopify/icons/Icon';
 import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
 
 type FooterBlock =
@@ -18,7 +17,6 @@ export function Footer({
   shopName?: string;
   poweredBy?: string;
 }) {
-  const addTopMargin = false;
   const blocks: FooterBlock[] = [];
 
   const sectionBlocks = section?.blocks ?? {};
@@ -38,7 +36,6 @@ export function Footer({
     }
 
     if (block.type === 'links') {
-      // TODO: hydrate menu links from your admin/menu system.
       blocks.push({
         type: 'links',
         title: 'Quick links',
@@ -78,7 +75,7 @@ export function Footer({
         id="section-footer"
         data-section-id="footer"
         data-section-type="footer"
-        className={`Footer ${blocks.length <= 2 ? 'Footer--center' : ''} ${addTopMargin ? 'Footer--withMargin' : ''}`.trim()}
+        className={`Footer ${blocks.length <= 2 ? 'Footer--center' : ''}`.trim()}
         role="contentinfo"
       >
         <div className="Container">
@@ -141,18 +138,37 @@ export function Footer({
             </div>
           ) : null}
 
+          {/* Legal Disclaimers */}
+          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 14, marginTop: 8 }}>
+            <p style={{ fontSize: 11, lineHeight: 1.5, color: 'var(--text-color-secondary, #666)', margin: '0 0 6px', opacity: 0.8 }}>
+              All artwork and designs are original creations of SUPER Spec. and are protected under applicable copyright laws. 
+              Unauthorized reproduction, distribution, or use of any content, images, or designs from this site is strictly prohibited.
+            </p>
+            <p style={{ fontSize: 11, lineHeight: 1.5, color: 'var(--text-color-secondary, #666)', margin: '0 0 6px', opacity: 0.8 }}>
+              All sales are final. Returns and exchanges are handled on a case-by-case basis. 
+              Please contact us at support@superspec.studio for any order inquiries.
+            </p>
+            <p style={{ fontSize: 11, lineHeight: 1.5, color: 'var(--text-color-secondary, #666)', margin: 0, opacity: 0.8 }}>
+              Prices are in USD. Shipping times and costs vary by location. Limited edition items are subject to availability.
+            </p>
+          </div>
+
           <div className="Footer__Aside">
             <div className="Footer__Copyright">
               <a href="/" className="Footer__StoreName Heading u-h7 Link Link--secondary">
-                © {shopName}
+                &copy; {new Date().getFullYear()} {shopName}
               </a>
               <p className="Footer__ThemeAuthor">{poweredBy}</p>
             </div>
 
-            <ul className="Footer__PaymentList HorizontalList">
-              <li className="HorizontalList__Item">
-                <Icon icon="select-arrow" />
-              </li>
+            {/* Payment method icons */}
+            <ul className="Footer__PaymentList HorizontalList" style={{ display: 'flex', gap: 8, listStyle: 'none', padding: 0, margin: '8px 0 0', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <li className="HorizontalList__Item" style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>Visa</li>
+              <li className="HorizontalList__Item" style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>Mastercard</li>
+              <li className="HorizontalList__Item" style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>Amex</li>
+              <li className="HorizontalList__Item" style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>Apple Pay</li>
+              <li className="HorizontalList__Item" style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>Google Pay</li>
+              <li className="HorizontalList__Item" style={{ fontSize: 11, color: '#888', fontWeight: 600 }}>PayPal</li>
             </ul>
           </div>
         </div>
@@ -169,4 +185,3 @@ export function Footer({
     </>
   );
 }
-

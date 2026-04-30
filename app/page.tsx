@@ -6,9 +6,24 @@ import { FeaturedProduct } from '@/components/shopify/sections/FeaturedProduct';
 import { Timeline } from '@/components/shopify/sections/Timeline';
 import { BlogPosts } from '@/components/shopify/sections/BlogPosts';
 import { ShopTheLook } from '@/components/shopify/sections/ShopTheLook';
+import { Marquee } from '@/components/shopify/sections/Marquee';
+import { Newsletter } from '@/components/shopify/sections/Newsletter';
+
+import { Metadata } from 'next';
 
 export const revalidate = 0;
 
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'SUPER Spec - Home',
+    description: 'Welcome to SUPER Spec. Shop apparel, prints, and engineered goods.',
+    openGraph: {
+      title: 'SUPER Spec - Home',
+      description: 'Welcome to SUPER Spec. Shop apparel, prints, and engineered goods.',
+      type: 'website',
+    },
+  };
+}
 type SectionData = {
   type?: string;
   disabled?: boolean;
@@ -69,6 +84,16 @@ async function renderSection(key: string, section: SectionData | undefined) {
   if (type === 'shop-the-look') {
     if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
     return <ShopTheLook id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+  }
+
+  if (type === 'marquee') {
+    if (!settings) return null;
+    return <Marquee id={key} settings={settings} />;
+  }
+
+  if (type === 'newsletter') {
+    if (!settings) return null;
+    return <Newsletter id={key} settings={settings} />;
   }
 
   return null;

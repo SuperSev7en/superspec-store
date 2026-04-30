@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-
+import Image from 'next/image';
 function aspectBoxStyle(maxWidth: string | number, aspectRatio: number): CSSProperties {
   const w = typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth;
   return {
@@ -26,12 +26,12 @@ export function ProductImageFrame({
 
   return (
     <div className="AspectRatio AspectRatio--withFallback" style={aspectBoxStyle(maxWidth, aspectRatio)}>
-      <img
+      <Image
         className={classes}
         src={src}
         alt={alt}
-        loading="lazy"
-        decoding="async"
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         style={{ objectFit: 'contain' }}
       />
     </div>

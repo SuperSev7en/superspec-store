@@ -170,20 +170,17 @@ main#main {
 }
 
 /**
- * Add to cart — remove Prestige ::before fill + hover color inversion (reads as a second “button”).
- * Solid theme fill with a spectrum gradient border only.
+ * Add to cart: clean solid button. No gradient border. No pseudo-element ghosts.
  */
 main#main button.AddToCartButton--storefront.Button.Button--primary {
   position: relative;
   isolation: isolate;
   color: #ffffff !important;
-  border: 2px solid transparent !important;
-  border-radius: 2px;
-  background:
-    linear-gradient(var(--button-background), var(--button-background)) padding-box,
-    linear-gradient(135deg, #f97316, #ec4899, #a855f7, #3b82f6, #22d3ee, #f97316) border-box;
-  background-origin: border-box;
-  box-shadow: none;
+  background: var(--button-background) !important;
+  border: none !important;
+  border-radius: 4px;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
 main#main button.AddToCartButton--storefront.Button.Button--primary::before,
@@ -191,6 +188,7 @@ main#main button.AddToCartButton--storefront.Button.Button--primary::after {
   display: none !important;
   content: none !important;
   opacity: 0 !important;
+  animation: none !important;
 }
 
 @media (-moz-touch-enabled: 0), (hover: hover) {
@@ -198,49 +196,60 @@ main#main button.AddToCartButton--storefront.Button.Button--primary::after {
     .features--show-button-transition
     button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):hover {
     color: #ffffff !important;
-    filter: brightness(1.07);
-    transform: none !important;
+    background-color: #22c55e !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
   }
 }
 
+main#main
+  button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):active {
+  background-color: #16a34a !important;
+  transform: translateY(0px);
+}
+
 /**
- * Footer: reduce excess white space.
+ * Footer: compact layout.
  */
 .Footer {
-  padding: 40px 0 !important;
+  padding: 30px 0 20px !important;
 }
 
 .Footer__Inner {
-  margin-bottom: 20px !important;
+  margin-bottom: 16px !important;
 }
 
 .Footer__Block {
-  margin-bottom: 20px !important;
+  margin-bottom: 12px !important;
 }
 
 .Footer__Aside {
-  margin-top: 20px !important;
+  margin-top: 12px !important;
+  padding-top: 12px !important;
 }
 
+/**
+ * Text backdrop for readability over Three.js particles.
+ */
 .text-backdrop {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .text-backdrop-sm {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 6px;
-  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 10px 14px;
 }
 
 /**
- * Cart: opaque panels so particle field doesn’t compete with line items.
+ * Cart: opaque panels.
  */
 main#main .Cart--opaqueShell .CartItem--panel,
 main#main .Cart--opaqueShell .Cart__Summary--panel,

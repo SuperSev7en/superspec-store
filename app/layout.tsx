@@ -6,10 +6,19 @@ import { getThemeBodyClassName } from '@/lib/shopify/themeUtils';
 import { getThemeSettings, getThemeSections, getThemeBrandAssets } from '@/lib/shopify/themeConfig';
 import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
 import { Analytics } from '@vercel/analytics/next';
+import { Toaster } from 'sonner';
+import { CartDrawer } from '@/components/store/CartDrawer';
+import { ExitIntentPopup } from '@/components/store/ExitIntentPopup';
+import { PostAddUpsellModal } from '@/components/store/PostAddUpsellModal';
 
 export const metadata: Metadata = {
   title: 'SUPER Spec',
   description: 'SUPER Spec',
+  openGraph: {
+    title: 'SUPER Spec',
+    description: 'SUPER Spec Storefront',
+    type: 'website',
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -36,8 +45,32 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 <link rel="stylesheet" href="/assets/background-effects.css" />
 <link rel="stylesheet" href="/assets/fixes.css" />
 
-        <Script id="disable-context-menu" strategy="beforeInteractive">
-          {`document.addEventListener('contextmenu', event => event.preventDefault());`}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-XXXXXXXXXX');
+          `}
+        </Script>
+
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', 'XXXXXXXXXXXXXXXX');
+            fbq('track', 'PageView');
+          `}
         </Script>
 
         <Script id="theme-globals" strategy="beforeInteractive">
@@ -109,6 +142,11 @@ document.documentElement.style.setProperty("--window-height", window.innerHeight
         <ThemeLayout settings={settings} sections={sections}>
           {children}
         </ThemeLayout>
+        <Toaster position="bottom-right" className="hidden md:flex" />
+        <Toaster position="bottom-center" className="flex md:hidden" />
+        <CartDrawer />
+        <ExitIntentPopup />
+        <PostAddUpsellModal />
         <Analytics />
         <Script src="/assets/theme-toggle.js" strategy="afterInteractive" />
       </body>

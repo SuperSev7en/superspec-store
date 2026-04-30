@@ -9,12 +9,24 @@ export const runtime = 'nodejs';
  * Mobile app: `Authorization: Bearer <supabase_access_token>`.
  */
 export async function POST(req: Request) {
-  const admin = await getAdminFromBearer(req);
-  if (!admin) {
+  let context = await getAdminFromBearer(req);
+  
+  if (!context) {
+    // Fallback for web admin (cookies)
+    const { createClient: createWebClient } = await import('@/lib/supabase');
+    const supabase = await createWebClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: prof } = await supabase.from('profiles').select('is_admin').eq('id', user.id).maybeSingle();
+      if (prof?.is_admin) context = { supabase, user };
+    }
+  }
+
+  if (!context) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { supabase, user } = admin;
+  const { supabase, user } = context;
   const { data: subs, error } = await supabase.from('push_subscriptions').select('expo_push_token').eq('user_id', user.id);
   if (error) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import { getBrowserSupabase } from '@/lib/supabaseBrowser';
 
 type Img = {
@@ -100,9 +101,8 @@ export function ProductMediaManager({ productId, initialImages }: { productId: s
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {urls.map((im) => (
             <div key={im.id} className="border rounded-md overflow-hidden">
-              <div className="aspect-square bg-black flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={im.url} alt={im.alt ?? ''} className="w-full h-full object-contain" />
+              <div className="aspect-square bg-black flex items-center justify-center relative">
+                <Image src={im.url} alt={im.alt ?? ''} fill style={{ objectFit: 'contain' }} className="w-full h-full" />
               </div>
               <div className="flex items-center justify-between p-2">
                 <span className="text-xs text-gray-500">#{im.position}</span>

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getProductByHandle } from '@/lib/catalog/catalog';
-import { getProductByHandleFromSupabase } from '@/lib/catalog/supabaseCatalog';
+import { getProductByHandleFromSupabase, loadCatalogFromSupabase } from '@/lib/catalog/supabaseCatalog';
 import { stripHtml } from '@/lib/catalog/htmlUtils';
+import { ProductDetailBase } from '@/components/store/ProductDetailBase';
 import { ProductImageFrame } from '@/components/store/ProductImageFrame';
 import { ProductPurchaseClient } from '@/components/store/ProductPurchaseClient';
 
@@ -20,6 +21,12 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   return {
     title: product.seoTitle?.trim() || product.title,
     description,
+    openGraph: {
+      title: product.seoTitle?.trim() || product.title,
+      description,
+      type: 'article',
+      images: product.images.length > 0 ? [{ url: product.images[0] }] : [],
+    },
   };
 }
 
@@ -46,59 +53,35 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   }));
   const canPurchase = purchaseVariants.length > 0;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: stripHtml(product.descriptionHtml),
+    image: product.images,
+    offers: {
+      '@type': 'AggregateOffer',
+      availability: 'https://schema.org/InStock',
+      priceCurrency: 'USD',
+      highPrice: Math.max(...purchaseVariants.map(v => v.price)),
+      lowPrice: Math.min(...purchaseVariants.map(v => v.price)),
+    }
+  };
+
+  const catalog = await loadCatalogFromSupabase();
+  const relatedProducts = catalog.filter(p => p.handle !== product.handle).slice(0, 4);
+
   return (
     <div className="Product">
-      <div className="Container">
-        <div className="Product__Wrapper">
-          <div className="Product__Gallery Product__Gallery--withDots">
-            <div className="Product__Slideshow Carousel">
-              {images.map((src, i) => (
-                <div key={src} className={`Carousel__Cell ${i === 0 ? 'is-selected' : ''}`.trim()}>
-                  <ProductImageFrame
-                    src={src}
-                    alt={i === 0 ? product.title : `${product.title} ${i + 1}`}
-                    maxWidth="1200px"
-                    aspectRatio={1}
-                    imgClassName="Image--fadeIn Image--zoomOut"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="Product__InfoWrapper">
-            <div className="Product__Info">
-              <div className="Container">
-                {product.vendor ? (
-                  <p className="ProductMeta__Vendor Heading u-h6 Text--subdued">{product.vendor}</p>
-                ) : null}
-                <h1 className="ProductMeta__Title Heading u-h2">{product.title}</h1>
-
-                {product.productType ? (
-                  <p className="Text--subdued" style={{ marginTop: 4 }}>
-                    {product.productType}
-                  </p>
-                ) : null}
-
-                {canPurchase ? (
-                  <ProductPurchaseClient handle={product.handle} variants={purchaseVariants} />
-                ) : (
-                  <p className="Text--subdued" style={{ marginTop: 16 }}>
-                    This product is not available for purchase.
-                  </p>
-                )}
-
-                {product.descriptionHtml ? (
-                  <div className="ProductMeta__Description Rte" style={{ marginTop: 28 }}>
-                    {/* eslint-disable-next-line react/no-danger */}
-                    <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductDetailBase 
+        product={product as any} 
+        relatedProducts={relatedProducts}
+        collectionTitle={product.productType || 'Store'}
+      />
     </div>
   );
 }

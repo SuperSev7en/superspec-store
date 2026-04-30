@@ -1217,10 +1217,6 @@ th {
 /* Prevent selection and tap highlights */
 .pswp__container,
 .pswp__img {
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
@@ -2303,10 +2299,6 @@ body:not(.is-tabbing) .flickity-enabled:focus {
 }
 
 .flickity-enabled.is-draggable {
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .flickity-enabled.is-draggable .flickity-viewport {
@@ -4019,10 +4011,6 @@ body:not(.features--show-image-zooming) .Image--lazyLoaded.Image--zoomOut {
   display: inline-block;
   padding: 5px 9px; /* this allows to slightly increase the clickable area */
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .QuantitySelector__CurrentQuantity {
@@ -5924,10 +5912,6 @@ th {
 /* Prevent selection and tap highlights */
 .pswp__container,
 .pswp__img {
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
@@ -7010,10 +6994,6 @@ body:not(.is-tabbing) .flickity-enabled:focus {
 }
 
 .flickity-enabled.is-draggable {
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .flickity-enabled.is-draggable .flickity-viewport {
@@ -8740,10 +8720,6 @@ body:not(.features--show-image-zooming) .Image--lazyLoaded.Image--zoomOut {
   display: inline-block;
   padding: 5px 9px; /* this allows to slightly increase the clickable area */
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .QuantitySelector__CurrentQuantity {
@@ -9927,10 +9903,6 @@ body:not(.features--show-image-zooming) .Image--lazyLoaded.Image--zoomOut {
   padding: 12px 20px;
   width: 100%;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
   color: var(--text-color-light);
   text-align: center;
   transition: color 0.2s ease-in-out;
@@ -12890,10 +12862,6 @@ body:not(.features--show-image-zooming) .Image--lazyLoaded.Image--zoomOut {
   bottom: 0;
   color: transparent;
   pointer-events: none;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .Header__LinkSpacer::after {
@@ -14297,10 +14265,6 @@ shopify-payment-terms {
   padding: 10px 28px 10px 14px;
   border: 1px solid var(--border-color);
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
 }
 
 .ProductForm__Item .Icon--select-arrow {
@@ -15902,10 +15866,6 @@ shopify-payment-terms {
   position: relative;
   padding: 30px 20px;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
   letter-spacing: inherit;
   vertical-align: text-bottom;
   transition: all 0.25s ease-in-out;

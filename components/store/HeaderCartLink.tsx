@@ -46,6 +46,12 @@ export function HeaderCartLink({ cartType }: { cartType?: string }) {
       data-action={drawer ? 'open-drawer' : undefined}
       aria-expanded="false"
       aria-label={`Open cart${count > 0 ? `, ${count} items` : ''}`}
+      onClick={(e) => {
+        if (drawer) {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('superspec:open-cart'));
+        }
+      }}
     >
       <Icon icon="cart" />
       {count > 0 ? (

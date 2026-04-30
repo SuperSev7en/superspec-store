@@ -1,115 +1,90 @@
-# How to operate SuperSpec.store
+# How to Operate SuperSpec.store
 
-## Prerequisites
+This document provides a comprehensive guide for store owners to manage the store and for developers to understand the codebase.
 
-- Node.js 20+ (LTS recommended)
-- npm
-- Optional: Vercel account + CLI for production deploys
+---
 
-## Environment variables
+## 1. How to Open and Use the Admin Portal
 
-Create `.env.local` (never commit secrets):
+The Admin Portal is your central hub for managing orders, products, customers, and analytics.
 
-| Variable | Purpose |
-|----------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (auth + data) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key (browser + server user sessions) |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Server only.** Used by `POST /api/stripe/webhook` to insert customers/orders (bypasses RLS). Never commit to client code. |
-| `STRIPE_SECRET_KEY` | Create Checkout sessions server-side |
-| `STRIPE_WEBHOOK_SECRET` | Verify Stripe webhook signatures |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Optional today; reserved for future client-side Stripe.js |
-| `CONTACT_WEBHOOK_URL` | Optional. If set, `POST /api/contact` and newsletter signups from `POST /api/newsletter` can forward JSON here. If unset, payloads are logged server-side only. |
-| `ADMIN_BASIC_USER` / `ADMIN_BASIC_PASSWORD` | Optional **production** extra gate on `/admin/*` (see `middleware.ts`). After passing Basic auth, you still sign in with Supabase on `/login`. |
+### Accessing the Admin Portal
+1. Make sure your local server is running (`npm run dev`) or visit your live website.
+2. Navigate to **`/login`** and sign in. (If you haven't created an account yet, go to `/register` to create one).
+3. **Important:** Your account must be marked as an Admin. 
+   - Go to your Supabase dashboard → **Table Editor** → **`profiles`** table.
+   - Find your user row and set the **`is_admin`** column to `true`.
+4. Once logged in as an admin, navigate to **`/admin`** in your browser.
 
-### Stripe webhooks (orders in Supabase)
+### Using the Admin Portal Features
+- **Dashboard:** Gives you a quick glance at your recent orders, revenue, and pending tasks.
+- **Orders (`/admin/orders`):** View all customer orders. Click on any order to see its details, mark it as processing or shipped, issue refunds (which integrates with Stripe), or print a packing slip.
+- **Products (`/admin/products`):** View your catalog. Click "Add product" to create a new one, or click an existing product to edit its title, images, variants (size/color), pricing, and stock levels.
+- **Customers (`/admin/customers`):** View customer profiles, their total spend (Lifetime Value), and order history.
+- **Discounts (`/admin/discounts`):** Create and manage discount codes (e.g., 10% off, $5 off) with optional usage limits and expiration dates.
+- **Analytics (`/admin/analytics`):** Track your store's performance with charts showing revenue over time, conversion funnels, top products, and device breakdowns.
+- **Pages / Settings:** Manage store policies, shipping zones, tax rates, and staff accounts.
 
-1. Deploy the site so `https://YOUR_DOMAIN/api/stripe/webhook` exists.
-2. In [Stripe Dashboard → Webhooks](https://dashboard.stripe.com/webhooks), add an endpoint for that URL.
-3. Subscribe to **`checkout.session.completed`** (Checkout mode: `payment`).
-4. Copy the **Signing secret** into `STRIPE_WEBHOOK_SECRET` in Vercel (or `.env.local`).
-5. Ensure **`SUPABASE_SERVICE_ROLE_KEY`** is set in the same environment.
+---
 
-When a customer pays, Stripe calls your webhook; the handler creates/updates **`customers`**, **`orders`**, and **`order_items`** (idempotent per `stripe_session_id`). You then see the order under **`/admin/orders`**.
+## 2. Environment Variables Explained
 
-### Admin access (beginner checklist)
+Your `.env` file (or `.env.local` for local development) holds the secret keys needed for the store to function. 
 
-1. Run the SQL in `supabase/migrations/` on your Supabase project if you have not already.
-2. Create a user: Supabase **Authentication → Users** (email/password), or your `/register` flow if enabled.
-3. Mark yourself admin: in **Table Editor → `profiles`**, set **`is_admin`** to `true` for your user row (or run SQL `update profiles set is_admin = true where email = 'you@example.com';`).
-4. Open **`/login?next=/admin`**, sign in, then use **Products** and **Orders** from the sidebar. On your phone, use the **menu icon** in the top bar to open the same links.
-5. In production, set **`ADMIN_BASIC_*`** if you want the extra password layer described in `middleware.ts`.
+### What are `RESEND_API_KEY` and `CRON_SECRET`?
+Yes, these are now explicitly listed in your `.env` file. Here is what they do:
 
-### Expo hub — remote push & “only me”
+- **`RESEND_API_KEY`**: 
+  - **What it is:** We use a service called [Resend](https://resend.com) to send all transactional emails.
+  - **What it does:** It sends Order Confirmations, Welcome Emails (when someone subscribes to the newsletter), Abandoned Cart reminders, and Post-Purchase Follow-ups (asking for reviews 7 days later, or restocking nudges 45 days later).
+  - **Action Needed:** Sign up for a free account at Resend.com, generate an API key, and paste it here. If left as the placeholder, emails will simply be skipped without crashing the site.
 
-1. Apply **`supabase/migrations/20260422_push_subscriptions.sql`** so devices can store Expo push tokens.
-2. On **Vercel**, set optional **`ADMIN_PUSH_USER_IDS`** to a comma-separated list of your Supabase `auth.users` UUIDs. When set, **only those users** receive push notifications from the Stripe webhook (everyone else’s tokens are ignored server-side).
-3. In **`apps/admin-mobile/.env`**, set optional **`EXPO_PUBLIC_ADMIN_LOCK_EMAIL`** to your email so the app signs out anyone else immediately after login (pairs with `is_admin = false` for other users in `profiles`).
-4. Run **`eas init`** inside `apps/admin-mobile`, set **`EAS_PROJECT_ID`** in that `.env`, rebuild the dev client or store build when you are ready for production push.
+- **`CRON_SECRET`**:
+  - **What it is:** A random password that protects your automated background tasks (Cron jobs).
+  - **What it does:** The store has automated tasks that run every hour (e.g., checking for abandoned carts and sending emails). You don't want random people on the internet triggering these manually. Vercel automatically sends this secret when it triggers the hourly task, and your code verifies it.
+  - **Action Needed:** Generate a random string (e.g., `my_super_secret_cron_key_123`) and put it here. In Vercel, set the same value in your Environment Variables.
 
-## Local development
+- **`JWT_SECRET`**:
+  - **What it is:** A private "master key" used to lock and unlock your user sessions.
+  - **What it does:** When a customer or admin logs in, the server gives them a digital "passport" (JWT). This passport is signed with your `JWT_SECRET` so that the server can trust it hasn't been tampered with. Without this, anyone could pretend to be an admin.
+  - **Action Needed:** Generate a secure 32+ character random string. You can use the command in your `.env` file to generate one instantly: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Paste the result into your `.env` and Vercel settings.
 
-```bash
-npm install
-npm run dev
-```
+---
 
-Visit `/products`, `/collections/{handle}`, `/about`, `/contact`, `/mission-and-sustainability`, `/search?q=`, `/checkout/success` (after a test payment), `/admin` (admin users only).
+## 3. Developer Handover: Codebase Overview
 
-**Super Spec Hub (Expo):** dedicated mobile/web admin lives in `apps/admin-mobile/`. Quick start: copy `NEXT_PUBLIC_SUPABASE_*` from your root `.env` into `apps/admin-mobile/.env` as `EXPO_PUBLIC_SUPABASE_*`, then from the repo root run `npm run mobile`. Full notes: [apps/admin-mobile/README.md](../apps/admin-mobile/README.md). Architecture reference: [ADMIN_MOBILE_PLAN.md](./ADMIN_MOBILE_PLAN.md).
+If another developer needs to work on this site, here is exactly how it is structured:
 
-## Product images (offline / no Shopify CDN)
+### Architecture
+- **Framework:** Next.js 15 (App Router). All pages live in the `app/` directory.
+- **Database:** Supabase (PostgreSQL). We use `@supabase/ssr` for secure cookie-based authentication.
+- **Styling:** Tailwind CSS + custom CSS (`app/globals.css`).
+- **Payments:** Stripe (Checkout Sessions + Webhooks).
+- **Emails:** Resend.
 
-1. **Automatic download** (while source URLs still respond):
+### Key Directories
+- **`app/(storefront)`** (Implicit): Pages like `app/page.tsx`, `app/products/[handle]/page.tsx`, `app/checkout/page.tsx`. This is the customer-facing side.
+- **`app/admin/*`**: The protected Admin Portal. It checks for a valid JWT with the `admin` role in `middleware.ts`.
+- **`app/api/*`**: 
+  - `/api/auth/*`: Handles login, register, password reset. Custom JWTs are stored in HTTP-only cookies.
+  - `/api/checkout/*`: Creates Stripe Payment Intents and confirms orders.
+  - `/api/cron/*`: Hourly tasks for marketing automation (abandoned carts, scheduled emails). Protected by `CRON_SECRET`.
+  - `/api/stripe/webhook/route.ts`: Listens to Stripe to finalize orders when payments succeed.
+- **`components/`**: Reusable UI parts. `components/store/` has customer-facing components (e.g., `CartDrawer`, `ProductDetailBase`), and `components/admin/` has admin UI parts.
 
-   ```bash
-   npm run images:download
-   ```
+### Recent Major Updates (Phases 6, 7, 8)
+1. **Auth Hardening:** Replaced basic password protection for the Admin portal with secure JWT role-based checks. Added "Guest Cart Merge" so if a user adds items while logged out, then logs in, their items are kept.
+2. **Marketing Automation:** Wired up automated emails using a `scheduled_emails` table in Supabase. When an order is placed, a "Review Request" is scheduled for 7 days later, and a "Reorder Nudge" for 45 days later.
+3. **Admin Rebuild:** Completely rebuilt the Admin Orders, Products, Customers, and Analytics pages to be production-ready with real data mapping, charts (via `recharts`), and CSV exports.
 
-   Output: `public/assets/product-images/` + `manifest.json`. The catalog maps CSV `Image Src` URLs to local paths.
+### Maintenance & Deployment
+- **To Deploy:** Push to your `main` branch connected to Vercel, or run `npm run deploy:vercel`.
+- **To add new Environment Variables:** Always add them in your local `.env.local` first to test, then add them in the Vercel Dashboard → Settings → Environment Variables.
 
-2. **Manual**: Add files under `public/assets/product-images/` and add entries to `manifest.json` keyed by the exact CSV URL.
+---
 
-## Production deploy to Vercel
-
-**Live site:** [https://superspec.studio](https://superspec.studio) (production alias on Vercel project `superspec-store`).
-
-1. Install CLI: `npm i -g vercel`
-2. Log in: `vercel login` (once per machine)
-3. Link this repo to the Vercel project (once per clone; `.vercel/` is gitignored):
-
-   ```bash
-   vercel link
-   ```
-
-   Choose your Vercel team and project **superspec-store** (or the project shown in the Vercel dashboard).
-
-4. Deploy with version tag + production:
-
-   ```bash
-   npm run deploy:vercel
-   ```
-
-   Or: `vercel deploy --prod --yes`
-
-The script (`scripts/deploy-vercel.sh`) attempts to:
-
-- Commit uncommitted changes (if any)
-- Create an annotated git tag `v/<timestamp-or-name>`
-- Push branch and tags to `origin` (if configured)
-- Run `vercel deploy --prod --yes`
-
-**Also:** Pushes to `main` on GitHub trigger Vercel builds when the repo is connected in project settings.
-
-**Rollback:** Vercel dashboard → Deployments → promote a previous deployment. Git tags record deploy markers locally.
-
-## Animated background
-
-The site loads `public/assets/background-effects.js` + `background-effects.css` from `app/layout.tsx`. Layers use `z-index: 0`; main content is in `.PageContainer` with `z-index: 1` (see `app/globals.css`). If the canvas does not appear, check the browser console for WebGL errors and ensure `three.min.js` loads.
-
-## Navigation
-
-Primary links are defined once in `lib/siteNavigation.ts` (`MAIN_NAV_LINKS`) and used by the header and footer.
-
-## Support
-
-Store contact emails are listed on `/contact` and in the README for business use.
+## 4. Cleanup Notes
+We recently ran a cleanup script that removed unnecessary development/legacy files:
+- Removed obsolete scripts (`modify_settings.js`, `test-catalog.mjs`).
+- Removed old Shopify UI screenshots and the `.factory` / `.kilocode` hidden directories.
+- The project root is now clean and contains only production-necessary code and documentation.

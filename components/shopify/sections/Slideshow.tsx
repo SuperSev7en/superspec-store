@@ -1,4 +1,5 @@
 import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
+import Image from 'next/image';
 
 export function Slideshow({
   id,
@@ -71,9 +72,16 @@ export function Slideshow({
                 backgroundImage: `url(${mobileImage})`,
               }}
             >
-              <img className="Slideshow__Image Image--lazyLoad" src={mobileImage} alt="" />
+              <Image 
+                className="Slideshow__Image Image--lazyLoad" 
+                src={mobileImage} 
+                alt="" 
+                fill 
+                style={{ objectFit: 'cover' }}
+                priority={idx === 0}
+              />
               <noscript>
-                <img className="Slideshow__Image" src={mobileImage} alt="" />
+                <Image className="Slideshow__Image" src={mobileImage} alt="" fill style={{ objectFit: 'cover' }} />
               </noscript>
             </div>
           ) : null}
@@ -88,9 +96,16 @@ export function Slideshow({
                 backgroundImage: `url(${image})`,
               }}
             >
-              <img className="Slideshow__Image Image--lazyLoad hide-no-js" src={image} alt="" />
+              <Image 
+                className="Slideshow__Image Image--lazyLoad hide-no-js" 
+                src={image} 
+                alt="" 
+                fill 
+                style={{ objectFit: 'cover' }}
+                priority={idx === 0}
+              />
               <noscript>
-                <img className="Slideshow__Image" src={image} alt="" />
+                <Image className="Slideshow__Image" src={image} alt="" fill style={{ objectFit: 'cover' }} />
               </noscript>
             </div>
           ) : (

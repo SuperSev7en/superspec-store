@@ -16,17 +16,26 @@
     "mobile:typecheck": "npm run typecheck --prefix apps/admin-mobile"
   },
   "dependencies": {
+    "@heroui/react": "^3.0.3",
+    "@heroui/styles": "^3.0.3",
+    "@stripe/react-stripe-js": "^6.3.0",
     "@stripe/stripe-js": "^9.0.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.101.1",
+    "@types/bcryptjs": "^2.4.6",
     "@vercel/analytics": "^2.0.1",
+    "bcryptjs": "^3.0.3",
     "csv-parse": "^6.2.1",
+    "jose": "^6.2.3",
     "lucide-react": "^1.7.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^3.8.1",
-    "stripe": "^22.0.0"
+    "resend": "^6.12.2",
+    "sonner": "^2.0.7",
+    "stripe": "^22.0.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
