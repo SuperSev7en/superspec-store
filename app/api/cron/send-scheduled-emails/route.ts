@@ -10,7 +10,7 @@ import { Resend } from 'resend';
  */
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const BASE_URL = process.env.NEXT_PUBLIC_URL || 'https://superspec.store';
+const BASE_URL = process.env.NEXT_PUBLIC_URL || 'https://superspec.studio';
 
 const TEMPLATES: Record<string, { subject: string; html: (email: string) => string }> = {
   welcome_day2: {
@@ -128,7 +128,7 @@ export async function GET(req: Request) {
 
     try {
       await resend.emails.send({
-        from: 'SUPER Spec <hello@superspec.store>',
+        from: 'SUPER Spec <hello@superspec.studio>',
         to: scheduled.to_email,
         subject: scheduled.subject || template.subject,
         html: template.html(scheduled.to_email),

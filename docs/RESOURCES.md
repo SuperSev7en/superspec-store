@@ -1,40 +1,38 @@
-# Research & resources
+# SUPER Spec. — Resources
 
-Curated links for maintaining and extending this project.
+## Core Stack Docs
 
-## Next.js
+| Tool | Link |
+|------|------|
+| Next.js 15 App Router | https://nextjs.org/docs |
+| Supabase + Next.js | https://supabase.com/docs/guides/getting-started/quickstarts/nextjs |
+| Stripe PaymentElement | https://stripe.com/docs/payments/payment-element |
+| Resend Email API | https://resend.com/docs |
+| Vercel Deployment | https://vercel.com/docs/frameworks/nextjs |
 
-- [Next.js Documentation](https://nextjs.org/docs) — App Router, `metadata`, Route Handlers
-- [Deployment on Vercel](https://vercel.com/docs/frameworks/nextjs)
+## Design System
 
-## Shopify (reference — original theme)
+The storefront uses the **Prestige** Shopify theme CSS as a base (`/public/assets/theme.css`).
+Custom overrides live in `app/globals.css` and `public/assets/fixes.css`.
 
-- [Shopify Theme Architecture](https://shopify.dev/docs/storefronts/themes/architecture)
-- [Liquid reference](https://shopify.dev/docs/api/liquid)
-- [Prestige theme vendor (Maestrooo)](https://support.maestrooo.com/) — support articles for the exported theme
+CSS variable reference: look for `:root` and `[data-theme]` blocks in `theme.css`.
 
-## Images & catalog
+Key classes used throughout:
+- `Button Button--primary` / `Button--secondary` / `Button--full`
+- `Heading u-h1` through `u-h6`
+- `Text--subdued`
+- `Form__Input` / `Form__Label`
+- `Container` (max-width wrapper)
 
-- CSV columns match Shopify product export format (`Image Src`, `Handle`, etc.)
-- Local mapping: `public/assets/product-images/manifest.json` keys = full CDN URLs from CSV
+## Image System
 
-## Vercel
+Product images are stored in Supabase Storage (bucket: `product-media`).
+Local legacy images: `public/assets/product-images/` with `manifest.json` mapping CDN URLs → local filenames.
 
-- [Vercel CLI](https://vercel.com/docs/cli)
-- [Environment variables](https://vercel.com/docs/projects/environment-variables)
+The `storagePublicUrl()` function in `lib/catalog/supabaseCatalog.ts` builds public URLs from storage paths.
 
-## Supabase
+## Admin Mobile App
 
-- [Supabase + Next.js](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs)
-- Used for auth in this project (`@supabase/ssr`)
-
-## Admin mobile (Expo) — see `docs/ADMIN_MOBILE_PLAN.md`
-
-- [Expo documentation](https://docs.expo.dev/) — including [Expo Go vs development builds](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Supabase + Expo (tutorial)](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native)
-- [Supabase Realtime](https://supabase.com/docs/guides/realtime) — optional live collaboration
-- [Shopify Admin API](https://shopify.dev/docs/api/admin-rest) — only if re-integrating Shopify backend
-
-## Design parity
-
-- [Shopify Polaris](https://polaris.shopify.com/) — admin UX patterns for web + mobile admin shells
+The Expo React Native admin app lives in `apps/admin-mobile/`.
+See `apps/admin-mobile/README.md` for setup and build instructions.
+Uses Supabase Realtime for live order notifications.

@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     }
   } else if (event.type === 'payment_intent.succeeded') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
-    console.log('[stripe webhook] payment_intent.succeeded', paymentIntent.id);
+
     // order confirmation is handled in /api/checkout/confirm-order client-side,
     // but in a fully robust system we'd confirm here as a fallback or source-of-truth.
   } else if (event.type === 'payment_intent.payment_failed') {
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     // Log failure
   } else if (event.type === 'charge.refunded') {
     const charge = event.data.object as Stripe.Charge;
-    console.log('[stripe webhook] charge.refunded', charge.payment_intent);
+
     
     // Attempt to update order status in DB
     try {

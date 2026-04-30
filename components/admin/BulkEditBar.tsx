@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export function BulkEditBar({
   selectedCount,
@@ -8,12 +8,15 @@ export function BulkEditBar({
   onClear,
 }: {
   selectedCount: number;
-  onApply: (patch: { status?: 'draft' | 'active' | 'archived'; published?: boolean }) => Promise<void>;
+  onApply: (patch: {
+    status?: "draft" | "active" | "archived";
+    published?: boolean;
+  }) => Promise<void>;
   onClear: () => void;
 }) {
   const [busy, setBusy] = useState(false);
 
-  async function applyStatus(status: 'draft' | 'active' | 'archived') {
+  async function applyStatus(status: "draft" | "active" | "archived") {
     setBusy(true);
     try {
       await onApply({ status });
@@ -45,7 +48,7 @@ export function BulkEditBar({
             type="button"
             disabled={busy}
             className="px-3 py-2 text-sm rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60"
-            onClick={() => applyStatus('active')}
+            onClick={() => applyStatus("active")}
           >
             Set Active
           </button>
@@ -53,7 +56,7 @@ export function BulkEditBar({
             type="button"
             disabled={busy}
             className="px-3 py-2 text-sm rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60"
-            onClick={() => applyStatus('draft')}
+            onClick={() => applyStatus("draft")}
           >
             Set Draft
           </button>
@@ -85,4 +88,3 @@ export function BulkEditBar({
     </div>
   );
 }
-

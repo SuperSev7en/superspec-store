@@ -43,19 +43,19 @@ export async function POST(req: Request) {
     try {
       if (process.env.RESEND_API_KEY) {
         await resend.emails.send({
-          from: 'SUPER Spec <orders@superspec.store>',
+          from: 'SUPER Spec <orders@superspec.studio>',
           to: email,
           subject: `Order Confirmation - ${orderNumber}`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="text-transform: uppercase; letter-spacing: 2px;">SUPER Spec</h1>
+              <h1 style="text-transform: uppercase; letter-spacing: 2px;">SUPER Spec.</h1>
               <h2>Thank you for your order!</h2>
               <p>Your order <strong>${orderNumber}</strong> has been confirmed.</p>
               <p>Total: $${total.toFixed(2)}</p>
               <h3>Shipping to:</h3>
               <p>${address.name}<br>${address.line1}<br>${address.city}, ${address.state} ${address.zip}</p>
               <br>
-              <a href="https://superspec.store/order/${orderNumber}/success" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none;">View Order</a>
+              <a href="https://superspec.studio/order/${orderNumber}/success" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none;">View Order</a>
             </div>
           `,
         });

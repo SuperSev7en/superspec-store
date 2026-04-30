@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export function FulfillmentForm({ orderId }: { orderId: string }) {
-  const [carrier, setCarrier] = useState('');
-  const [tracking, setTracking] = useState('');
+  const [carrier, setCarrier] = useState("");
+  const [tracking, setTracking] = useState("");
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState('');
+  const [msg, setMsg] = useState("");
 
   async function submit() {
     setBusy(true);
-    setMsg('');
+    setMsg("");
     try {
       const res = await fetch(`/api/admin/orders/${orderId}/fulfill`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ carrier, tracking_number: tracking }),
       });
       const json = (await res.json()) as any;
-      if (!res.ok) throw new Error(json?.error ?? 'Fulfillment failed');
-      setMsg('Marked fulfilled.');
+      if (!res.ok) throw new Error(json?.error ?? "Fulfillment failed");
+      setMsg("Marked fulfilled.");
       window.location.reload();
     } catch (e: any) {
-      setMsg(e?.message ?? 'Fulfillment failed');
+      setMsg(e?.message ?? "Fulfillment failed");
     } finally {
       setBusy(false);
     }
@@ -33,12 +33,26 @@ export function FulfillmentForm({ orderId }: { orderId: string }) {
       <h2 className="text-lg font-semibold text-gray-900">Fulfillment</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Carrier</label>
-          <input value={carrier} onChange={(e) => setCarrier(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="USPS / UPS / DHL" />
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Carrier
+          </label>
+          <input
+            value={carrier}
+            onChange={(e) => setCarrier(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="USPS / UPS / DHL"
+          />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tracking number</label>
-          <input value={tracking} onChange={(e) => setTracking(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="Tracking #" />
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tracking number
+          </label>
+          <input
+            value={tracking}
+            onChange={(e) => setTracking(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md"
+            placeholder="Tracking #"
+          />
         </div>
       </div>
       <button
@@ -47,10 +61,9 @@ export function FulfillmentForm({ orderId }: { orderId: string }) {
         onClick={submit}
         className="inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
       >
-        {busy ? 'Saving…' : 'Mark fulfilled'}
+        {busy ? "Saving…" : "Mark fulfilled"}
       </button>
       {msg ? <div className="text-sm text-gray-700">{msg}</div> : null}
     </div>
   );
 }
-

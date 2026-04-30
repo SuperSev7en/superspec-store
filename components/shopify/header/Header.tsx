@@ -1,17 +1,17 @@
-import type { ThemeSettings } from '@/lib/shopify/themeSettings';
-import { Icon } from '@/components/shopify/icons/Icon';
-import Image from 'next/image';
-import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
-import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
-import { HeaderCartLink } from '@/components/store/HeaderCartLink';
-import { HeaderWishlistLink } from '@/components/store/HeaderWishlistLink';
-import { HeaderSidebarToggle } from '@/components/store/HeaderSidebarToggle';
+import type { ThemeSettings } from "@/lib/shopify/themeSettings";
+import { Icon } from "@/components/shopify/icons/Icon";
+import Image from "next/image";
+import { resolveShopifyAssetUrl } from "@/lib/shopify/assetUrls";
+import { MAIN_NAV_LINKS } from "@/lib/siteNavigation";
+import { HeaderCartLink } from "@/components/store/HeaderCartLink";
+import { HeaderWishlistLink } from "@/components/store/HeaderWishlistLink";
+import { HeaderSidebarToggle } from "@/components/store/HeaderSidebarToggle";
 type MenuLink = { title: string; url: string; active?: boolean };
 
 export function Header({
   settings,
   sectionSettings,
-  shopName = 'SUPER Spec',
+  shopName = "SUPER Spec",
   menu = [...MAIN_NAV_LINKS],
 }: {
   settings: ThemeSettings;
@@ -20,8 +20,11 @@ export function Header({
   menu?: MenuLink[];
 }) {
   const useStickyHeader = Boolean(sectionSettings.use_sticky_header ?? true);
-  const navigationStyle = String(sectionSettings.navigation_style ?? 'inline');
-  const logo = typeof sectionSettings.logo === 'string' ? resolveShopifyAssetUrl(sectionSettings.logo) : null;
+  const navigationStyle = String(sectionSettings.navigation_style ?? "inline");
+  const logo =
+    typeof sectionSettings.logo === "string"
+      ? resolveShopifyAssetUrl(sectionSettings.logo)
+      : null;
   const logoMaxWidth = Number(sectionSettings.logo_max_width ?? 140);
 
   return (
@@ -29,7 +32,12 @@ export function Header({
       <div id="Search" className="Search" aria-hidden="true">
         <div className="Search__Inner">
           <div className="Search__SearchBar">
-            <form action="/search" name="GET" role="search" className="Search__Form">
+            <form
+              action="/search"
+              name="GET"
+              role="search"
+              className="Search__Form"
+            >
               <div className="Search__InputIconWrapper">
                 <span className="hidden-tablet-and-up">
                   <Icon icon="search" />
@@ -53,13 +61,17 @@ export function Header({
               <input type="hidden" name="type" value="product" />
             </form>
 
-            <button className="Search__Close Link Link--primary" data-action="close-search" aria-label="Close search">
+            <button
+              className="Search__Close Link Link--primary"
+              data-action="close-search"
+              aria-label="Close search"
+            >
               <Icon icon="close" />
             </button>
           </div>
 
           <div className="Search__Results" aria-hidden="true">
-            {settings.search_mode !== 'product' ? (
+            {settings.search_mode !== "product" ? (
               <div className="PageLayout PageLayout--breakLap">
                 <div className="PageLayout__Section"></div>
                 <div className="PageLayout__Section PageLayout__Section--secondary"></div>
@@ -84,17 +96,17 @@ export function Header({
           <div className="Header__FlexItem Header__FlexItem--logo">
             <HeaderSidebarToggle />
           </div>
-          
+
           <div className="Header__LogoContainer">
             <a href="/" className="Header__Logo">
               {logo ? (
-                <Image 
-                  className="Header__LogoImage" 
-                  src={logo} 
-                  alt={shopName} 
+                <Image
+                  className="Header__LogoImage"
+                  src={logo}
+                  alt={shopName}
                   width={logoMaxWidth}
                   height={logoMaxWidth / 2} // Estimate aspect ratio
-                  style={{ maxWidth: `${logoMaxWidth}px`, height: 'auto' }} 
+                  style={{ maxWidth: `${logoMaxWidth}px`, height: "auto" }}
                   priority
                 />
               ) : (
@@ -108,7 +120,7 @@ export function Header({
               {menu.map((link) => (
                 <li
                   key={`${link.url}-${link.title}`}
-                  className={`HorizontalList__Item ${link.active ? 'is-active' : ''}`.trim()}
+                  className={`HorizontalList__Item ${link.active ? "is-active" : ""}`.trim()}
                 >
                   <a href={link.url} className="Heading u-h6">
                     {link.title}
@@ -119,7 +131,11 @@ export function Header({
           </nav>
 
           <div className="Header__SecondaryNav">
-            <a href="/account" className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable" aria-label="Account">
+            <a
+              href="/account"
+              className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable"
+              aria-label="Account"
+            >
               <Icon icon="account" />
             </a>
 
@@ -148,4 +164,3 @@ export function Header({
     </>
   );
 }
-

@@ -1,7 +1,10 @@
-import { loadCatalog } from '@/lib/catalog/catalog';
-import { loadCatalogFromSupabase } from '@/lib/catalog/supabaseCatalog';
-import { stripHtml } from '@/lib/catalog/htmlUtils';
-import { ProductCatalogClient, type CatalogRowProduct } from '@/components/store/ProductCatalogClient';
+import { loadCatalog } from "@/lib/catalog/catalog";
+import { loadCatalogFromSupabase } from "@/lib/catalog/supabaseCatalog";
+import { stripHtml } from "@/lib/catalog/htmlUtils";
+import {
+  ProductCatalogClient,
+  type CatalogRowProduct,
+} from "@/components/store/ProductCatalogClient";
 
 export const revalidate = 0;
 

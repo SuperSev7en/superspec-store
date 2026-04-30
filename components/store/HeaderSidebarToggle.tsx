@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Icon } from '@/components/shopify/icons/Icon';
-import { SidebarMenu } from '@/components/shopify/header/SidebarMenu';
-import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
+import { useState } from "react";
+import { Icon } from "@/components/shopify/icons/Icon";
+import { SidebarMenu } from "@/components/shopify/header/SidebarMenu";
+import { MAIN_NAV_LINKS } from "@/lib/siteNavigation";
 
 export function HeaderSidebarToggle() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,7 +24,11 @@ export function HeaderSidebarToggle() {
         </span>
       </button>
 
-      <SidebarMenu isOpen={isOpen} onClose={() => setIsOpen(false)} menu={MAIN_NAV_LINKS} />
+      <SidebarMenu
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        menu={MAIN_NAV_LINKS}
+      />
     </>
   );
 }

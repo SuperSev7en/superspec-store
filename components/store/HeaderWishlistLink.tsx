@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Icon } from '@/components/shopify/icons/Icon';
-import { readWishlist, WISHLIST_UPDATED_EVENT } from '@/components/store/wishlist';
+import { useEffect, useState } from "react";
+import { Icon } from "@/components/shopify/icons/Icon";
+import {
+  readWishlist,
+  WISHLIST_UPDATED_EVENT,
+} from "@/components/store/wishlist";
 
 export function HeaderWishlistLink() {
   const [count, setCount] = useState(0);
@@ -22,17 +25,13 @@ export function HeaderWishlistLink() {
     <a
       href="/account/wishlist"
       className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable Header__Icon--wishlist"
-      aria-label={`Open wishlist${count > 0 ? `, ${count} items` : ''}`}
-      style={{ position: 'relative' }}
+      aria-label={`Open wishlist${count > 0 ? `, ${count} items` : ""}`}
+      style={{ position: "relative" }}
     >
       <Icon icon="heart" />
       {count > 0 ? (
-        <span 
-          className="Header__CartBadge"
-          style={{ right: -6 }}
-          aria-hidden
-        >
-          {count > 99 ? '99+' : count}
+        <span className="Header__CartBadge" style={{ right: -6 }} aria-hidden>
+          {count > 99 ? "99+" : count}
         </span>
       ) : null}
     </a>

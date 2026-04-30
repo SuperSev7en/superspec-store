@@ -1,26 +1,31 @@
-import { getHomePageSectionOrder, getThemeSections } from '@/lib/shopify/themeConfig';
-import { CollectionList } from '@/components/shopify/sections/CollectionList';
-import { Slideshow } from '@/components/shopify/sections/Slideshow';
-import { FeaturedCollections } from '@/components/shopify/sections/FeaturedCollections';
-import { FeaturedProduct } from '@/components/shopify/sections/FeaturedProduct';
-import { Timeline } from '@/components/shopify/sections/Timeline';
-import { BlogPosts } from '@/components/shopify/sections/BlogPosts';
-import { ShopTheLook } from '@/components/shopify/sections/ShopTheLook';
-import { Marquee } from '@/components/shopify/sections/Marquee';
-import { Newsletter } from '@/components/shopify/sections/Newsletter';
+import {
+  getHomePageSectionOrder,
+  getThemeSections,
+} from "@/lib/shopify/themeConfig";
+import { CollectionList } from "@/components/shopify/sections/CollectionList";
+import { Slideshow } from "@/components/shopify/sections/Slideshow";
+import { FeaturedCollections } from "@/components/shopify/sections/FeaturedCollections";
+import { FeaturedProduct } from "@/components/shopify/sections/FeaturedProduct";
+import { Timeline } from "@/components/shopify/sections/Timeline";
+import { BlogPosts } from "@/components/shopify/sections/BlogPosts";
+import { ShopTheLook } from "@/components/shopify/sections/ShopTheLook";
+import { Marquee } from "@/components/shopify/sections/Marquee";
+import { Newsletter } from "@/components/shopify/sections/Newsletter";
 
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'SUPER Spec - Home',
-    description: 'Welcome to SUPER Spec. Shop apparel, prints, and engineered goods.',
+    title: "SUPER Spec. - Home",
+    description:
+      "Welcome to SUPER Spec. Shop apparel, prints, and engineered goods.",
     openGraph: {
-      title: 'SUPER Spec - Home',
-      description: 'Welcome to SUPER Spec. Shop apparel, prints, and engineered goods.',
-      type: 'website',
+      title: "SUPER Spec. - Home",
+      description:
+        "Welcome to SUPER Spec. Shop apparel, prints, and engineered goods.",
+      type: "website",
     },
   };
 }
@@ -28,7 +33,10 @@ type SectionData = {
   type?: string;
   disabled?: boolean;
   settings?: Record<string, unknown>;
-  blocks?: Record<string, { type?: string; settings?: Record<string, unknown> }>;
+  blocks?: Record<
+    string,
+    { type?: string; settings?: Record<string, unknown> }
+  >;
   block_order?: string[];
 };
 
@@ -41,12 +49,19 @@ async function renderSection(key: string, section: SectionData | undefined) {
   const blocks = section.blocks;
   const blockOrder = section.block_order;
 
-  if (type === 'slideshow') {
+  if (type === "slideshow") {
     if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
-    return <Slideshow id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+    return (
+      <Slideshow
+        id={key}
+        settings={settings}
+        blocks={blocks}
+        blockOrder={blockOrder}
+      />
+    );
   }
 
-  if (type === 'collection-list') {
+  if (type === "collection-list") {
     if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
     return (
       <CollectionList
@@ -59,39 +74,62 @@ async function renderSection(key: string, section: SectionData | undefined) {
     );
   }
 
-  if (type === 'featured-collections') {
+  if (type === "featured-collections") {
     if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
-    return <FeaturedCollections id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+    return (
+      <FeaturedCollections
+        id={key}
+        settings={settings}
+        blocks={blocks}
+        blockOrder={blockOrder}
+      />
+    );
   }
 
-  if (type === 'featured-product') {
+  if (type === "featured-product") {
     if (!settings) return null;
     return <FeaturedProduct id={key} settings={settings} />;
   }
 
-  if (type === 'timeline') {
+  if (type === "timeline") {
     if (!blocks || !Array.isArray(blockOrder)) return null;
     const textColor =
-      typeof settings?.text_color === 'string' ? settings.text_color : '#ffffff';
-    return <Timeline id={key} textColor={textColor} blocks={blocks} blockOrder={blockOrder} />;
+      typeof settings?.text_color === "string"
+        ? settings.text_color
+        : "#ffffff";
+    return (
+      <Timeline
+        id={key}
+        textColor={textColor}
+        blocks={blocks}
+        blockOrder={blockOrder}
+      />
+    );
   }
 
-  if (type === 'blog-posts') {
+  if (type === "blog-posts") {
     if (!settings) return null;
     return <BlogPosts id={key} settings={settings} />;
   }
 
-  if (type === 'shop-the-look') {
+  if (type === "shop-the-look") {
     if (!settings || !blocks || !Array.isArray(blockOrder)) return null;
-    return <ShopTheLook id={key} settings={settings} blocks={blocks} blockOrder={blockOrder} />;
+    return (
+      <ShopTheLook
+        id={key}
+        settings={settings}
+        blocks={blocks}
+        blockOrder={blockOrder}
+      />
+    );
   }
 
-  if (type === 'marquee') {
+  if (type === "marquee") {
     if (!settings) return null;
     return <Marquee id={key} settings={settings} />;
   }
 
-  if (type === 'newsletter') {
+  if (type === "newsletter") {
     if (!settings) return null;
     return <Newsletter id={key} settings={settings} />;
   }

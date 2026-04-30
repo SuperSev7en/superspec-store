@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
       if (process.env.RESEND_API_KEY) {
         await resend.emails.send({
-          from: 'SUPER Spec <noreply@superspec.store>',
+          from: 'SUPER Spec <noreply@superspec.studio>',
           to: user.email,
           subject: 'Reset your SUPER Spec password',
           html: `

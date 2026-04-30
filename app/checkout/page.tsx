@@ -1,16 +1,31 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { readCart, CartLine } from '@/components/store/cart';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { toast } from 'sonner';
-import { TrustBadges } from '@/components/store/TrustBadges';
+import { useEffect, useState } from "react";
+import { readCart, CartLine } from "@/components/store/cart";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+  ExpressCheckoutElement,
+} from "@stripe/react-stripe-js";
+import { toast } from "sonner";
+import { TrustBadges } from "@/components/store/TrustBadges";
 
-// Initialize Stripe outside of component
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+);
 
-function CheckoutForm({ clientSecret, onSuccess, onBack }: { clientSecret: string; onSuccess: (id: string) => void; onBack: () => void }) {
+function CheckoutForm({
+  clientSecret,
+  onSuccess,
+  onBack,
+}: {
+  clientSecret: string;
+  onSuccess: (id: string) => void;
+  onBack: () => void;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -22,16 +37,16 @@ function CheckoutForm({ clientSecret, onSuccess, onBack }: { clientSecret: strin
     setLoading(true);
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
-      redirect: 'if_required', // Avoid automatic redirect so we can hit our API
+      redirect: "if_required",
     });
 
     if (error) {
-      toast.error(error.message || 'Payment failed');
+      toast.error(error.message || "Payment failed");
       setLoading(false);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
       onSuccess(paymentIntent.id);
     } else {
-      toast.error('Unexpected state');
+      toast.error("Unexpected state");
       setLoading(false);
     }
   };
@@ -39,14 +54,30 @@ function CheckoutForm({ clientSecret, onSuccess, onBack }: { clientSecret: strin
   return (
     <form onSubmit={handleSubmit} style={{ marginTop: 20 }}>
       <PaymentElement />
-      <div style={{ marginTop: 20, display: 'flex', gap: 15, alignItems: 'center' }}>
-        <input type="checkbox" id="tos" required />
-        <label htmlFor="tos" style={{ fontSize: 13 }}>I agree to the <a href="/policies/terms" className="Link Link--underline">Terms of Service</a></label>
+      <div style={{ marginTop: 20 }}>
+        <p style={{ fontSize: 13, color: "var(--text-light-color)" }}>
+          By placing your order you agree to our{" "}
+          <a href="/policies/terms" className="Link Link--underline">
+            Terms of Service
+          </a>
+        </p>
       </div>
-      <div style={{ marginTop: 30, display: 'flex', gap: 20 }}>
-        <button type="button" className="Button Button--secondary" onClick={onBack} disabled={loading}>Back</button>
-        <button type="submit" className="Button Button--primary" style={{ flex: 1 }} disabled={!stripe || loading}>
-          {loading ? 'Processing...' : 'Place Order'}
+      <div style={{ marginTop: 30, display: "flex", gap: 20 }}>
+        <button
+          type="button"
+          className="Button Button--secondary"
+          onClick={onBack}
+          disabled={loading}
+        >
+          Back to Shipping
+        </button>
+        <button
+          type="submit"
+          className="Button Button--primary"
+          style={{ flex: 1, padding: "16px 0", fontSize: 16 }}
+          disabled={!stripe || loading}
+        >
+          {loading ? "Processing..." : "Place Order"}
         </button>
       </div>
     </form>
@@ -54,48 +85,83 @@ function CheckoutForm({ clientSecret, onSuccess, onBack }: { clientSecret: strin
 }
 
 export default function CheckoutFlow() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2); // Start at Contact (Step 2) since Step 1 is Express
   const [cart, setCart] = useState<CartLine[]>([]);
-  const [clientSecret, setClientSecret] = useState('');
-  
+  const [clientSecret, setClientSecret] = useState("");
+
   // Form State
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState({ name: '', line1: '', line2: '', city: '', state: '', zip: '', country: 'US' });
-  const [discountCode, setDiscountCode] = useState('');
+  const [email, setEmail] = useState("");
+  const [saveInfo, setSaveInfo] = useState(false);
+
+  const [address, setAddress] = useState({
+    firstName: "",
+    lastName: "",
+    line1: "",
+    line2: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "US",
+    phone: "",
+  });
+
+  const [shippingMethod, setShippingMethod] = useState("standard");
+  const [discountCode, setDiscountCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
 
   useEffect(() => {
     const c = readCart();
     if (c.length === 0) {
-      window.location.href = '/cart';
+      window.location.href = "/cart";
     } else {
       setCart(c);
     }
   }, []);
 
-  const subtotal = cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
-  const shipping = subtotal > 75 ? 0 : 5.99;
-  const total = Math.max(0, subtotal - discountAmount) + shipping;
+  const subtotal = cart.reduce(
+    (sum, item) => sum + (item.price || 0) * item.quantity,
+    0,
+  );
+  const isFreeStandard = subtotal > 75;
+
+  let shippingCost = 0;
+  if (shippingMethod === "standard") {
+    shippingCost = isFreeStandard ? 0 : 5.99;
+  } else if (shippingMethod === "express") {
+    shippingCost = 14.99;
+  }
+
+  const total = Math.max(0, subtotal - discountAmount) + shippingCost;
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(2);
+    setStep(3);
   };
 
   const handleShippingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('/api/checkout/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cart, email, address, discountCode }),
+      const res = await fetch("/api/checkout/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cart,
+          email,
+          address: {
+            name: `${address.firstName} ${address.lastName}`,
+            ...address,
+          },
+          discountCode,
+          shippingCost,
+        }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to initialize payment');
-      
+      if (!res.ok)
+        throw new Error(data.error || "Failed to initialize payment");
+
       setClientSecret(data.clientSecret);
       setDiscountAmount(data.discountAmount || 0);
-      setStep(3);
+      setStep(4);
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -103,14 +169,23 @@ export default function CheckoutFlow() {
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
     try {
-      const res = await fetch('/api/checkout/confirm-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ paymentIntentId, cart, email, address, total }),
+      const res = await fetch("/api/checkout/confirm-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentIntentId,
+          cart,
+          email,
+          address: {
+            name: `${address.firstName} ${address.lastName}`,
+            ...address,
+          },
+          total,
+        }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to confirm order');
-      
+      if (!res.ok) throw new Error(data.error || "Failed to confirm order");
+
       window.location.href = `/checkout/success?orderNumber=${data.orderNumber}`;
     } catch (err: any) {
       toast.error(err.message);
@@ -120,126 +195,697 @@ export default function CheckoutFlow() {
   if (cart.length === 0) return null;
 
   return (
-    <div className="Container" style={{ padding: '40px 20px', display: 'flex', gap: 60, flexWrap: 'wrap' }}>
+    <div
+      className="Container"
+      style={{
+        padding: "40px 20px",
+        display: "flex",
+        gap: 60,
+        flexWrap: "wrap",
+        maxWidth: 1200,
+        margin: "0 auto",
+      }}
+    >
       {/* Left Column: Flow */}
-      <div style={{ flex: '1 1 500px' }}>
-        <h1 className="Heading u-h2" style={{ marginBottom: 40 }}>Checkout</h1>
+      <div style={{ flex: "1 1 550px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 40,
+          }}
+        >
+          <h1 className="Heading u-h2" style={{ margin: 0 }}>
+            SUPER Spec.
+          </h1>
+        </div>
 
-        {/* Step 1: Contact */}
-        <div style={{ marginBottom: 30, opacity: step === 1 ? 1 : 0.5 }}>
-          <h2 className="Heading u-h4" style={{ marginBottom: 20 }}>1. Contact</h2>
-          {step === 1 ? (
+        {/* Step 1: Express Options */}
+        <div style={{ marginBottom: 40 }}>
+          <p
+            style={{ textAlign: "center", fontSize: 13, marginBottom: 15 }}
+            className="Text--subdued"
+          >
+            Express Checkout
+          </p>
+          <Elements
+            stripe={stripePromise}
+            options={{
+              mode: "payment",
+              amount: Math.round(total * 100),
+              currency: "usd",
+            }}
+          >
+            <ExpressCheckoutElement
+              onConfirm={() => {
+                /* Handled automatically by Stripe */
+              }}
+            />
+          </Elements>
+
+          <div
+            style={{ display: "flex", alignItems: "center", margin: "30px 0" }}
+          >
+            <div
+              style={{ flex: 1, height: 1, background: "var(--border-color)" }}
+            />
+            <span
+              style={{ padding: "0 15px", fontSize: 13 }}
+              className="Text--subdued"
+            >
+              OR CONTINUE BELOW
+            </span>
+            <div
+              style={{ flex: 1, height: 1, background: "var(--border-color)" }}
+            />
+          </div>
+        </div>
+
+        {/* Step 2: Contact */}
+        <div
+          style={{
+            marginBottom: 30,
+            opacity: step === 2 ? 1 : 0.6,
+            transition: "opacity 0.3s",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 20,
+            }}
+          >
+            <h2 className="Heading u-h4">Contact</h2>
+            {step === 2 && (
+              <p style={{ fontSize: 13, margin: 0 }}>
+                Already have an account?{" "}
+                <a
+                  href="/login"
+                  className="Link Link--underline"
+                  style={{ color: "var(--primary-color)" }}
+                >
+                  Log in
+                </a>
+              </p>
+            )}
+          </div>
+          {step === 2 ? (
             <form onSubmit={handleContactSubmit}>
-              <input type="email" className="Form__Input" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-              <div style={{ marginTop: 15 }}>
-                <input type="checkbox" id="newsletter" />
-                <label htmlFor="newsletter" style={{ marginLeft: 10, fontSize: 13 }}>Subscribe to newsletter</label>
+              <input
+                type="email"
+                className="Form__Input"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <div
+                style={{ marginTop: 15, display: "flex", alignItems: "center" }}
+              >
+                <input
+                  type="checkbox"
+                  id="saveInfo"
+                  checked={saveInfo}
+                  onChange={(e) => setSaveInfo(e.target.checked)}
+                />
+                <label
+                  htmlFor="saveInfo"
+                  style={{ marginLeft: 10, fontSize: 14 }}
+                >
+                  Save my info for faster checkout next time
+                </label>
               </div>
-              <p style={{ marginTop: 15, fontSize: 13 }}>Already have an account? <a href="/account/login" className="Link Link--underline">Log in</a></p>
-              <button type="submit" className="Button Button--primary" style={{ marginTop: 20 }}>Continue to Shipping</button>
+              <button
+                type="submit"
+                className="Button Button--primary"
+                style={{
+                  marginTop: 25,
+                  width: "100%",
+                  padding: "16px 0",
+                  fontSize: 16,
+                }}
+              >
+                Continue to Shipping
+              </button>
             </form>
           ) : (
-            <p className="Text--subdued">{email} <button onClick={() => setStep(1)} className="Link Link--underline" style={{ marginLeft: 10 }}>Edit</button></p>
+            <p
+              className="Text--subdued"
+              style={{
+                border: "1px solid var(--border-color)",
+                padding: 15,
+                borderRadius: 8,
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              {email}{" "}
+              <button
+                onClick={() => setStep(2)}
+                className="Link Link--underline"
+                style={{ color: "var(--primary-color)" }}
+              >
+                Edit
+              </button>
+            </p>
           )}
         </div>
 
-        {/* Step 2: Shipping */}
-        <div style={{ marginBottom: 30, opacity: step === 2 ? 1 : (step > 2 ? 0.5 : 0.3) }}>
-          <h2 className="Heading u-h4" style={{ marginBottom: 20 }}>2. Shipping Address</h2>
-          {step === 2 && (
-            <form onSubmit={handleShippingSubmit} className="Form Form--spacingTight">
-              <input type="text" className="Form__Input" placeholder="Full Name" value={address.name} onChange={e => setAddress({...address, name: e.target.value})} required style={{ marginBottom: 15 }} />
-              <input type="text" className="Form__Input" placeholder="Address Line 1" value={address.line1} onChange={e => setAddress({...address, line1: e.target.value})} required style={{ marginBottom: 15 }} />
-              <input type="text" className="Form__Input" placeholder="Address Line 2 (Optional)" value={address.line2} onChange={e => setAddress({...address, line2: e.target.value})} style={{ marginBottom: 15 }} />
-              <div style={{ display: 'flex', gap: 15, marginBottom: 15 }}>
-                <input type="text" className="Form__Input" placeholder="City" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} required />
-                <input type="text" className="Form__Input" placeholder="State/Province" value={address.state} onChange={e => setAddress({...address, state: e.target.value})} required />
+        {/* Step 3: Shipping */}
+        <div
+          style={{
+            marginBottom: 30,
+            opacity: step === 3 ? 1 : step > 3 ? 0.6 : 0.3,
+            transition: "opacity 0.3s",
+          }}
+        >
+          <h2 className="Heading u-h4" style={{ marginBottom: 20 }}>
+            Shipping Address
+          </h2>
+          {step === 3 && (
+            <form
+              onSubmit={handleShippingSubmit}
+              className="Form Form--spacingTight"
+            >
+              <select
+                className="Form__Input"
+                value={address.country}
+                onChange={(e) =>
+                  setAddress({ ...address, country: e.target.value })
+                }
+                style={{ marginBottom: 15 }}
+              >
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+                <option value="AU">Australia</option>
+              </select>
+
+              <div style={{ display: "flex", gap: 15, marginBottom: 15 }}>
+                <input
+                  type="text"
+                  className="Form__Input"
+                  placeholder="First name"
+                  value={address.firstName}
+                  onChange={(e) =>
+                    setAddress({ ...address, firstName: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="text"
+                  className="Form__Input"
+                  placeholder="Last name"
+                  value={address.lastName}
+                  onChange={(e) =>
+                    setAddress({ ...address, lastName: e.target.value })
+                  }
+                  required
+                />
               </div>
-              <div style={{ display: 'flex', gap: 15, marginBottom: 15 }}>
-                <input type="text" className="Form__Input" placeholder="ZIP/Postal Code" value={address.zip} onChange={e => setAddress({...address, zip: e.target.value})} required />
-                <select className="Form__Input" value={address.country} onChange={e => setAddress({...address, country: e.target.value})}>
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="GB">United Kingdom</option>
+
+              <input
+                type="text"
+                className="Form__Input"
+                placeholder="Address line 1"
+                value={address.line1}
+                onChange={(e) =>
+                  setAddress({ ...address, line1: e.target.value })
+                }
+                required
+                style={{ marginBottom: 15 }}
+              />
+              <input
+                type="text"
+                className="Form__Input"
+                placeholder="Address line 2 (optional)"
+                value={address.line2}
+                onChange={(e) =>
+                  setAddress({ ...address, line2: e.target.value })
+                }
+                style={{ marginBottom: 15 }}
+              />
+
+              <div style={{ display: "flex", gap: 15, marginBottom: 15 }}>
+                <input
+                  type="text"
+                  className="Form__Input"
+                  placeholder="City"
+                  value={address.city}
+                  onChange={(e) =>
+                    setAddress({ ...address, city: e.target.value })
+                  }
+                  required
+                  style={{ flex: 2 }}
+                />
+                <select
+                  className="Form__Input"
+                  value={address.state}
+                  onChange={(e) =>
+                    setAddress({ ...address, state: e.target.value })
+                  }
+                  required
+                  style={{ flex: 1 }}
+                >
+                  <option value="">State</option>
+                  {[
+                    ["AL", "Alabama"],
+                    ["AK", "Alaska"],
+                    ["AZ", "Arizona"],
+                    ["AR", "Arkansas"],
+                    ["CA", "California"],
+                    ["CO", "Colorado"],
+                    ["CT", "Connecticut"],
+                    ["DE", "Delaware"],
+                    ["FL", "Florida"],
+                    ["GA", "Georgia"],
+                    ["HI", "Hawaii"],
+                    ["ID", "Idaho"],
+                    ["IL", "Illinois"],
+                    ["IN", "Indiana"],
+                    ["IA", "Iowa"],
+                    ["KS", "Kansas"],
+                    ["KY", "Kentucky"],
+                    ["LA", "Louisiana"],
+                    ["ME", "Maine"],
+                    ["MD", "Maryland"],
+                    ["MA", "Massachusetts"],
+                    ["MI", "Michigan"],
+                    ["MN", "Minnesota"],
+                    ["MS", "Mississippi"],
+                    ["MO", "Missouri"],
+                    ["MT", "Montana"],
+                    ["NE", "Nebraska"],
+                    ["NV", "Nevada"],
+                    ["NH", "New Hampshire"],
+                    ["NJ", "New Jersey"],
+                    ["NM", "New Mexico"],
+                    ["NY", "New York"],
+                    ["NC", "North Carolina"],
+                    ["ND", "North Dakota"],
+                    ["OH", "Ohio"],
+                    ["OK", "Oklahoma"],
+                    ["OR", "Oregon"],
+                    ["PA", "Pennsylvania"],
+                    ["RI", "Rhode Island"],
+                    ["SC", "South Carolina"],
+                    ["SD", "South Dakota"],
+                    ["TN", "Tennessee"],
+                    ["TX", "Texas"],
+                    ["UT", "Utah"],
+                    ["VT", "Vermont"],
+                    ["VA", "Virginia"],
+                    ["WA", "Washington"],
+                    ["WV", "West Virginia"],
+                    ["WI", "Wisconsin"],
+                    ["WY", "Wyoming"],
+                    ["DC", "Washington D.C."],
+                  ].map(([abbr, name]) => (
+                    <option key={abbr} value={abbr}>
+                      {abbr} — {name}
+                    </option>
+                  ))}
                 </select>
+                <input
+                  type="text"
+                  className="Form__Input"
+                  placeholder="ZIP code"
+                  value={address.zip}
+                  onChange={(e) =>
+                    setAddress({ ...address, zip: e.target.value })
+                  }
+                  required
+                  style={{ flex: 1 }}
+                />
               </div>
-              <div style={{ display: 'flex', gap: 20, marginTop: 20 }}>
-                <button type="button" className="Button Button--secondary" onClick={() => setStep(1)}>Back</button>
-                <button type="submit" className="Button Button--primary" style={{ flex: 1 }}>Continue to Payment</button>
+
+              <input
+                type="tel"
+                className="Form__Input"
+                placeholder="Phone (for shipping updates)"
+                value={address.phone}
+                onChange={(e) =>
+                  setAddress({ ...address, phone: e.target.value })
+                }
+                required
+                style={{ marginBottom: 30 }}
+              />
+
+              <h3 className="Heading u-h5" style={{ marginBottom: 15 }}>
+                Shipping Method
+              </h3>
+              <div
+                style={{
+                  border: "1px solid var(--border-color)",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  marginBottom: 25,
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: 15,
+                    borderBottom: "1px solid var(--border-color)",
+                    cursor: "pointer",
+                    background:
+                      shippingMethod === "standard"
+                        ? "var(--secondary-elements-background)"
+                        : "transparent",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: 15 }}>
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="standard"
+                      checked={shippingMethod === "standard"}
+                      onChange={() => setShippingMethod("standard")}
+                    />
+                    <span>Standard Shipping</span>
+                  </div>
+                  <span className="Price">
+                    {isFreeStandard ? "Free" : "$5.99"}
+                  </span>
+                </label>
+                <label
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: 15,
+                    cursor: "pointer",
+                    background:
+                      shippingMethod === "express"
+                        ? "var(--secondary-elements-background)"
+                        : "transparent",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: 15 }}>
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="express"
+                      checked={shippingMethod === "express"}
+                      onChange={() => setShippingMethod("express")}
+                    />
+                    <span>Express Shipping</span>
+                  </div>
+                  <span className="Price">$14.99</span>
+                </label>
+              </div>
+
+              <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                <button
+                  type="button"
+                  className="Link Link--underline Text--subdued"
+                  onClick={() => setStep(2)}
+                >
+                  Return to Contact
+                </button>
+                <button
+                  type="submit"
+                  className="Button Button--primary"
+                  style={{ flex: 1, padding: "16px 0", fontSize: 16 }}
+                >
+                  Continue to Payment
+                </button>
               </div>
             </form>
           )}
-          {step > 2 && (
-            <p className="Text--subdued">{address.line1}, {address.city}, {address.state} {address.zip} <button onClick={() => setStep(2)} className="Link Link--underline" style={{ marginLeft: 10 }}>Edit</button></p>
+          {step > 3 && (
+            <div
+              style={{
+                border: "1px solid var(--border-color)",
+                padding: 15,
+                borderRadius: 8,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
+                <span className="Text--subdued">Ship to</span>
+                <span>
+                  {address.line1}, {address.city}, {address.state} {address.zip}
+                </span>
+                <button
+                  onClick={() => setStep(3)}
+                  className="Link Link--underline"
+                  style={{ color: "var(--primary-color)" }}
+                >
+                  Edit
+                </button>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  borderTop: "1px solid var(--border-color)",
+                  paddingTop: 10,
+                }}
+              >
+                <span className="Text--subdued">Method</span>
+                <span>
+                  {shippingMethod === "standard"
+                    ? "Standard Shipping"
+                    : "Express Shipping"}
+                </span>
+                <button
+                  onClick={() => setStep(3)}
+                  className="Link Link--underline"
+                  style={{ color: "var(--primary-color)" }}
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Step 3: Payment */}
-        <div style={{ opacity: step === 3 ? 1 : 0.3 }}>
-          <h2 className="Heading u-h4" style={{ marginBottom: 20 }}>3. Payment</h2>
-          {step === 3 && clientSecret && (
-            <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
-              <CheckoutForm clientSecret={clientSecret} onSuccess={handlePaymentSuccess} onBack={() => setStep(2)} />
-            </Elements>
+        {/* Step 4: Payment */}
+        <div
+          style={{ opacity: step === 4 ? 1 : 0.3, transition: "opacity 0.3s" }}
+        >
+          <h2 className="Heading u-h4" style={{ marginBottom: 20 }}>
+            Payment
+          </h2>
+          <p
+            className="Text--subdued"
+            style={{ fontSize: 13, marginBottom: 20 }}
+          >
+            All transactions are secure and encrypted.
+          </p>
+          {step === 4 && clientSecret && (
+            <div
+              style={{
+                background: "var(--secondary-elements-background)",
+                padding: 25,
+                borderRadius: 8,
+              }}
+            >
+              <Elements
+                stripe={stripePromise}
+                options={{ clientSecret, appearance: { theme: "stripe" } }}
+              >
+                <CheckoutForm
+                  clientSecret={clientSecret}
+                  onSuccess={handlePaymentSuccess}
+                  onBack={() => setStep(3)}
+                />
+              </Elements>
+            </div>
           )}
         </div>
       </div>
 
       {/* Right Column: Order Summary */}
-      <div style={{ flex: '1 1 400px', position: 'sticky', top: 40, alignSelf: 'flex-start' }}>
-        <div style={{ background: 'var(--secondary-elements-background)', padding: 30, borderRadius: 8 }}>
-          <h2 className="Heading u-h5" style={{ marginBottom: 20 }}>Order Summary</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 15, marginBottom: 20 }}>
+      <div
+        style={{
+          flex: "1 1 400px",
+          position: "sticky",
+          top: 40,
+          alignSelf: "flex-start",
+        }}
+      >
+        <div
+          style={{
+            background: "var(--secondary-elements-background)",
+            padding: 30,
+            borderRadius: 12,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              marginBottom: 25,
+            }}
+          >
             {cart.map((item, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ position: 'relative' }}>
-                    <div style={{ width: 60, height: 60, background: '#fff', borderRadius: 4, overflow: 'hidden' }}>
-                      {item.image && <img src={item.image.replace('shopify://shop_images/', '/assets/')} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />}
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 15 }}>
+                  <div style={{ position: "relative" }}>
+                    <div
+                      style={{
+                        width: 64,
+                        height: 64,
+                        background: "#fff",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        border: "1px solid var(--border-color)",
+                      }}
+                    >
+                      {item.image && (
+                        <img
+                          src={item.image.replace(
+                            "shopify://shop_images/",
+                            "/assets/",
+                          )}
+                          alt={item.title}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      )}
                     </div>
-                    <span style={{ position: 'absolute', top: -5, right: -5, background: 'var(--text-color)', color: '#fff', width: 20, height: 20, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{item.quantity}</span>
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -8,
+                        right: -8,
+                        background: "var(--text-color)",
+                        color: "#fff",
+                        width: 22,
+                        height: 22,
+                        borderRadius: 11,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 12,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {item.quantity}
+                    </span>
                   </div>
                   <div>
-                    <p className="Heading u-h6" style={{ margin: 0 }}>{item.title}</p>
-                    {item.variantTitle && <p className="Text--subdued" style={{ fontSize: 12, margin: 0 }}>{item.variantTitle}</p>}
+                    <p
+                      className="Heading u-h6"
+                      style={{ margin: 0, fontSize: 14 }}
+                    >
+                      {item.title}
+                    </p>
+                    {item.variantTitle &&
+                      item.variantTitle !== "Default Title" && (
+                        <p
+                          className="Text--subdued"
+                          style={{ fontSize: 12, margin: "4px 0 0" }}
+                        >
+                          {item.variantTitle}
+                        </p>
+                      )}
                   </div>
                 </div>
-                <span className="Price">${((item.price || 0) * item.quantity).toFixed(2)}</span>
+                <span className="Price" style={{ fontWeight: 500 }}>
+                  ${((item.price || 0) * item.quantity).toFixed(2)}
+                </span>
               </div>
             ))}
           </div>
 
-          <div style={{ padding: '20px 0', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', marginBottom: 20 }}>
-            <div style={{ display: 'flex', gap: 10 }}>
-              <input type="text" className="Form__Input" placeholder="Discount code" value={discountCode} onChange={e => setDiscountCode(e.target.value)} disabled={step === 3} />
-              <button className="Button Button--secondary" disabled={step === 3}>Apply</button>
+          <div
+            style={{
+              padding: "20px 0",
+              borderTop: "1px solid var(--border-color)",
+              borderBottom: "1px solid var(--border-color)",
+              marginBottom: 25,
+            }}
+          >
+            <div style={{ display: "flex", gap: 10 }}>
+              <input
+                type="text"
+                className="Form__Input"
+                placeholder="Discount code"
+                value={discountCode}
+                onChange={(e) => setDiscountCode(e.target.value)}
+                disabled={step === 4}
+                style={{ background: "#fff" }}
+              />
+              <button
+                className="Button Button--secondary"
+                disabled={step === 4}
+              >
+                Apply
+              </button>
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span className="Text--subdued">Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span style={{ fontWeight: 500 }}>${subtotal.toFixed(2)}</span>
             </div>
             {discountAmount > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981' }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  color: "var(--primary-color)",
+                }}
+              >
                 <span>Discount</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span style={{ fontWeight: 500 }}>
+                  -${discountAmount.toFixed(2)}
+                </span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span className="Text--subdued">Shipping</span>
-              <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+              <span style={{ fontWeight: 500 }}>
+                {shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}
+              </span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border-color)', fontWeight: 'bold' }}>
-              <span className="Heading u-h5">Total</span>
-              <span className="Heading u-h5">${total.toFixed(2)}</span>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: 15,
+                paddingTop: 15,
+                borderTop: "1px solid var(--border-color)",
+              }}
+            >
+              <span className="Heading u-h4">Total</span>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <span className="Text--subdued" style={{ fontSize: 12 }}>
+                  USD
+                </span>
+                <span className="Heading u-h3">${total.toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>
 
-          {/* Trust Badges */}
+        {/* Trust Badges */}
+        <div style={{ marginTop: 20 }}>
           <TrustBadges />
+        </div>
       </div>
     </div>
   );

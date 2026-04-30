@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   AreaChart,
   Area,
@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
 
 type DataPoint = {
   date: string;
@@ -38,23 +38,34 @@ export function SalesChart({ data }: { data: DataPoint[] }) {
               <stop offset="95%" stopColor="#008060" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e1e3e5" />
-          <XAxis 
-            dataKey="date" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 12, fill: '#616a75' }} 
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke="#e1e3e5"
+          />
+          <XAxis
+            dataKey="date"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 12, fill: "#616a75" }}
             dy={10}
           />
-          <YAxis 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 12, fill: '#616a75' }} 
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 12, fill: "#616a75" }}
             tickFormatter={(value) => `$${value}`}
           />
-          <Tooltip 
-            contentStyle={{ borderRadius: '8px', border: '1px solid #e1e3e5', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-            formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Total Sales']}
+          <Tooltip
+            contentStyle={{
+              borderRadius: "8px",
+              border: "1px solid #e1e3e5",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            }}
+            formatter={(value: any) => [
+              `$${Number(value).toFixed(2)}`,
+              "Total Sales",
+            ]}
           />
           <Area
             type="monotone"

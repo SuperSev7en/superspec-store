@@ -1,10 +1,13 @@
-import type { CSSProperties } from 'react';
-import Image from 'next/image';
-function aspectBoxStyle(maxWidth: string | number, aspectRatio: number): CSSProperties {
-  const w = typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth;
+import type { CSSProperties } from "react";
+import Image from "next/image";
+function aspectBoxStyle(
+  maxWidth: string | number,
+  aspectRatio: number,
+): CSSProperties {
+  const w = typeof maxWidth === "number" ? `${maxWidth}px` : maxWidth;
   return {
     maxWidth: w,
-    ['--aspect-ratio' as string]: aspectRatio,
+    ["--aspect-ratio" as string]: aspectRatio,
   } as CSSProperties;
 }
 
@@ -12,9 +15,9 @@ function aspectBoxStyle(maxWidth: string | number, aspectRatio: number): CSSProp
 export function ProductImageFrame({
   src,
   alt,
-  maxWidth = '800px',
+  maxWidth = "800px",
   aspectRatio = 1,
-  imgClassName = '',
+  imgClassName = "",
 }: {
   src: string;
   alt: string;
@@ -22,17 +25,22 @@ export function ProductImageFrame({
   aspectRatio?: number;
   imgClassName?: string;
 }) {
-  const classes = [imgClassName.trim(), 'Image--lazyLoaded'].filter(Boolean).join(' ');
+  const classes = [imgClassName.trim(), "Image--lazyLoaded"]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className="AspectRatio AspectRatio--withFallback" style={aspectBoxStyle(maxWidth, aspectRatio)}>
+    <div
+      className="AspectRatio AspectRatio--withFallback"
+      style={aspectBoxStyle(maxWidth, aspectRatio)}
+    >
       <Image
         className={classes}
         src={src}
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        style={{ objectFit: 'contain' }}
+        style={{ objectFit: "contain" }}
       />
     </div>
   );

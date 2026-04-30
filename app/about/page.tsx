@@ -1,47 +1,187 @@
-import type { Metadata } from 'next';
-import { StaticPageLayout } from '@/components/store/StaticPageLayout';
+import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'About us',
-  description: 'About SUPER Spec. — love, diversity, and individuality through light and color.',
+  title: "About us | SUPER Spec.",
+  description:
+    "About SUPER Spec. — love, diversity, and individuality through light and color.",
 };
 
 export default function AboutPage() {
   return (
     <div className="Page">
-      <StaticPageLayout title="About us">
-        <p>
-          At SUPER Spec. we are dedicated to celebrating love, diversity, and individuality through the transformative power
-          of light and color. Our mission is to unite a global family of SUPER humans by fostering knowledge,
-          understanding, and appreciation for all aspects of life.
-        </p>
-        <p>Our company comprises three distinct divisions, each catering to unique facets of creativity and innovation:</p>
-        <ol>
-          <li>
-            <strong>SUPER Speck:</strong> This division focuses on clothing and accessories—the small yet significant pieces
-            that define our uniqueness. With a palette inspired by the full spectrum of the rainbow, including pink, we offer
-            a myriad of options to express individuality or coordinate with friends.
-          </li>
-          <li>
-            <strong>SUPER Spectrum:</strong> Dedicated to the arts, SUPER Spectrum aims to expand perceptions beyond the
-            visible spectrum, unveiling the mystical and exploring the unknown.
-          </li>
-          <li>
-            <strong>SUPER Specification:</strong> This division is committed to engineering high-quality products designed to
-            enhance everyday life through thoughtful and innovative solutions.
-          </li>
-        </ol>
-        <p>
-          Under the umbrella of SUPER Spec., we strive to transcend limits by offering durable, high-quality items at fair
-          prices. We believe that every action, no matter how small, has an impact on the world and the universe. Therefore,
-          we are committed to ensuring that our influence is a positive one.
-        </p>
-        <p>
-          Our goal is to build a brand that promotes diversity and individuality while uniting a collective force to make us
-          all SUPER. We are dedicated to supporting artists, engineers, and thinkers whose aspirations align with ours,
-          fostering a new culture of quality and affordability.
-        </p>
-      </StaticPageLayout>
+      {/* 1. Hero */}
+      <section
+        className="AboutHero"
+        style={{
+          background: "#1a1a1a",
+          padding: "100px 20px",
+          textAlign: "center",
+          color: "#ffffff",
+          marginBottom: "60px",
+        }}
+      >
+        <div className="Container">
+          <h1
+            className="Heading u-h1"
+            style={{ fontSize: "3.5rem", letterSpacing: "0.1em" }}
+          >
+            We Are SUPER Spec.
+          </h1>
+        </div>
+      </section>
+
+      <div className="Container">
+        {/* 2. Mission */}
+        <div
+          className="AboutMission"
+          style={{
+            maxWidth: "800px",
+            margin: "0 auto 80px",
+            textAlign: "center",
+            fontSize: "1.2rem",
+            lineHeight: "1.8",
+          }}
+        >
+          <p className="Text--subdued">
+            At SUPER Spec. we are dedicated to celebrating love, diversity, and
+            individuality through the transformative power of light and color.
+            Our mission is to unite a global family of SUPER humans by fostering
+            knowledge, understanding, and appreciation for all aspects of life.
+          </p>
+        </div>
+
+        {/* 3. Division Cards */}
+        <div
+          className="AboutDivisions"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "30px",
+            marginBottom: "80px",
+          }}
+        >
+          <div
+            className="DivisionCard text-backdrop"
+            style={{ padding: "40px", textAlign: "center" }}
+          >
+            <div style={{ fontSize: "2.5rem", marginBottom: "20px" }}>👕</div>
+            <h3 className="Heading u-h4" style={{ marginBottom: "15px" }}>
+              SUPER Speck
+            </h3>
+            <p className="Text--subdued" style={{ fontSize: "0.95rem" }}>
+              Defining uniqueness through clothing and accessories. A vibrant
+              palette inspired by the full spectrum of self-expression.
+            </p>
+          </div>
+
+          <div
+            className="DivisionCard text-backdrop"
+            style={{ padding: "40px", textAlign: "center" }}
+          >
+            <div style={{ fontSize: "2.5rem", marginBottom: "20px" }}>🎨</div>
+            <h3 className="Heading u-h4" style={{ marginBottom: "15px" }}>
+              SUPER Spectrum
+            </h3>
+            <p className="Text--subdued" style={{ fontSize: "0.95rem" }}>
+              Expanding perceptions through the arts. Unveiling the mystical and
+              exploring the unknown beyond the visible spectrum.
+            </p>
+          </div>
+
+          <div
+            className="DivisionCard text-backdrop"
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              position: "relative",
+            }}
+          >
+            <span
+              className="Badge"
+              style={{
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                background: "#363636",
+                color: "#fff",
+                padding: "4px 8px",
+                fontSize: "10px",
+                borderRadius: "4px",
+              }}
+            >
+              COMING SOON
+            </span>
+            <div style={{ fontSize: "2.5rem", marginBottom: "20px" }}>⚙️</div>
+            <h3 className="Heading u-h4" style={{ marginBottom: "15px" }}>
+              SUPER Specification
+            </h3>
+            <p className="Text--subdued" style={{ fontSize: "0.95rem" }}>
+              Precision engineering for everyday life. High-quality products
+              designed with thoughtful and innovative solutions.
+            </p>
+          </div>
+        </div>
+
+        {/* 4. Values */}
+        <div
+          className="AboutValues"
+          style={{
+            borderTop: "1px solid var(--border-color)",
+            paddingTop: "60px",
+            paddingBottom: "60px",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: "40px",
+            }}
+          >
+            <div style={{ flex: "1 1 200px" }}>
+              <h4 className="Heading u-h6" style={{ marginBottom: "10px" }}>
+                Quality Without Compromise
+              </h4>
+              <p className="Text--subdued" style={{ fontSize: "0.85rem" }}>
+                Durable, high-quality items at fair prices.
+              </p>
+            </div>
+            <div style={{ flex: "1 1 200px" }}>
+              <h4 className="Heading u-h6" style={{ marginBottom: "10px" }}>
+                Diversity & Individuality
+              </h4>
+              <p className="Text--subdued" style={{ fontSize: "0.85rem" }}>
+                Promoting a collective force of unique voices.
+              </p>
+            </div>
+            <div style={{ flex: "1 1 200px" }}>
+              <h4 className="Heading u-h6" style={{ marginBottom: "10px" }}>
+                Positive Impact
+              </h4>
+              <p className="Text--subdued" style={{ fontSize: "0.85rem" }}>
+                Ensuring our influence on the universe is a positive one.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 5. CTA */}
+        <div
+          className="AboutCTA"
+          style={{ textAlign: "center", marginBottom: "100px" }}
+        >
+          <Link
+            href="/products"
+            className="Button Button--primary"
+            style={{ padding: "16px 40px" }}
+          >
+            Explore the Spectrum
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

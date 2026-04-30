@@ -13,8 +13,6 @@ type ThemeSettingsData = {
 
 const SETTINGS_DATA_PATH = path.join(
   process.cwd(),
-  'Shopify files',
-  'theme_export__superspec-studio-theme-export-www-superspec-store-superspec-upd__03APR2026-0504pm',
   'config',
   'settings_data.json',
 );

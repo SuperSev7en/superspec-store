@@ -1,8 +1,8 @@
-import type { ThemeSettings } from '@/lib/shopify/themeSettings';
-import { getCssVariables } from '@/lib/shopify/themeUtils';
-import { Header } from '@/components/shopify/header/Header';
-import { Footer } from '@/components/shopify/footer/Footer';
-import { AnnouncementBarGate } from '@/components/shopify/sections/AnnouncementBarGate';
+import type { ThemeSettings } from "@/lib/shopify/themeSettings";
+import { getCssVariables } from "@/lib/shopify/themeUtils";
+import { Header } from "@/components/shopify/header/Header";
+import { Footer } from "@/components/shopify/footer/Footer";
+import { AnnouncementBarGate } from "@/components/shopify/sections/AnnouncementBarGate";
 
 export function ThemeLayout({
   children,
@@ -11,11 +11,19 @@ export function ThemeLayout({
 }: {
   children: React.ReactNode;
   settings: ThemeSettings;
-  sections: Record<string, { type: string; settings?: Record<string, unknown>; blocks?: Record<string, unknown>; block_order?: string[] }>;
+  sections: Record<
+    string,
+    {
+      type: string;
+      settings?: Record<string, unknown>;
+      blocks?: Record<string, unknown>;
+      block_order?: string[];
+    }
+  >;
 }) {
-  const headerSection = sections['header'];
-  const footerSection = sections['footer'];
-  const announcementSection = sections['announcement'];
+  const headerSection = sections["header"];
+  const footerSection = sections["footer"];
+  const announcementSection = sections["announcement"];
 
   return (
     <>
@@ -25,7 +33,9 @@ export function ThemeLayout({
       <span className="LoadingBar"></span>
       <div className="PageOverlay"></div>
 
-      {settings.show_page_transition ? <div className="PageTransition"></div> : null}
+      {settings.show_page_transition ? (
+        <div className="PageTransition"></div>
+      ) : null}
 
       {/* Theme-level CSS variables (from `snippets/css-variables.liquid`) */}
       <style
@@ -33,17 +43,25 @@ export function ThemeLayout({
         dangerouslySetInnerHTML={{
           __html: `:root{${Object.entries(getCssVariables(settings))
             .map(([k, v]) => `${k}:${v};`)
-            .join('')}}`,
+            .join("")}}`,
         }}
       />
 
       <div className="PageContainer">
         {announcementSection?.settings ? (
-          <AnnouncementBarGate id="announcement" settings={announcementSection.settings} />
+          <AnnouncementBarGate
+            id="announcement"
+            settings={announcementSection.settings}
+          />
         ) : null}
 
         {/* TODO: sections: popup, sidebar-menu, cart-drawer */}
-        <Header settings={settings} sectionSettings={(headerSection?.settings ?? {}) as Record<string, unknown>} />
+        <Header
+          settings={settings}
+          sectionSettings={
+            (headerSection?.settings ?? {}) as Record<string, unknown>
+          }
+        />
 
         <main id="main" role="main">
           {children}
@@ -51,10 +69,15 @@ export function ThemeLayout({
 
         <Footer
           settings={settings}
-          section={footerSection as unknown as { settings?: Record<string, unknown>; blocks?: Record<string, unknown>; block_order?: string[] }}
+          section={
+            footerSection as unknown as {
+              settings?: Record<string, unknown>;
+              blocks?: Record<string, unknown>;
+              block_order?: string[];
+            }
+          }
         />
       </div>
     </>
   );
 }
-

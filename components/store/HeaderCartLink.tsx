@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { Icon } from '@/components/shopify/icons/Icon';
-import { CART_UPDATED_EVENT, cartTotalQuantity, readCart } from '@/components/store/cart';
+import { useEffect, useRef, useState } from "react";
+import { Icon } from "@/components/shopify/icons/Icon";
+import {
+  CART_UPDATED_EVENT,
+  cartTotalQuantity,
+  readCart,
+} from "@/components/store/cart";
 
 export function HeaderCartLink({ cartType }: { cartType?: string }) {
   const [count, setCount] = useState(0);
@@ -26,8 +30,12 @@ export function HeaderCartLink({ cartType }: { cartType?: string }) {
 
         // Add flash effect to badge
         if (badgeRef.current) {
-          badgeRef.current.classList.add('superspec-cart-badge-flash');
-          setTimeout(() => badgeRef.current?.classList.remove('superspec-cart-badge-flash'), 600);
+          badgeRef.current.classList.add("superspec-cart-badge-flash");
+          setTimeout(
+            () =>
+              badgeRef.current?.classList.remove("superspec-cart-badge-flash"),
+            600,
+          );
         }
       }
       prev.current = next;
@@ -36,31 +44,31 @@ export function HeaderCartLink({ cartType }: { cartType?: string }) {
     return () => window.removeEventListener(CART_UPDATED_EVENT, onUpdate);
   }, []);
 
-  const drawer = cartType === 'drawer';
+  const drawer = cartType === "drawer";
 
   return (
     <a
       href="/cart"
-      className={`Header__Icon Icon-Wrapper Icon-Wrapper--clickable Header__Icon--cartLink ${drawer ? 'js-drawer-open-cart' : ''}`.trim()}
-      {...(drawer ? { 'aria-controls': 'sidebar-cart' } : {})}
-      data-action={drawer ? 'open-drawer' : undefined}
+      className={`Header__Icon Icon-Wrapper Icon-Wrapper--clickable Header__Icon--cartLink ${drawer ? "js-drawer-open-cart" : ""}`.trim()}
+      {...(drawer ? { "aria-controls": "sidebar-cart" } : {})}
+      data-action={drawer ? "open-drawer" : undefined}
       aria-expanded="false"
-      aria-label={`Open cart${count > 0 ? `, ${count} items` : ''}`}
+      aria-label={`Open cart${count > 0 ? `, ${count} items` : ""}`}
       onClick={(e) => {
         if (drawer) {
           e.preventDefault();
-          window.dispatchEvent(new CustomEvent('superspec:open-cart'));
+          window.dispatchEvent(new CustomEvent("superspec:open-cart"));
         }
       }}
     >
       <Icon icon="cart" />
       {count > 0 ? (
-        <span 
+        <span
           ref={badgeRef}
-          className={`Header__CartBadge ${pop ? 'Header__CartBadge--pop' : ''}`.trim()} 
+          className={`Header__CartBadge ${pop ? "Header__CartBadge--pop" : ""}`.trim()}
           aria-hidden
         >
-          {count > 99 ? '99+' : count}
+          {count > 99 ? "99+" : count}
         </span>
       ) : null}
     </a>

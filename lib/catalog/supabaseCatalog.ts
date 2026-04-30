@@ -137,22 +137,74 @@ function normalizeTag(t: string) {
 export async function getProductsForCollectionHandleFromSupabase(collectionHandle: string, limit: number): Promise<DbProduct[]> {
   const h = collectionHandle.trim().toLowerCase();
   if (!h) return [];
+
+  const supabase = await createClient();
+
+  // First: try direct collection_handle match (most accurate)
+  const { data: direct } = await supabase
+    .from('products')
+    .select(`
+      id, handle, title, description_html, vendor, product_type, product_category, tags, published, seo_title, seo_description,
+      variants:variants(id,title,price,compare_at_price,sku,option1,inventory_quantity),
+      images:product_images(storage_path,alt,position)
+    `)
+    .eq('collection_handle', h)
+    .eq('status', 'active')
+    .eq('published', true)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (direct && direct.length > 0) {
+    return direct.map((p: any) => mapDbRow(p));
+  }
+
+  // Fallback: load all and filter by tags/type heuristics
   const catalog = await loadCatalogFromSupabase();
+  if (h === 'all') return catalog.slice(0, Math.max(0, limit));
 
   const matched = catalog.filter((p) => {
     const tags = p.tags.map(normalizeTag);
     if (tags.includes(h) || tags.includes(`collection:${h}`) || tags.some((t) => t.replace(/^collection:/, '') === h)) {
       return true;
     }
-
-    // Heuristic fallback: many imported catalogs don't preserve collection tags.
-    // Match if any handle segment appears in title/vendor/type/tags (OR), so e.g. super-spectrum still surfaces art SKUs.
-    const keywords = h.split('-').filter((k) => k.length >= 3);
+    const keywords = h.split('-').filter((k) => k.length >= 4);
     const hay = normalizeTag([p.title, p.vendor ?? '', p.productType ?? '', p.productCategory ?? '', p.tags.join(' ')].join(' '));
     if (keywords.length === 0) return false;
     return keywords.some((k) => hay.includes(k));
   });
 
   return matched.slice(0, Math.max(0, limit));
+}
+
+function mapDbRow(p: any): DbProduct {
+  const imgs = Array.isArray(p.images)
+    ? p.images.slice().sort((a: any, b: any) => (a.position ?? 1) - (b.position ?? 1))
+    : [];
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  return {
+    id: String(p.id),
+    handle: String(p.handle),
+    title: String(p.title ?? ''),
+    descriptionHtml: String(p.description_html ?? ''),
+    vendor: p.vendor ?? null,
+    productType: p.product_type ?? null,
+    productCategory: p.product_category ?? null,
+    tags: Array.isArray(p.tags) ? p.tags.map(String) : [],
+    published: Boolean(p.published),
+    seoTitle: p.seo_title ?? null,
+    seoDescription: p.seo_description ?? null,
+    images: imgs.map((im: any) => `${base}/storage/v1/object/public/${String(im.storage_path).replace(/^\/+/, '')}`),
+    variants: Array.isArray(p.variants)
+      ? p.variants.map((v: any) => ({
+          id: String(v.id),
+          title: String(v.title ?? ''),
+          price: Number(v.price ?? 0),
+          compareAtPrice: v.compare_at_price ?? null,
+          sku: v.sku ?? null,
+          option1: v.option1 ?? null,
+          inventoryQuantity: typeof v.inventory_quantity === 'number' ? v.inventory_quantity : undefined,
+        }))
+      : [],
+  };
 }
 

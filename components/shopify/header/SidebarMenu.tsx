@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
-import { Icon } from '@/components/shopify/icons/Icon';
-import { MAIN_NAV_LINKS } from '@/lib/siteNavigation';
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { Icon } from "@/components/shopify/icons/Icon";
+import { MAIN_NAV_LINKS } from "@/lib/siteNavigation";
 
 export function SidebarMenu({
   isOpen,
@@ -27,12 +27,12 @@ export function SidebarMenu({
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   // Trap focus
@@ -40,13 +40,15 @@ export function SidebarMenu({
     if (!isOpen || !drawerRef.current) return;
 
     const focusableElements = drawerRef.current.querySelectorAll(
-      'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+      'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select',
     );
     const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
 
     const handleTab = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         if (e.shiftKey) {
           if (document.activeElement === firstElement) {
             e.preventDefault();
@@ -61,19 +63,19 @@ export function SidebarMenu({
       }
     };
 
-    window.addEventListener('keydown', handleTab);
+    window.addEventListener("keydown", handleTab);
     firstElement?.focus();
 
-    return () => window.removeEventListener('keydown', handleTab);
+    return () => window.removeEventListener("keydown", handleTab);
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <>
-      <div 
-        className="PageOverlay is-visible" 
-        onClick={onClose} 
+      <div
+        className="PageOverlay is-visible"
+        onClick={onClose}
         style={{ zIndex: 100 }}
       />
       <div
@@ -83,7 +85,11 @@ export function SidebarMenu({
         aria-hidden={!isOpen}
         role="dialog"
         tabIndex={-1}
-        style={{ zIndex: 101, transform: isOpen ? 'translateX(0)' : undefined, visibility: isOpen ? 'visible' : undefined }}
+        style={{
+          zIndex: 101,
+          transform: isOpen ? "translateX(0)" : undefined,
+          visibility: isOpen ? "visible" : undefined,
+        }}
       >
         <header className="Drawer__Header" data-drawer-animated-left>
           <button
@@ -98,12 +104,22 @@ export function SidebarMenu({
         </header>
 
         <div className="Drawer__Content">
-          <div className="Drawer__Main" data-drawer-animated-left data-scrollable>
+          <div
+            className="Drawer__Main"
+            data-drawer-animated-left
+            data-scrollable
+          >
             <div className="Drawer__Container">
-              <nav className="SidebarMenu__Nav SidebarMenu__Nav--primary" aria-label="Sidebar navigation">
+              <nav
+                className="SidebarMenu__Nav SidebarMenu__Nav--primary"
+                aria-label="Sidebar navigation"
+              >
                 {menu.map((link) => (
                   <div key={link.url} className="Collapsible">
-                    <a href={link.url} className="Collapsible__Button Heading Link Link--primary u-h6">
+                    <a
+                      href={link.url}
+                      className="Collapsible__Button Heading Link Link--primary u-h6"
+                    >
                       {link.title}
                     </a>
                   </div>
@@ -113,7 +129,10 @@ export function SidebarMenu({
               <nav className="SidebarMenu__Nav SidebarMenu__Nav--secondary">
                 <ul className="Linklist Linklist--spacingLoose">
                   <li className="Linklist__Item">
-                    <a href="/account" className="Text--subdued Link Link--primary">
+                    <a
+                      href="/account"
+                      className="Text--subdued Link Link--primary"
+                    >
                       Account
                     </a>
                   </li>
@@ -121,7 +140,7 @@ export function SidebarMenu({
               </nav>
             </div>
           </div>
-          
+
           <aside className="Drawer__Footer" data-drawer-animated-bottom>
             <div className="SidebarMenu__SocialList">
               {/* Add social links later if needed */}

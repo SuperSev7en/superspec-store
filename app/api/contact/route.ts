@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const MAX_LEN = 4000;
 
 export async function POST(req: Request) {
@@ -30,23 +32,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'Invalid email address.' }, { status: 400 });
   }
 
-  if (process.env.CONTACT_WEBHOOK_URL) {
-    try {
-      await fetch(process.env.CONTACT_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: nameStr,
-          email: emailStr,
-          orderNumber: orderStr || undefined,
-          message: messageStr,
-        }),
+  try {
+    if (process.env.RESEND_API_KEY) {
+      await resend.emails.send({
+        from: 'SUPER Spec. Contact <system@superspec.studio>',
+        to: ['service@superspec.studio'],
+        replyTo: emailStr,
+        subject: `New Contact Form Submission: ${nameStr}`,
+        html: `
+          <div style="font-family: sans-serif; line-height: 1.5; color: #333;">
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${nameStr}</p>
+            <p><strong>Email:</strong> ${emailStr}</p>
+            <p><strong>Order Number:</strong> ${orderStr || 'N/A'}</p>
+            <hr />
+            <p><strong>Message:</strong></p>
+            <p style="white-space: pre-wrap;">${messageStr}</p>
+          </div>
+        `,
       });
-    } catch {
-      return NextResponse.json({ ok: false, error: 'Could not deliver message. Try email instead.' }, { status: 502 });
+    } else {
+      console.info('[contact - simulated]', { name: nameStr, email: emailStr, orderNumber: orderStr || undefined, messageLen: messageStr.length });
     }
-  } else {
-    console.info('[contact]', { name: nameStr, email: emailStr, orderNumber: orderStr || undefined, messageLen: messageStr.length });
+  } catch (error) {
+    console.error('[contact error]', error);
+    return NextResponse.json({ ok: false, error: 'Could not deliver message. Please email us directly.' }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

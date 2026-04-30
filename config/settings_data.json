@@ -1,0 +1,74 @@
+{
+  "current": {
+    "sections": {
+      "slideshow": {
+        "type": "slideshow",
+        "settings": {
+          "show_fullscreen": true,
+          "show_arrow": true,
+          "autoplay": true,
+          "cycle_speed": 7,
+          "text_color": "#ffffff"
+        },
+        "blocks": {
+          "slide_1": {
+            "type": "image",
+            "settings": {
+              "image": "/assets/product-images/img-2bbada814b40.jpg",
+              "apply_overlay": true,
+              "subheading": "Limited edition prints — own a piece of the spectrum",
+              "title": "Art That Transcends",
+              "button_1_text": "Shop Art Prints",
+              "button_1_link": "/collections/super-spectrum"
+            }
+          },
+          "slide_2": {
+            "type": "image",
+            "settings": {
+              "image": "/assets/product-images/img-83f91ce43feb.png",
+              "apply_overlay": true,
+              "subheading": "Premium apparel for those who live beyond the ordinary",
+              "title": "Wear Your Universe",
+              "button_1_text": "Shop Clothing",
+              "button_1_link": "/collections/super-speck"
+            }
+          }
+        },
+        "block_order": ["slide_1", "slide_2"]
+      },
+      "marquee": {
+        "type": "marquee",
+        "settings": {
+          "text": "FREE WORLDWIDE SHIPPING ON ORDERS OVER $75 • NEW DROPS EVERY FRIDAY • WORLDWIDE SHIPPING • ART THAT TRANSCENDS • WEAR YOUR UNIVERSE •",
+          "speed": 15
+        }
+      },
+      "featured-collections": {
+        "type": "featured-collections",
+        "settings": {
+          "title": "New Arrivals"
+        },
+        "blocks": {
+          "arrivals": {
+            "type": "collection",
+            "settings": {
+              "collection": "all",
+              "title": "Built on Precision",
+              "grid_items_count": 8
+            }
+          }
+        },
+        "block_order": ["arrivals"]
+      },
+      "newsletter": {
+        "type": "newsletter",
+        "settings": {
+          "title": "Join the Spec",
+          "subheading": "10% off your first order",
+          "content": "Subscribe to receive updates, access to exclusive deals, and more."
+        }
+      }
+    },
+    "content_for_index": ["slideshow", "marquee", "featured-collections", "newsletter"]
+  }
+}

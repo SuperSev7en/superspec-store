@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     if (!error && process.env.RESEND_API_KEY) {
       // Email 1: Immediate welcome + 10% off
       await resend.emails.send({
-        from: 'SUPER Spec <hello@superspec.store>',
+        from: 'SUPER Spec <hello@superspec.studio>',
         to: email,
         subject: 'Welcome to SUPER Spec — here\'s 10% off',
         html: `

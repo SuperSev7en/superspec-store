@@ -1,11 +1,11 @@
-import { CollectionItem } from '@/components/shopify/sections/CollectionListItem';
+import { CollectionItem } from "@/components/shopify/sections/CollectionListItem";
 
 export function CollectionList({
   id,
   settings,
   blocks,
   blockOrder,
-  template = 'index',
+  template = "index",
 }: {
   id: string;
   settings: Record<string, unknown>;
@@ -16,9 +16,14 @@ export function CollectionList({
   const stackOnMobile = Boolean(settings.stack_on_mobile ?? true);
   const addSpacing = Boolean(settings.add_spacing ?? true);
   const expandCollection = Boolean(settings.expand_collection ?? false);
-  const imageSize = typeof settings.image_size === 'string' ? settings.image_size : 'normal';
-  const textColor = typeof settings.text_color === 'string' ? settings.text_color : '#ffffff';
-  const buttonColor = typeof settings.button_color === 'string' ? settings.button_color : '#363636';
+  const imageSize =
+    typeof settings.image_size === "string" ? settings.image_size : "normal";
+  const textColor =
+    typeof settings.text_color === "string" ? settings.text_color : "#ffffff";
+  const buttonColor =
+    typeof settings.button_color === "string"
+      ? settings.button_color
+      : "#363636";
 
   const sectionStyle = `
 #section-${id} .CollectionItem .Heading,
@@ -32,7 +37,9 @@ export function CollectionList({
 
   const items = blockOrder
     .map((blockId, idx) => {
-      const block = blocks[blockId] as { type?: string; settings?: Record<string, unknown> } | undefined;
+      const block = blocks[blockId] as
+        | { type?: string; settings?: Record<string, unknown> }
+        | undefined;
       if (!block?.settings) return null;
       return (
         <CollectionItem
@@ -40,7 +47,10 @@ export function CollectionList({
           blockId={blockId}
           blockIndex={idx}
           blockSettings={block.settings}
-          sectionSettings={{ expand_collection: expandCollection, image_size: imageSize }}
+          sectionSettings={{
+            expand_collection: expandCollection,
+            image_size: imageSize,
+          }}
           template={template}
         />
       );
@@ -49,13 +59,21 @@ export function CollectionList({
 
   return (
     <>
-      <section id={`section-${id}`} data-section-id={id} data-section-type="collection-list">
+      <section
+        id={`section-${id}`}
+        data-section-id={id}
+        data-section-type="collection-list"
+      >
         {stackOnMobile ? (
-          <div className={`CollectionList CollectionList--grid ${addSpacing ? 'CollectionList--spaced' : ''}`.trim()}>
+          <div
+            className={`CollectionList CollectionList--grid ${addSpacing ? "CollectionList--spaced" : ""}`.trim()}
+          >
             {items}
           </div>
         ) : (
-          <div className={`Carousel Carousel--insideDots CollectionList ${addSpacing ? 'CollectionList--spaced' : ''}`.trim()}>
+          <div
+            className={`Carousel Carousel--insideDots CollectionList ${addSpacing ? "CollectionList--spaced" : ""}`.trim()}
+          >
             {items}
           </div>
         )}
@@ -68,4 +86,3 @@ export function CollectionList({
     </>
   );
 }
-

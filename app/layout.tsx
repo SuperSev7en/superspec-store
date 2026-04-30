@@ -1,27 +1,35 @@
-import type { Metadata } from 'next';
-import Script from 'next/script';
-import './globals.css';
-import { ThemeLayout } from '@/components/shopify/ThemeLayout';
-import { getThemeBodyClassName } from '@/lib/shopify/themeUtils';
-import { getThemeSettings, getThemeSections, getThemeBrandAssets } from '@/lib/shopify/themeConfig';
-import { resolveShopifyAssetUrl } from '@/lib/shopify/assetUrls';
-import { Analytics } from '@vercel/analytics/next';
-import { Toaster } from 'sonner';
-import { CartDrawer } from '@/components/store/CartDrawer';
-import { ExitIntentPopup } from '@/components/store/ExitIntentPopup';
-import { PostAddUpsellModal } from '@/components/store/PostAddUpsellModal';
+import type { Metadata } from "next";
+import Script from "next/script";
+import "./globals.css";
+import { ThemeLayout } from "@/components/shopify/ThemeLayout";
+import { getThemeBodyClassName } from "@/lib/shopify/themeUtils";
+import {
+  getThemeSettings,
+  getThemeSections,
+  getThemeBrandAssets,
+} from "@/lib/shopify/themeConfig";
+import { resolveShopifyAssetUrl } from "@/lib/shopify/assetUrls";
+import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "sonner";
+import { CartDrawer } from "@/components/store/CartDrawer";
+import { ExitIntentPopup } from "@/components/store/ExitIntentPopup";
+import { PostAddUpsellModal } from "@/components/store/PostAddUpsellModal";
 
 export const metadata: Metadata = {
-  title: 'SUPER Spec',
-  description: 'SUPER Spec',
+  title: "SUPER Spec.",
+  description: "SUPER Spec.",
   openGraph: {
-    title: 'SUPER Spec',
-    description: 'SUPER Spec Storefront',
-    type: 'website',
+    title: "SUPER Spec.",
+    description: "SUPER Spec. Storefront",
+    type: "website",
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const settings = await getThemeSettings();
   const sections = await getThemeSections();
   const brandAssets = await getThemeBrandAssets();
@@ -38,12 +46,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
         <meta name="theme-color" content={settings.button_background} />
 
-        {faviconUrl ? <link rel="shortcut icon" href={faviconUrl} type="image/png" /> : null}
+        {faviconUrl ? (
+          <link rel="shortcut icon" href={faviconUrl} type="image/png" />
+        ) : null}
 
-<link rel="stylesheet" href="/assets/theme.css" />
-<link rel="stylesheet" href="/assets/theme-toggle.css" />
-<link rel="stylesheet" href="/assets/background-effects.css" />
-<link rel="stylesheet" href="/assets/fixes.css" />
+        <link rel="stylesheet" href="/assets/theme.css" />
+        <link rel="stylesheet" href="/assets/theme-toggle.css" />
+        <link rel="stylesheet" href="/assets/background-effects.css" />
+        <link rel="stylesheet" href="/assets/fixes.css" />
 
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX`}
@@ -126,8 +136,15 @@ document.documentElement.style.setProperty("--window-height", window.innerHeight
 }());`}
         </Script>
 
-        <Script src="/assets/lazysizes.min.js" strategy="afterInteractive" async />
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" strategy="afterInteractive" />
+        <Script
+          src="/assets/lazysizes.min.js"
+          strategy="afterInteractive"
+          async
+        />
+        <Script
+          src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+          strategy="afterInteractive"
+        />
         <Script
           src="https://cdn.polyfill.io/v3/polyfill.min.js?unknown=polyfill&features=fetch,Element.prototype.closest,Element.prototype.remove,Element.prototype.classList,Array.prototype.includes,Array.prototype.fill,Object.assign,CustomEvent,IntersectionObserver,IntersectionObserverEntry,URL"
           strategy="afterInteractive"
@@ -135,7 +152,10 @@ document.documentElement.style.setProperty("--window-height", window.innerHeight
         <Script src="/assets/libs.min.js" strategy="afterInteractive" />
         <Script src="/assets/theme.min.js" strategy="afterInteractive" />
         <Script src="/assets/custom.js" strategy="afterInteractive" />
-        <Script src="/assets/background-effects.js" strategy="afterInteractive" />
+        <Script
+          src="/assets/background-effects.js"
+          strategy="afterInteractive"
+        />
       </head>
 
       <body className={getThemeBodyClassName(settings)}>

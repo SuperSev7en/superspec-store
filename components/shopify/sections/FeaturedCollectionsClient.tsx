@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import type { CatalogProduct } from '@/lib/catalog/catalog';
-import { ProductItem } from '@/components/shopify/sections/ProductItem';
+import { useState } from "react";
+import type { CatalogProduct } from "@/lib/catalog/catalog";
+import { ProductItem } from "@/components/shopify/sections/ProductItem";
 
 export type FeaturedCollectionTab = {
   blockId: string;
@@ -28,7 +28,9 @@ export function FeaturedCollectionsClient({
   const [active, setActive] = useState(0);
   if (tabs.length === 0) return null;
 
-  const sectionSettings = JSON.stringify({ layout: tabs[0]?.layoutMode === 'carousel' ? 'carousel' : 'grid' });
+  const sectionSettings = JSON.stringify({
+    layout: tabs[0]?.layoutMode === "carousel" ? "carousel" : "grid",
+  });
 
   return (
     <section
@@ -40,7 +42,9 @@ export function FeaturedCollectionsClient({
       <header className="SectionHeader SectionHeader--center">
         <div className="Container">
           {sectionTitle && tabs.length > 1 ? (
-            <h3 className="SectionHeader__SubHeading Heading u-h6">{sectionTitle}</h3>
+            <h3 className="SectionHeader__SubHeading Heading u-h6">
+              {sectionTitle}
+            </h3>
           ) : null}
           {tabs.length > 1 ? (
             <div className="SectionHeader__TabList TabList" role="tablist">
@@ -48,7 +52,7 @@ export function FeaturedCollectionsClient({
                 <button
                   key={t.blockId}
                   type="button"
-                  className={`Heading u-h1 TabList__Item ${i === active ? 'is-active' : ''}`}
+                  className={`Heading u-h1 TabList__Item ${i === active ? "is-active" : ""}`}
                   data-action="toggle-tab"
                   aria-controls={`block-${t.blockId}`}
                   aria-selected={i === active}
@@ -60,14 +64,16 @@ export function FeaturedCollectionsClient({
               ))}
             </div>
           ) : (
-            <h2 className="SectionHeader__Heading Heading u-h1">{tabs[0]?.title}</h2>
+            <h2 className="SectionHeader__Heading Heading u-h1">
+              {tabs[0]?.title}
+            </h2>
           )}
         </div>
       </header>
 
       {tabs.map((t, i) => {
-        const m = t.mobileCols || '2';
-        const d = t.desktopCols || '4';
+        const m = t.mobileCols || "2";
+        const d = t.desktopCols || "4";
         const cellGrid = `Grid__Cell 1/${m}--phone 1/2--tablet 1/${d}--lap-and-up`;
 
         return (
@@ -81,8 +87,13 @@ export function FeaturedCollectionsClient({
           >
             <div className="ProductListWrapper">
               {t.products.length === 0 ? (
-                <PlaceholderGrid count={t.limit} layoutMode={t.layoutMode} mobileCols={m} desktopCols={d} />
-              ) : t.layoutMode === 'carousel' ? (
+                <PlaceholderGrid
+                  count={t.limit}
+                  layoutMode={t.layoutMode}
+                  mobileCols={m}
+                  desktopCols={d}
+                />
+              ) : t.layoutMode === "carousel" ? (
                 <div className="ProductList ProductList--carousel Carousel">
                   {t.products.map((p) => (
                     <div key={p.handle} className="Carousel__Cell">
@@ -135,19 +146,28 @@ function PlaceholderGrid({
   const n = Math.min(8, Math.max(1, count));
   const cellGrid = `Grid__Cell 1/${mobileCols}--phone 1/2--tablet-and-up 1/${desktopCols}--lap-and-up`;
   const cells = Array.from({ length: n }, (_, idx) => (
-    <div key={idx} className={layoutMode === 'grid' ? cellGrid : 'Carousel__Cell'}>
+    <div
+      key={idx}
+      className={layoutMode === "grid" ? cellGrid : "Carousel__Cell"}
+    >
       <div className="ProductItem">
         <div className="ProductItem__Wrapper">
-          <a href="#" className="ProductItem__ImageWrapper" onClick={(e) => e.preventDefault()}>
+          <a
+            href="#"
+            className="ProductItem__ImageWrapper"
+            onClick={(e) => e.preventDefault()}
+          >
             <div
               className="ProductItem__Image PlaceholderSvg PlaceholderSvg--dark"
-              style={{ minHeight: 200, background: 'rgba(255,255,255,0.06)' }}
+              style={{ minHeight: 200, background: "rgba(255,255,255,0.06)" }}
             />
           </a>
           <div className="ProductItem__Info ProductItem__Info--left">
             <h2 className="ProductItem__Title Heading">Sample product</h2>
             <div className="ProductItem__PriceList Heading">
-              <span className="ProductItem__Price Price Text--subdued">$30</span>
+              <span className="ProductItem__Price Price Text--subdued">
+                $30
+              </span>
             </div>
           </div>
         </div>
@@ -155,7 +175,7 @@ function PlaceholderGrid({
     </div>
   ));
 
-  if (layoutMode === 'grid') {
+  if (layoutMode === "grid") {
     return (
       <div
         className="ProductList ProductList--grid ProductList--removeMargin Grid"
@@ -166,5 +186,7 @@ function PlaceholderGrid({
       </div>
     );
   }
-  return <div className="ProductList ProductList--carousel Carousel">{cells}</div>;
+  return (
+    <div className="ProductList ProductList--carousel Carousel">{cells}</div>
+  );
 }
