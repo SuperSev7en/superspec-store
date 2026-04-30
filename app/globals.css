@@ -18,7 +18,9 @@ body {
 .PageContent,
 .Section,
 .Collection,
-.Page {
+.Page,
+.Product,
+.Container {
   background-color: transparent !important;
 }
 
