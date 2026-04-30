@@ -529,10 +529,12 @@ export function CartDrawer() {
             </div>
             <a
               href="/checkout"
-              className="Button Button--primary Button--full"
-              style={{ marginBottom: 10 }}
+              className="Cart__Checkout Button Button--primary Button--full"
+              style={{ marginBottom: 10, display: "flex", justifyContent: "center", alignItems: "center", gap: "10px" }}
             >
-              Checkout
+              <span>Checkout</span>
+              <span className="Button__SeparatorDot"></span>
+              <span>${finalTotal.toFixed(2)}</span>
             </a>
             <a
               href="/cart"

@@ -133,8 +133,8 @@ main#main {
 main#main button.AddToCartButton--storefront.Button.Button--primary {
   position: relative;
   isolation: isolate;
-  color: #ffffff !important;
   background: var(--button-background) !important;
+  color: var(--button-text-color) !important;
   border: none !important;
   border-radius: 4px;
   box-shadow: none !important;

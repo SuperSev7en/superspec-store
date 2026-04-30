@@ -41,7 +41,7 @@ export function ThemeLayout({
       <style
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
-          __html: `:root{${Object.entries(getCssVariables(settings))
+          __html: `:root, [data-theme="dark"]{${Object.entries(getCssVariables(settings))
             .map(([k, v]) => `${k}:${v};`)
             .join("")}}`,
         }}

@@ -89,6 +89,13 @@ export default function CheckoutFlow() {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [clientSecret, setClientSecret] = useState("");
 
+  useEffect(() => {
+    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    if (!key || key.includes("pk_test_51QdX7zLqX7vZ9Y8x7W6vU5tS4rR3qP2oN1mK0lJ9kI8jH7gF6eD5cB4aA3z2Y1x0W9vU8tS7rQ6pO5nM4lK3jI2hG1fE0dC9bA8eF7gH6iJ5kL4mN6oP8qR0sT2uV4wX6yZ8")) {
+       console.warn("STRIPE DEBUG: The Stripe publishable key appears to be a placeholder or invalid. Checkout will likely fail.");
+    }
+  }, []);
+
   // Form State
   const [email, setEmail] = useState("");
   const [saveInfo, setSaveInfo] = useState(false);

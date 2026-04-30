@@ -33,6 +33,23 @@ export function Header({
   const logoMaxWidth = Number(sectionSettings.logo_max_width ?? 305);
   const mobileLogoMaxWidth = Number(sectionSettings.mobile_logo_max_width ?? 90);
 
+  // Set --header-height dynamically as in the original Shopify theme
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const header = document.getElementById("section-header");
+      if (header) {
+        document.documentElement.style.setProperty(
+          "--header-height",
+          `${header.offsetHeight}px`
+        );
+      }
+    };
+
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
   return (
     <>
       {/* ── Search overlay (matches header.liquid) ── */}
@@ -91,7 +108,7 @@ export function Header({
       {/* ── Header (matches header.liquid) ── */}
       <header
         id="section-header"
-        className="Header"
+        className={`Header ${navigationStyle === "inline" ? "Header--inline" : ""} ${navigationStyle === "logoLeft" ? "Header--logoLeft" : ""} ${navigationStyle === "center" ? "Header--center" : ""}`}
         data-section-id="header"
         data-section-type="header"
         data-section-settings={JSON.stringify({
@@ -101,12 +118,11 @@ export function Header({
         })}
       >
         <div className="Header__Wrapper">
-          {/* Mobile sidebar toggle */}
           <div className="Header__FlexItem Header__FlexItem--logo">
             <HeaderSidebarToggle />
           </div>
 
-          {/* Logo — centered */}
+          {/* Logo */}
           <div className="Header__LogoContainer">
             <a href="/" className="Header__Logo">
               {logo ? (
@@ -126,9 +142,9 @@ export function Header({
             </a>
           </div>
 
-          {/* Main Navigation — matches Prestige "center" style */}
+          {/* Main Navigation */}
           <nav className="Header__MainNav" aria-label="Main navigation">
-            <ul className="HorizontalList">
+            <ul className="HorizontalList HorizontalList--spacingLoose">
               {menu.map((link) => (
                 <li
                   key={`${link.url}-${link.title}`}
@@ -146,7 +162,7 @@ export function Header({
           <div className="Header__SecondaryNav">
             <a
               href="/account"
-              className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable"
+              className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable hidden-phone"
               aria-label="Account"
             >
               <Icon icon="account" />
@@ -176,6 +192,24 @@ export function Header({
               --header-is-not-transparent: 1;
               --header-is-transparent: 0;
             }
+            #section-header {
+              position: ${useStickyHeader ? "sticky" : "relative"};
+              top: 0;
+              z-index: 10;
+              background-color: var(--header-background);
+            }
+            @media screen and (min-width: 641px) {
+              .Header--center .Header__Wrapper {
+                padding-bottom: 24px;
+              }
+              .Header--center .Header__MainNav {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                text-align: center;
+              }
+            }
             @media screen and (max-width: 640px) {
               .Header__LogoImage {
                 max-width: ${mobileLogoMaxWidth}px !important;
@@ -187,3 +221,4 @@ export function Header({
     </>
   );
 }
+
