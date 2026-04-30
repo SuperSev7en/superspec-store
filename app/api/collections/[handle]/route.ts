@@ -16,7 +16,12 @@ export async function GET(
       return NextResponse.json({ error: 'Collection handle is required' }, { status: 400 });
     }
 
-    const products = await getProductsForCollectionHandleFromSupabase(handle, limit);
+    const { getProductsForCollectionHandle } = await import('@/lib/catalog/catalog');
+    let products = await getProductsForCollectionHandleFromSupabase(handle, limit);
+    
+    if (!products || products.length === 0) {
+      products = await getProductsForCollectionHandle(handle, limit);
+    }
     
     return NextResponse.json({ products });
   } catch (error) {
