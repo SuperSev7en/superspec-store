@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect } from "react";
 import type { ThemeSettings } from "@/lib/shopify/themeSettings";
 import { Icon } from "@/components/shopify/icons/Icon";
 import Image from "next/image";

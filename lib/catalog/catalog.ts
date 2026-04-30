@@ -13,6 +13,7 @@ export type CatalogVariant = {
 };
 
 export type CatalogProduct = {
+  id: string;
   handle: string;
   title: string;
   descriptionHtml: string;
@@ -132,6 +133,7 @@ export async function loadCatalog(): Promise<CatalogProduct[]> {
       const existing =
         byHandle.get(handle) ??
         ({
+          id: handle,
           handle,
           title,
           descriptionHtml: '',
