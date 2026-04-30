@@ -6,17 +6,20 @@
    ================================================================ */
 
 html,
-body,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000000 !important;
+  color: #ffffff;
+}
+
 #main,
 .PageContainer,
 .PageContent,
 .Section,
 .Collection,
 .Page {
-  margin: 0;
-  padding: 0;
-  background-color: #000000 !important;
-  color: #ffffff;
+  background-color: transparent !important;
 }
 
 /* ----------------------------------------------------------------

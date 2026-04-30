@@ -236,13 +236,23 @@ export async function getProductsForCollectionHandle(collectionHandle: string, l
   const h = collectionHandle.trim().toLowerCase();
   if (!h) return [];
   const catalog = await loadCatalog();
+  if (h === 'all') return catalog.slice(0, Math.max(0, limit));
+
   const matched = catalog.filter((p) => {
     const tags = p.tags.map(normalizeTag);
-    return (
+    if (
       tags.includes(h) ||
       tags.includes(`collection:${h}`) ||
       tags.some((t) => t.replace(/^collection:/, '') === h)
-    );
+    ) {
+      return true;
+    }
+
+    const keywords = h.split('-').filter((k) => k.length >= 4);
+    const hay = normalizeTag([p.title, p.vendor ?? '', p.productType ?? '', p.productCategory ?? '', p.tags.join(' ')].join(' '));
+    if (keywords.length === 0) return false;
+    return keywords.some((k) => hay.includes(k));
   });
+
   return matched.slice(0, Math.max(0, limit));
 }
