@@ -1,0 +1,36 @@
+// Express Checkout Fix - The current implementation is missing required options
+// File: app/checkout/page.tsx
+
+// In ExpressCheckoutWrapper, add these options:
+options={{
+  buttonType: { applePay: "buy", googlePay: "buy" },
+  buttonHeight: 44,
+  layout: {
+    maxColumns: 2,
+    overflow: 'auto'
+  },
+  paymentMethods: {
+    applePay: 'auto',
+    googlePay: 'auto',
+    link: 'auto'
+  }
+}}
+
+// Also ensure the Elements has proper options:
+<Elements
+  stripe={stripePromise}
+  options={{
+    mode: "payment",
+    amount: Math.round((total || 1) * 100),
+    currency: "usd",
+    appearance: {
+      theme: "night",
+      variables: {
+        colorPrimary: "#ffffff",
+        colorBackground: "#000000",
+        colorText: "#ffffff",
+      }
+    }
+  }}
+>
+</Elements>

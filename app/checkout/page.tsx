@@ -147,6 +147,9 @@ function ExpressCheckoutWrapper({
         onReady={() => setReady(true)}
         options={{
           buttonType: { applePay: "buy", googlePay: "buy" },
+          buttonHeight: 44,
+          layout: { maxColumns: 2 },
+          paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
         }}
       />
       {!ready && (

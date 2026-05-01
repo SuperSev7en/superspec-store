@@ -47,11 +47,9 @@ export function CollectionItem({
 
   const imageLayerClass = [
     "CollectionItem__Image",
-    "CollectionItem__Image--containFit",
+    "CollectionItem__Image--cover",
     applyOverlay ? "Image--contrast" : "",
-    image
-      ? "Image--lazyLoaded Image--zoomOut"
-      : "Image--lazyLoad Image--zoomOut",
+    image ? "Image--lazyLoaded" : "Image--lazyLoad",
     "hide-no-js",
   ]
     .join(" ")
@@ -75,6 +73,7 @@ export function CollectionItem({
             className={imageLayerClass}
             style={{
               backgroundPosition: imageAlignment,
+              backgroundSize: 'cover',
               ...(image ? { backgroundImage: `url(${image})` } : {}),
             }}
           >
