@@ -348,6 +348,24 @@ export function ProductItem({
               )}
             </div>
 
+            {/* Product Description on Scroll Page */}
+            {product.descriptionHtml && (
+              <p
+                className="ProductItem__Description Text--subdued"
+                style={{
+                  marginTop: "10px",
+                  fontSize: "13px",
+                  lineHeight: "1.5",
+                  display: "-webkit-box",
+                  WebkitLineClamp: "2",
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {product.descriptionHtml.replace(/<[^>]*>?/gm, "")}
+              </p>
+            )}
+
             {/* Collection specific info */}
             {collectionType === "clothing" &&
               totalInventory > 0 &&

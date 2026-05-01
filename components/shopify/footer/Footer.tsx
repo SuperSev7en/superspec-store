@@ -42,10 +42,15 @@ export function Footer({
               </div>
               <div className="Footer__Social" style={{ marginTop: 20 }}>
                 <ul className="HorizontalList HorizontalList--spacingLoose">
-                  {['Instagram', 'TikTok', 'Twitter', 'Pinterest'].map(social => (
-                    <li key={social} className="HorizontalList__Item">
-                      <a href="#" className="Link Link--primary" aria-label={social}>
-                        <span style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{social}</span>
+                  {[
+                    { name: 'Instagram', url: 'https://www.instagram.com/superspec.store/' },
+                    { name: 'TikTok', url: 'https://www.tiktok.com/@superspec.store' },
+                    { name: 'Twitter', url: 'https://x.com/SUPERSpec_store' },
+                    { name: 'Pinterest', url: 'https://www.pinterest.com/superspecstore/' },
+                  ].map(social => (
+                    <li key={social.name} className="HorizontalList__Item">
+                      <a href={social.url} target="_blank" rel="noopener noreferrer" className="Link Link--primary" aria-label={social.name}>
+                        <span style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{social.name}</span>
                       </a>
                     </li>
                   ))}

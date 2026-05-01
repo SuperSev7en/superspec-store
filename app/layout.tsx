@@ -56,11 +56,10 @@ export default async function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=1.0"
         />
-        <meta name="theme-color" content={settings.button_background} />
+        <meta name="theme-color" content="#c3922e" />
 
-        {faviconUrl ? (
-          <link rel="shortcut icon" href={faviconUrl} type="image/png" />
-        ) : null}
+        <link rel="shortcut icon" href="/assets/Super_Star.png" type="image/png" />
+        <link rel="icon" href="/assets/Super_Star.png" type="image/png" />
 
         <link rel="stylesheet" href="/assets/theme.css" />
         <link rel="stylesheet" href="/assets/theme-toggle.css" />

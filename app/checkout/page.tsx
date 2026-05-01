@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { readCart, CartLine } from "@/components/store/cart";
+import { useEffect, useState, useCallback } from "react";
+import { readCart, clearCart, CartLine } from "@/components/store/cart";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -17,6 +17,7 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
+/* ─── Standard Payment Form (Step 4) ─── */
 function CheckoutForm({
   clientSecret,
   onSuccess,
@@ -41,12 +42,12 @@ function CheckoutForm({
     });
 
     if (error) {
-      toast.error(error.message || "Payment failed");
+      toast.error(error.message || "Payment failed. Please try again.");
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       onSuccess(paymentIntent.id);
     } else {
-      toast.error("Unexpected state");
+      toast.error("Something went wrong. Please try again.");
       setLoading(false);
     }
   };
@@ -84,24 +85,90 @@ function CheckoutForm({
   );
 }
 
+/* ─── Express Checkout (Apple Pay / Google Pay) ─── */
+function ExpressCheckoutWrapper({
+  cart,
+  total,
+  onSuccess,
+}: {
+  cart: CartLine[];
+  total: number;
+  onSuccess: (paymentIntentId: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [ready, setReady] = useState(false);
+
+  const onConfirm = useCallback(async () => {
+    if (!stripe || !elements) return;
+
+    const { error } = await elements.submit();
+    if (error) {
+      toast.error(error.message || "Payment failed");
+      return;
+    }
+
+    // Create payment intent server-side for express checkout
+    try {
+      const res = await fetch("/api/checkout/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cart,
+          email: "", // Will be provided by Express Checkout
+          shippingMethod: "standard",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        clientSecret: data.clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/checkout/success`,
+        },
+        redirect: "if_required",
+      });
+
+      if (confirmError) {
+        toast.error(confirmError.message || "Payment failed");
+      } else if (paymentIntent?.status === "succeeded") {
+        onSuccess(paymentIntent.id);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Payment failed");
+    }
+  }, [stripe, elements, cart, onSuccess]);
+
+  return (
+    <div style={{ minHeight: ready ? undefined : 0 }}>
+      <ExpressCheckoutElement
+        onConfirm={onConfirm}
+        onReady={() => setReady(true)}
+        options={{
+          buttonType: { applePay: "buy", googlePay: "buy" },
+        }}
+      />
+      {!ready && (
+        <p
+          className="Text--subdued"
+          style={{ textAlign: "center", fontSize: 12, padding: "10px 0" }}
+        >
+          Express checkout loading...
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main Checkout Flow ─── */
 export default function CheckoutFlow() {
   const [step, setStep] = useState(2);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [clientSecret, setClientSecret] = useState("");
-  const [stripeError, setStripeError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-    if (!key) {
-       setStripeError("Stripe Publishable Key is missing. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.");
-    } else if (key.includes("pk_test_51QdX7zLqX7vZ9Y8x7W6vU5tS4rR3qP2oN1mK0lJ9kI8jH7gF6eD5cB4aA3z2Y1x0W9vU8tS7rQ6pO5nM4lK3jI2hG1fE0dC9bA8eF7gH6iJ5kL4mN6oP8qR0sT2uV4wX6yZ8")) {
-       console.warn("STRIPE DEBUG: Using placeholder key.");
-    }
-  }, []);
 
   // Form State
   const [email, setEmail] = useState("");
-  const [saveInfo, setSaveInfo] = useState(false);
 
   const [address, setAddress] = useState({
     firstName: "",
@@ -132,7 +199,7 @@ export default function CheckoutFlow() {
     (sum, item) => sum + (item.price || 0) * item.quantity,
     0,
   );
-  const isFreeStandard = subtotal > 75;
+  const isFreeStandard = subtotal >= 75;
 
   let shippingCost = 0;
   if (shippingMethod === "standard") {
@@ -162,7 +229,7 @@ export default function CheckoutFlow() {
             ...address,
           },
           discountCode,
-          shippingCost,
+          shippingMethod,
         }),
       });
       const data = await res.json();
@@ -190,12 +257,15 @@ export default function CheckoutFlow() {
             name: `${address.firstName} ${address.lastName}`,
             ...address,
           },
+          shippingMethod,
+          shippingCost,
           total,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to confirm order");
 
+      clearCart();
       window.location.href = `/checkout/success?orderNumber=${data.orderNumber}&email=${encodeURIComponent(email)}`;
     } catch (err: any) {
       toast.error(err.message);
@@ -218,11 +288,6 @@ export default function CheckoutFlow() {
     >
       {/* Left Column: Flow */}
       <div style={{ flex: "1 1 550px" }}>
-        {stripeError && (
-          <div style={{ background: "#fee2e2", border: "1px solid #ef4444", color: "#b91c1c", padding: 15, borderRadius: 8, marginBottom: 20, fontSize: 14 }}>
-            {stripeError}
-          </div>
-        )}
         <div
           style={{
             display: "flex",
@@ -236,7 +301,7 @@ export default function CheckoutFlow() {
           </h1>
         </div>
 
-        {/* Step 1: Express Options */}
+        {/* Step 1: Express Checkout */}
         <div style={{ marginBottom: 40 }}>
           <p
             style={{ textAlign: "center", fontSize: 13, marginBottom: 15 }}
@@ -248,14 +313,14 @@ export default function CheckoutFlow() {
             stripe={stripePromise}
             options={{
               mode: "payment",
-              amount: Math.round(total * 100),
+              amount: Math.round((total || 1) * 100),
               currency: "usd",
             }}
           >
-            <ExpressCheckoutElement
-              onConfirm={() => {
-                /* Handled automatically by Stripe */
-              }}
+            <ExpressCheckoutWrapper
+              cart={cart}
+              total={total}
+              onSuccess={handlePaymentSuccess}
             />
           </Elements>
 
@@ -294,45 +359,17 @@ export default function CheckoutFlow() {
             }}
           >
             <h2 className="Heading u-h4">Contact</h2>
-            {step === 2 && (
-              <p style={{ fontSize: 13, margin: 0 }}>
-                Already have an account?{" "}
-                <a
-                  href="/login"
-                  className="Link Link--underline"
-                  style={{ color: "var(--primary-color)" }}
-                >
-                  Log in
-                </a>
-              </p>
-            )}
           </div>
           {step === 2 ? (
             <form onSubmit={handleContactSubmit}>
               <input
                 type="email"
                 className="Form__Input"
-                placeholder="Email address"
+                placeholder="Email address for order updates"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <div
-                style={{ marginTop: 15, display: "flex", alignItems: "center" }}
-              >
-                <input
-                  type="checkbox"
-                  id="saveInfo"
-                  checked={saveInfo}
-                  onChange={(e) => setSaveInfo(e.target.checked)}
-                />
-                <label
-                  htmlFor="saveInfo"
-                  style={{ marginLeft: 10, fontSize: 14 }}
-                >
-                  Save my info for faster checkout next time
-                </label>
-              </div>
               <button
                 type="submit"
                 className="Button Button--primary"
@@ -467,57 +504,23 @@ export default function CheckoutFlow() {
                 >
                   <option value="">State</option>
                   {[
-                    ["AL", "Alabama"],
-                    ["AK", "Alaska"],
-                    ["AZ", "Arizona"],
-                    ["AR", "Arkansas"],
-                    ["CA", "California"],
-                    ["CO", "Colorado"],
-                    ["CT", "Connecticut"],
-                    ["DE", "Delaware"],
-                    ["FL", "Florida"],
-                    ["GA", "Georgia"],
-                    ["HI", "Hawaii"],
-                    ["ID", "Idaho"],
-                    ["IL", "Illinois"],
-                    ["IN", "Indiana"],
-                    ["IA", "Iowa"],
-                    ["KS", "Kansas"],
-                    ["KY", "Kentucky"],
-                    ["LA", "Louisiana"],
-                    ["ME", "Maine"],
-                    ["MD", "Maryland"],
-                    ["MA", "Massachusetts"],
-                    ["MI", "Michigan"],
-                    ["MN", "Minnesota"],
-                    ["MS", "Mississippi"],
-                    ["MO", "Missouri"],
-                    ["MT", "Montana"],
-                    ["NE", "Nebraska"],
-                    ["NV", "Nevada"],
-                    ["NH", "New Hampshire"],
-                    ["NJ", "New Jersey"],
-                    ["NM", "New Mexico"],
-                    ["NY", "New York"],
-                    ["NC", "North Carolina"],
-                    ["ND", "North Dakota"],
-                    ["OH", "Ohio"],
-                    ["OK", "Oklahoma"],
-                    ["OR", "Oregon"],
-                    ["PA", "Pennsylvania"],
-                    ["RI", "Rhode Island"],
-                    ["SC", "South Carolina"],
-                    ["SD", "South Dakota"],
-                    ["TN", "Tennessee"],
-                    ["TX", "Texas"],
-                    ["UT", "Utah"],
-                    ["VT", "Vermont"],
-                    ["VA", "Virginia"],
-                    ["WA", "Washington"],
-                    ["WV", "West Virginia"],
-                    ["WI", "Wisconsin"],
-                    ["WY", "Wyoming"],
-                    ["DC", "Washington D.C."],
+                    ["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"],
+                    ["AR", "Arkansas"], ["CA", "California"], ["CO", "Colorado"],
+                    ["CT", "Connecticut"], ["DE", "Delaware"], ["FL", "Florida"],
+                    ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"],
+                    ["IL", "Illinois"], ["IN", "Indiana"], ["IA", "Iowa"],
+                    ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"],
+                    ["ME", "Maine"], ["MD", "Maryland"], ["MA", "Massachusetts"],
+                    ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"],
+                    ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"],
+                    ["NV", "Nevada"], ["NH", "New Hampshire"], ["NJ", "New Jersey"],
+                    ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"],
+                    ["ND", "North Dakota"], ["OH", "Ohio"], ["OK", "Oklahoma"],
+                    ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"],
+                    ["SC", "South Carolina"], ["SD", "South Dakota"], ["TN", "Tennessee"],
+                    ["TX", "Texas"], ["UT", "Utah"], ["VT", "Vermont"],
+                    ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"],
+                    ["WI", "Wisconsin"], ["WY", "Wyoming"], ["DC", "Washington D.C."],
                   ].map(([abbr, name]) => (
                     <option key={abbr} value={abbr}>
                       {abbr} — {name}
@@ -581,7 +584,7 @@ export default function CheckoutFlow() {
                       checked={shippingMethod === "standard"}
                       onChange={() => setShippingMethod("standard")}
                     />
-                    <span>Standard Shipping</span>
+                    <span>Standard Shipping (5-7 business days)</span>
                   </div>
                   <span className="Price">
                     {isFreeStandard ? "Free" : "$5.99"}
@@ -607,11 +610,17 @@ export default function CheckoutFlow() {
                       checked={shippingMethod === "express"}
                       onChange={() => setShippingMethod("express")}
                     />
-                    <span>Express Shipping</span>
+                    <span>Express Shipping (2-3 business days)</span>
                   </div>
                   <span className="Price">$14.99</span>
                 </label>
               </div>
+
+              {subtotal >= 75 && shippingMethod === "standard" && (
+                <p style={{ fontSize: 13, color: "var(--primary-color)", marginBottom: 20 }}>
+                  You qualify for free standard shipping!
+                </p>
+              )}
 
               <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
                 <button
@@ -669,7 +678,7 @@ export default function CheckoutFlow() {
                 <span className="Text--subdued">Method</span>
                 <span>
                   {shippingMethod === "standard"
-                    ? "Standard Shipping"
+                    ? `Standard Shipping${isFreeStandard ? " (Free)" : ""}`
                     : "Express Shipping"}
                 </span>
                 <button
@@ -707,7 +716,7 @@ export default function CheckoutFlow() {
             >
               <Elements
                 stripe={stripePromise}
-                options={{ clientSecret, appearance: { theme: "stripe" } }}
+                options={{ clientSecret, appearance: { theme: "night" } }}
               >
                 <CheckoutForm
                   clientSecret={clientSecret}
@@ -759,7 +768,7 @@ export default function CheckoutFlow() {
                       style={{
                         width: 64,
                         height: 64,
-                        background: "#fff",
+                        background: "#111",
                         borderRadius: 8,
                         overflow: "hidden",
                         border: "1px solid var(--border-color)",
@@ -785,8 +794,8 @@ export default function CheckoutFlow() {
                         position: "absolute",
                         top: -8,
                         right: -8,
-                        background: "var(--text-color)",
-                        color: "#fff",
+                        background: "var(--link-color)",
+                        color: "#000",
                         width: 22,
                         height: 22,
                         borderRadius: 11,
@@ -841,7 +850,7 @@ export default function CheckoutFlow() {
                 value={discountCode}
                 onChange={(e) => setDiscountCode(e.target.value)}
                 disabled={step === 4}
-                style={{ background: "#fff" }}
+                style={{ background: "#111", color: "#fff" }}
               />
               <button
                 className="Button Button--secondary"
@@ -897,7 +906,6 @@ export default function CheckoutFlow() {
           </div>
         </div>
 
-        {/* Trust Badges */}
         <div style={{ marginTop: 20 }}>
           <TrustBadges />
         </div>

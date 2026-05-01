@@ -1,6 +1,18 @@
 # SUPER Spec. — Master Status & Operations Guide
-> **Single source of truth.** Last updated: 2026-04-30
+> **Single source of truth.** Last updated: 2026-05-01
 > Live site: **https://superspec.studio** | Repo: `/SuperSpec.store` | Deploy: Vercel → `superspec-store`
+
+---
+
+## PROJECT DOCUMENTATION (Phase 1: Exact Replica)
+Detailed research, planning, and technical reviews are now located in the `/docs` subfolders:
+
+| Folder | Contents |
+|--------|----------|
+| `docs/research/` | Wayback Machine analysis, Theme export audit |
+| `docs/plan/` | Master Plan, Checklists, Execution Strategy |
+| `docs/technical/` | API Review (Stripe, Resend, Supabase), Shipping Strategy |
+| `docs/shopify_conversion/` | Guide for Liquid to React conversion rules |
 
 ---
 

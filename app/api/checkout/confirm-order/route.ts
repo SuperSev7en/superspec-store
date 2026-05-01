@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase';
 import { Resend } from 'resend';
+import { orderConfirmationHtml } from '@/lib/email/templates/orderConfirmation';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -13,6 +14,17 @@ export async function POST(req: Request) {
     }
 
     const supabase = await createClient();
+
+    // Idempotency: check if order already exists for this payment intent
+    const { data: existingOrder } = await supabase
+      .from('orders')
+      .select('order_number')
+      .eq('stripe_payment_intent_id', paymentIntentId)
+      .single();
+
+    if (existingOrder) {
+      return NextResponse.json({ orderNumber: existingOrder.order_number });
+    }
     
     // Generate order number
     const orderNumber = `SP-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
@@ -25,8 +37,9 @@ export async function POST(req: Request) {
         email,
         total: total,
         status: 'paid',
-        stripe_session_id: paymentIntentId,
-        currency: 'USD'
+        stripe_payment_intent_id: paymentIntentId,
+        currency: 'USD',
+        fulfillment_status: 'unfulfilled',
       })
       .select()
       .single();
@@ -64,22 +77,25 @@ export async function POST(req: Request) {
     // 3. Trigger order confirmation email via Resend
     try {
       if (process.env.RESEND_API_KEY) {
+        const items = cart.map((item: any) => ({
+          title: item.title,
+          quantity: item.quantity,
+          price: item.price,
+          variantTitle: item.variantTitle,
+        }));
+
         await resend.emails.send({
           from: 'SUPER Spec <orders@superspec.studio>',
           to: email,
-          subject: `Order Confirmation - ${orderNumber}`,
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="text-transform: uppercase; letter-spacing: 2px;">SUPER Spec.</h1>
-              <h2>Thank you for your order!</h2>
-              <p>Your order <strong>${orderNumber}</strong> has been confirmed.</p>
-              <p>Total: $${total.toFixed(2)}</p>
-              <h3>Shipping to:</h3>
-              <p>${address.name}<br>${address.line1}<br>${address.city}, ${address.state} ${address.zip}</p>
-              <br>
-              <a href="https://superspec.studio/order/${orderNumber}/success" style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none;">View Order</a>
-            </div>
-          `,
+          subject: `Order Confirmed — ${orderNumber}`,
+          html: orderConfirmationHtml({
+            orderNumber,
+            email,
+            total,
+            items,
+            address,
+            shippingMethod: 'standard',
+          }),
         });
       }
     } catch (emailErr) {

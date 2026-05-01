@@ -179,34 +179,16 @@ export function ProductCatalogClient({
     <div className="CollectionMain">
       <div className="CollectionToolbar">
         <div className="CollectionToolbar__Group">
-          {/* Filters Dropdown/Sidebar Toggle would go here in a real theme, simplified for inline */}
           <div className="CollectionToolbar__Item CollectionToolbar__Item--filter">
-            <span className="Heading Text--subdued u-h6">Filters</span>
-            <div
-              className="FilterList"
-              style={{
-                display: "flex",
-                gap: "15px",
-                marginTop: "10px",
-                flexWrap: "wrap",
-              }}
-            >
+            <span className="Heading u-h6">Filters</span>
+            <div className="FilterList">
               {currentFilters.map((group) => (
                 <div key={group.id} className="FilterGroup">
-                  <span
-                    className="Text--subdued"
-                    style={{ fontSize: 12, marginRight: 8 }}
-                  >
+                  <span className="FilterGroup__Label">
                     {group.label}:
                   </span>
                   <select
                     className="Form__Input"
-                    style={{
-                      padding: "4px 8px",
-                      fontSize: 13,
-                      display: "inline-block",
-                      width: "auto",
-                    }}
                     onChange={(e) => {
                       if (e.target.value)
                         handleFilterToggle(group.id, e.target.value);
@@ -228,22 +210,11 @@ export function ProductCatalogClient({
 
         <div className="CollectionToolbar__Group CollectionToolbar__Group--layout">
           <div className="CollectionToolbar__Item CollectionToolbar__Item--sort">
-            <span
-              className="Heading Text--subdued u-h6"
-              style={{ marginRight: 8 }}
-            >
-              Sort
-            </span>
+            <span className="Heading u-h6">Sort</span>
             <select
               className="Form__Input"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              style={{
-                padding: "4px 8px",
-                fontSize: 13,
-                display: "inline-block",
-                width: "auto",
-              }}
             >
               <option value="featured">Featured</option>
               <option value="newest">Newest</option>
@@ -258,7 +229,6 @@ export function ProductCatalogClient({
               className="ProductViewToggle"
               role="group"
               aria-label="Product display layout"
-              style={{ display: "flex", gap: 10 }}
             >
               <button
                 type="button"

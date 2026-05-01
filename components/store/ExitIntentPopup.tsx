@@ -48,44 +48,55 @@ export function ExitIntentPopup() {
 
   return (
     <div
+      onClick={() => setVisible(false)}
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.65)",
+        background: "rgba(0,0,0,0.75)",
         zIndex: 99999,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: 20,
         animation: "fadeIn 0.3s ease",
+        cursor: "pointer",
       }}
     >
       <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
       <div
+        onClick={(e) => e.stopPropagation()}
         style={{
-          background: "var(--background)",
+          background: "#111",
           borderRadius: 8,
           maxWidth: 480,
           width: "100%",
           padding: 40,
           position: "relative",
           animation: "slideUp 0.35s ease",
-          border: "1px solid var(--border-color)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          cursor: "default",
         }}
       >
         <button
           onClick={() => setVisible(false)}
+          aria-label="Close popup"
           style={{
             position: "absolute",
-            top: 16,
-            right: 16,
-            background: "none",
-            border: "none",
+            top: 12,
+            right: 12,
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            borderRadius: "50%",
+            width: 32,
+            height: 32,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             cursor: "pointer",
-            color: "var(--text-light-color)",
+            color: "#fff",
           }}
         >
-          <X style={{ width: 20, height: 20 }} />
+          <X style={{ width: 16, height: 16 }} />
         </button>
 
         {submitted ? (

@@ -69,8 +69,38 @@ export async function POST(req: Request) {
   } else if (event.type === 'payment_intent.succeeded') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-    // order confirmation is handled in /api/checkout/confirm-order client-side,
-    // but in a fully robust system we'd confirm here as a fallback or source-of-truth.
+    // Fallback order creation: if client-side confirm-order failed or was skipped
+    try {
+      const supabase = createServiceRoleClient();
+      const piId = paymentIntent.id;
+
+      // Check if order already exists (created by confirm-order endpoint)
+      const { data: existing } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('stripe_payment_intent_id', piId)
+        .single();
+
+      if (!existing) {
+        // Order not yet created — create it from PI metadata
+        const meta = paymentIntent.metadata || {};
+        const email = meta.email || paymentIntent.receipt_email || '';
+        const orderNumber = `SP-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+
+        await supabase.from('orders').insert({
+          order_number: orderNumber,
+          email,
+          total: paymentIntent.amount / 100,
+          status: 'paid',
+          stripe_payment_intent_id: piId,
+          currency: 'USD',
+          shipping_method: meta.shippingMethod || 'standard',
+          fulfillment_status: 'unfulfilled',
+        });
+      }
+    } catch (e) {
+      console.error('[stripe webhook] payment_intent.succeeded fallback', e);
+    }
   } else if (event.type === 'payment_intent.payment_failed') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
     console.error('[stripe webhook] payment_intent.payment_failed', paymentIntent.last_payment_error?.message);

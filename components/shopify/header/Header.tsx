@@ -156,15 +156,6 @@ export function Header({
             <div className="HorizontalList HorizontalList--spacingLoose hidden-pocket">
               <div className="HorizontalList__Item">
                 <a
-                  href="/account"
-                  className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable"
-                  aria-label="Account"
-                >
-                  <Icon icon="account" />
-                </a>
-              </div>
-              <div className="HorizontalList__Item">
-                <a
                   href="/search"
                   className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable"
                   data-action="toggle-search"

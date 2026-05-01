@@ -12,6 +12,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { getBrowserSupabase } from "@/lib/supabaseBrowser";
 
 type OrderItem = {
   id: string;
@@ -36,7 +37,7 @@ type OrderDetail = {
   discount: number;
   currency: string;
   created_at: string;
-  stripe_session_id?: string;
+  stripe_payment_intent_id?: string;
   shipping_address?: any;
   tracking_number?: string;
   carrier?: string;
@@ -51,6 +52,7 @@ const STATUS_COLORS: Record<string, string> = {
   processing: "#2563eb",
   shipped: "#7c3aed",
   delivered: "#16a34a",
+  fulfilled: "#16a34a",
   cancelled: "#dc2626",
   refunded: "#6b7280",
 };
@@ -69,6 +71,7 @@ export default function AdminOrderDetailPage({
 }) {
   const { id } = use(params);
   const [order, setOrder] = useState<OrderDetail | null>(null);
+  const [loading, setLoading] = useState(true);
   const [showRefund, setShowRefund] = useState(false);
   const [showShip, setShowShip] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
@@ -79,83 +82,100 @@ export default function AdminOrderDetailPage({
   const [notes, setNotes] = useState<string[]>([]);
 
   useEffect(() => {
-    // Mock data — replace with real DB fetch
-    setOrder({
-      id,
-      order_number: "SP-000001",
-      email: "jane@example.com",
-      customer_name: "Jane Doe",
-      status: "paid",
-      fulfillment_status: "unfulfilled",
-      total: 145,
-      subtotal: 145,
-      shipping: 0,
-      discount: 0,
-      currency: "USD",
-      created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-      stripe_session_id: "pi_test_123",
-      shipping_address: {
-        name: "Jane Doe",
-        line1: "123 Main St",
-        city: "New York",
-        state: "NY",
-        zip: "10001",
-        country: "US",
-      },
-      items: [
-        {
-          id: "1",
-          title: "SUPER Spec Logo Tee",
-          variantTitle: "Black / L",
-          price: 85,
-          quantity: 1,
-          handle: "logo-tee",
-        },
-        {
-          id: "2",
-          title: "Spectrum Print 001",
-          variantTitle: '18×24"',
-          price: 60,
-          quantity: 1,
-          handle: "spectrum-print-001",
-        },
-      ],
-      timeline: [
-        {
-          type: "placed",
-          message: "Order placed",
-          date: new Date(Date.now() - 3 * 86400000).toISOString(),
-        },
-        {
-          type: "confirmed",
-          message: "Payment confirmed via Stripe",
-          date: new Date(Date.now() - 3 * 86400000 + 60000).toISOString(),
-        },
-      ],
-      notes: [],
-    });
+    async function fetchOrder() {
+      const supabase = getBrowserSupabase();
+      const { data: orderData, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error || !orderData) {
+        toast.error("Order not found");
+        setLoading(false);
+        return;
+      }
+
+      // Type assertion to fix TypeScript inference
+      const order = orderData as any;
+
+      // Fetch order items
+      const { data: items } = await supabase
+        .from("order_items")
+        .select("*, products(title, handle), variants(title)")
+        .eq("order_id", id);
+
+      const formattedItems: OrderItem[] = (items || []).map((item: any) => ({
+        id: item.id,
+        title: item.products?.title || "Product",
+        variantTitle: item.variants?.title,
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        handle: item.products?.handle,
+      }));
+
+      setOrder({
+        id: order.id,
+        order_number: order.order_number,
+        email: order.email || "",
+        customer_name: order.customer_name,
+        status: order.status || "paid",
+        fulfillment_status: order.fulfillment_status || "unfulfilled",
+        total: order.total || 0,
+        subtotal: order.subtotal || order.total || 0,
+        shipping: order.shipping || 0,
+        discount: order.discount || 0,
+        currency: order.currency || "USD",
+        created_at: order.created_at,
+        stripe_payment_intent_id: order.stripe_payment_intent_id,
+        shipping_address: order.shipping_address,
+        tracking_number: order.tracking_number,
+        carrier: order.carrier,
+        items: formattedItems,
+        timeline: [
+          { type: "placed", message: "Order placed", date: order.created_at },
+          { type: "confirmed", message: "Payment confirmed", date: order.created_at },
+        ],
+        notes: order.notes ? [order.notes] : [],
+      });
+      setLoading(false);
+    }
+    fetchOrder();
   }, [id]);
 
-  const handleMarkProcessing = () => {
+  const handleMarkProcessing = async () => {
     if (!order) return;
+    const supabase = getBrowserSupabase();
+    await (supabase.from("orders") as any).update({ status: "processing" }).eq("id", order.id);
     setOrder({ ...order, status: "processing" });
     toast.success("Order marked as processing");
   };
 
-  const handleMarkShipped = () => {
+  const handleMarkShipped = async () => {
     if (!order || !carrier || !trackingNumber) {
       toast.error("Enter carrier and tracking number");
       return;
     }
-    setOrder({
-      ...order,
-      status: "shipped",
-      fulfillment_status: "fulfilled",
-      carrier,
-      tracking_number: trackingNumber,
-    });
-    setShowShip(false);
-    toast.success("Order marked as shipped");
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/fulfill`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ carrier, tracking_number: trackingNumber }),
+      });
+      if (!res.ok) throw new Error("Failed to fulfill order");
+
+      setOrder({
+        ...order,
+        status: "fulfilled",
+        fulfillment_status: "fulfilled",
+        carrier,
+        tracking_number: trackingNumber,
+      });
+      setShowShip(false);
+      toast.success("Order marked as shipped — customer will be notified");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   };
 
   const handleRefund = () => {
@@ -202,7 +222,8 @@ export default function AdminOrderDetailPage({
     printWin.document.close();
   };
 
-  if (!order) return <div className="text-gray-500">Loading…</div>;
+  if (loading) return <div className="text-gray-500">Loading order...</div>;
+  if (!order) return <div className="text-gray-500">Order not found.</div>;
 
   const timelineIdx = TIMELINE_STEPS.indexOf(
     order.status === "paid"
@@ -419,13 +440,13 @@ export default function AdminOrderDetailPage({
               </div>
             </div>
           )}
-          {order.stripe_session_id && (
+          {order.stripe_payment_intent_id && (
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 Payment
               </h3>
               <div className="text-xs text-gray-500 font-mono break-all">
-                {order.stripe_session_id}
+                {order.stripe_payment_intent_id}
               </div>
             </div>
           )}

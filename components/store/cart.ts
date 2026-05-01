@@ -60,6 +60,11 @@ export function writeCart(lines: CartLine[]) {
   syncCartToBackend(lines);
 }
 
+export function clearCart() {
+  localStorage.removeItem(KEY);
+  emitCartUpdated();
+}
+
 export function addToCart(line: CartLine) {
   const cart = readCart();
   const idx = cart.findIndex((l) => l.handle === line.handle && l.variantId === line.variantId);
