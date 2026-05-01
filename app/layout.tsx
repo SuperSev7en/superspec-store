@@ -17,7 +17,7 @@ import { ExitIntentPopup } from "@/components/store/ExitIntentPopup";
 import { PostAddUpsellModal } from "@/components/store/PostAddUpsellModal";
 
 const exo2 = localFont({
-  src: "../Exo_2/Exo2-VariableFont_wght.ttf",
+  src: "../public/fonts/exo2/Exo2-VariableFont_wght.ttf",
   variable: "--font-exo2",
   display: "swap",
 });

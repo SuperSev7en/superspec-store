@@ -6,55 +6,9 @@
    ================================================================ */
 
 @theme {
-  --color-text-primary: var(--text-color);
-  --color-text-secondary: var(--text-light-color);
   --color-accent: var(--link-color);
   --color-accent-hover: #e2c07a;
   --color-border: rgba(255, 255, 255, 0.15);
-  --color-button-primary-bg: var(--button-background);
-  --color-button-primary-text: var(--button-text-color);
-  
-  --font-heading: var(--font-exo2), Futura, "Century Gothic", sans-serif;
-  --font-body: "Century Gothic", CenturyGothic, Futura, sans-serif;
-
-  --spacing-section: 80px;
-  --header-height: 80px;
-}
-
-:root {
-  /* Brand Tokens */
-  --heading-color: #ffffff;
-  --text-color: #ffffff;
-  --text-light-color: #939393;
-  --link-color: #c3922e;
-  --background: #000000;
-  --button-background: #e22120;
-  --button-text-color: #c3922e;
-  --header-background: #000000;
-  --footer-background: #000000;
-  --navigation-text-color: #c3922e;
-  
-  /* Spacing & Borders */
-  --border-radius-sm: 2px;
-  --border-radius-md: 4px;
-  --border-radius-lg: 8px;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--background) !important;
-  color: var(--text-color);
-  font-family: var(--font-body);
-  overflow-x: hidden;
-  min-height: 100vh;
-}
-
-h1, h2, h3, h4, h5, h6, .Heading {
-  font-family: var(--font-heading) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 /* ----------------------------------------------------------------
@@ -66,12 +20,12 @@ h1, h2, h3, h4, h5, h6, .Heading {
 .ImageWithText__Content, 
 .Hero__Content,
 .TextOverBackground {
-  background: rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
-  border-radius: var(--border-radius-md);
-  padding: 24px !important;
-  color: #FFFFFF !important;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 4px;
+  padding: 24px;
+  color: #FFFFFF;
 }
 
 /* Nav Dropdown Menus (Solid Background) */
@@ -79,7 +33,7 @@ h1, h2, h3, h4, h5, h6, .Heading {
 .Header__SecondaryNav .DropdownMenu,
 .Popover,
 .Drawer {
-  background-color: rgba(0, 0, 0, 0.97) !important;
+  background-color: rgba(0, 0, 0, 0.97);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -87,17 +41,9 @@ h1, h2, h3, h4, h5, h6, .Heading {
 
 .Header__MainNav a, 
 .Header__SecondaryNav a {
-  color: var(--navigation-text-color) !important;
+  color: var(--navigation-text-color);
   transition: opacity 0.2s ease;
 }
-
-.Header__MainNav a:hover {
-  opacity: 0.7;
-}
-
-/* ----------------------------------------------------------------
-   Prestige Theme Fixes
-   ---------------------------------------------------------------- */
 
 /* Force-reveal products hidden by Prestige stagger logic */
 .js .features--show-element-staggering .ProductItem {
@@ -121,50 +67,35 @@ h1, h2, h3, h4, h5, h6, .Heading {
   font-weight: 600;
   line-height: 18px;
   text-align: center;
-  box-shadow: 0 0 0 2px var(--header-background);
 }
 
-/* Buttons */
-.Button, .Button--primary {
-  background-color: var(--button-background) !important;
-  color: var(--button-text-color) !important;
-  border: 1px solid var(--button-text-color) !important;
-  border-radius: var(--border-radius-sm);
-  padding: 12px 24px;
-  font-family: var(--font-heading);
-  font-weight: 600;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
+/* ----------------------------------------------------------------
+   Prestige Alignment - MINIMAL OVERRIDES
+   ---------------------------------------------------------------- */
+
+#main {
+  min-height: 80vh;
 }
 
-.Button:hover {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border-color: #ffffff !important;
+/* Ensure no overlap on product page by allowing flex to flow naturally */
+.Product__Wrapper {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-/* Forms */
-.Form__Input, select {
-  background-color: #111111 !important;
-  color: #ffffff !important;
-  border: 1px solid #333333 !important;
-  padding: 12px;
-  border-radius: var(--border-radius-sm);
+.Product__Gallery {
+  width: 100%;
 }
 
-.Form__Input:focus {
-  border-color: var(--link-color) !important;
-  outline: none;
+.Product__InfoWrapper {
+  width: 100%;
 }
 
-/* Product Cards */
-.ProductItem__Title {
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  margin-top: 12px;
-}
-
-.ProductItem__Price {
-  color: var(--text-light-color);
-  font-size: 0.85rem;
+@media screen and (min-width: 1008px) {
+  .Product__Gallery {
+    width: 60%;
+  }
+  .Product__InfoWrapper {
+    width: 40%;
+  }
 }

@@ -25,6 +25,14 @@ export function ThemeLayout({
   const footerSection = sections["footer"];
   const announcementSection = sections["announcement"];
 
+  const cssVars = getCssVariables(settings);
+  // Inject Exo 2 for headings
+  const customVars = {
+    ...cssVars,
+    "--heading-font-family": "var(--font-exo2), Futura, sans-serif",
+    "--accent-color": settings.link_color || "#c3922e",
+  };
+
   return (
     <>
       <a className="PageSkipLink u-visually-hidden" href="#main">
@@ -44,7 +52,7 @@ export function ThemeLayout({
       {/* Theme-level CSS variables */}
       <style
         dangerouslySetInnerHTML={{
-          __html: `:root, [data-theme="dark"]{${Object.entries(getCssVariables(settings))
+          __html: `:root, [data-theme="dark"]{${Object.entries(customVars)
             .map(([k, v]) => `${k}:${v};`)
             .join("")}}`,
         }}

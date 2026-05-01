@@ -85,14 +85,17 @@ function CheckoutForm({
 }
 
 export default function CheckoutFlow() {
-  const [step, setStep] = useState(2); // Start at Contact (Step 2) since Step 1 is Express
+  const [step, setStep] = useState(2);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [clientSecret, setClientSecret] = useState("");
+  const [stripeError, setStripeError] = useState<string | null>(null);
 
   useEffect(() => {
     const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-    if (!key || key.includes("pk_test_51QdX7zLqX7vZ9Y8x7W6vU5tS4rR3qP2oN1mK0lJ9kI8jH7gF6eD5cB4aA3z2Y1x0W9vU8tS7rQ6pO5nM4lK3jI2hG1fE0dC9bA8eF7gH6iJ5kL4mN6oP8qR0sT2uV4wX6yZ8")) {
-       console.warn("STRIPE DEBUG: The Stripe publishable key appears to be a placeholder or invalid. Checkout will likely fail.");
+    if (!key) {
+       setStripeError("Stripe Publishable Key is missing. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.");
+    } else if (key.includes("pk_test_51QdX7zLqX7vZ9Y8x7W6vU5tS4rR3qP2oN1mK0lJ9kI8jH7gF6eD5cB4aA3z2Y1x0W9vU8tS7rQ6pO5nM4lK3jI2hG1fE0dC9bA8eF7gH6iJ5kL4mN6oP8qR0sT2uV4wX6yZ8")) {
+       console.warn("STRIPE DEBUG: Using placeholder key.");
     }
   }, []);
 
@@ -215,6 +218,11 @@ export default function CheckoutFlow() {
     >
       {/* Left Column: Flow */}
       <div style={{ flex: "1 1 550px" }}>
+        {stripeError && (
+          <div style={{ background: "#fee2e2", border: "1px solid #ef4444", color: "#b91c1c", padding: 15, borderRadius: 8, marginBottom: 20, fontSize: 14 }}>
+            {stripeError}
+          </div>
+        )}
         <div
           style={{
             display: "flex",
