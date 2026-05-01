@@ -326,3 +326,36 @@ main#main
     max-width: 140px;
   }
 }
+
+/* ----------------------------------------------------------------
+   UI Visibility Fixes (Variant Selectors, Inputs, and Buttons)
+   ---------------------------------------------------------------- */
+select, .Form__Input, select.Form__Input, .Form__Select select {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #333333 !important;
+}
+
+select:focus, .Form__Input:focus {
+  border-color: #ffffff !important;
+}
+
+/* Variant overlay buttons */
+.ClothingOverlay button, .ArtOverlay button, .EngineeredOverlay button {
+  background-color: #111111;
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+/* Add to Cart Text Contrast */
+.ProductForm__AddToCart {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+  font-weight: bold !important;
+}
+
+/* Faint social proof text fix */
+.Text--subdued {
+  color: #e0e0e0 !important;
+  opacity: 1 !important;
+}

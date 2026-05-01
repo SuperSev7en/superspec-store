@@ -40,6 +40,8 @@ export function ProductDetailBase({
     string | undefined
   >(product.variants.length === 1 ? product.variants[0]?.id : undefined);
 
+  const fallbackImage = product.images?.[0] || "";
+
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ||
     product.variants[0];
@@ -119,7 +121,7 @@ export function ProductDetailBase({
             className="Product__Gallery"
             style={{ flex: "1 1 500px", minWidth: 0 }}
           >
-            <ProductGallery images={product.images} alt={product.title} />
+            <ProductGallery images={product.images || []} alt={product.title} />
           </div>
 
           {/* Info */}
@@ -294,7 +296,7 @@ export function ProductDetailBase({
                   variantId={selectedVariantId}
                   title={product.title}
                   price={price}
-                  image={product.images[0]}
+                  image={fallbackImage}
                   variantTitle={selectedVariant?.title}
                   onClick={(e) => {
                     if (!selectedVariantId && product.variants.length > 1) {
@@ -333,16 +335,7 @@ export function ProductDetailBase({
               <WishlistButton productHandle={product.handle} />
             </div>
 
-            {/* Express Checkout (Apple Pay / Google Pay) */}
-            {mounted && price > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <Elements stripe={stripePromise} options={{ mode: 'payment', amount: Math.round(price * 100), currency: 'usd' }}>
-                  <ExpressCheckoutElement onConfirm={() => {}} />
-                </Elements>
-              </div>
-            )}
-
-            {/* Return Policy */}
+            {/* Express Checkout Handled via standard checkout process */}
             <div style={{ marginBottom: 12 }}>
               <ReturnPolicyBadge />
             </div>
@@ -448,7 +441,7 @@ export function ProductDetailBase({
             handle: product.handle,
             title: product.title,
             price: `$${price.toFixed(2)}`,
-            image: product.images[0],
+            image: fallbackImage,
           }}
         />
       </div>
@@ -458,7 +451,7 @@ export function ProductDetailBase({
         title={product.title}
         price={`$${price.toFixed(2)}`}
         variantId={selectedVariantId}
-        image={product.images[0]}
+        image={fallbackImage}
       />
     </>
   );
