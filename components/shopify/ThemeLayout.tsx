@@ -33,13 +33,16 @@ export function ThemeLayout({
       <span className="LoadingBar"></span>
       <div className="PageOverlay"></div>
 
+      {/* Prestige Premium Background Layers */}
+      <div className="animated-background"></div>
+      <div className="animated-background-particles"></div>
+
       {settings.show_page_transition ? (
         <div className="PageTransition"></div>
       ) : null}
 
-      {/* Theme-level CSS variables (from `snippets/css-variables.liquid`) */}
+      {/* Theme-level CSS variables */}
       <style
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
           __html: `:root, [data-theme="dark"]{${Object.entries(getCssVariables(settings))
             .map(([k, v]) => `${k}:${v};`)
@@ -55,11 +58,10 @@ export function ThemeLayout({
           />
         ) : null}
 
-        {/* TODO: sections: popup, sidebar-menu, cart-drawer */}
         <Header
           settings={settings}
           sectionSettings={
-            (headerSection?.settings ?? {}) as Record<string, unknown>
+            (headerSection?.settings ?? {}) as Record<string, any>
           }
         />
 
@@ -71,8 +73,8 @@ export function ThemeLayout({
           settings={settings}
           section={
             footerSection as unknown as {
-              settings?: Record<string, unknown>;
-              blocks?: Record<string, unknown>;
+              settings?: Record<string, any>;
+              blocks?: Record<string, any>;
               block_order?: string[];
             }
           }

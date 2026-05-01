@@ -35,9 +35,9 @@ type ImageSlot = { pos: number; url: string };
 
 const ROOT = process.cwd();
 const CSV_PATHS = [
-  path.join(ROOT, 'shopify files copy', 'products_export 2.csv'),
   path.join(ROOT, 'shopify files copy', 'products_export 3.csv'),
 ];
+
 const MANIFEST_PATH = path.join(ROOT, 'public', 'assets', 'product-images', 'manifest.json');
 
 function toNumber(input: unknown): number | null {
@@ -101,6 +101,12 @@ function addImageSlot(map: Map<string, ImageSlot[]>, handle: string, rawUrl: str
   list.push({ pos: sortKey, url: mapped });
 }
 
+function isPublished(r: Record<string, any>) {
+  const status = String(r.Status || '').toLowerCase();
+  if (status === 'active') return true;
+  return csvBool(r.Published);
+}
+
 export async function loadCatalog(): Promise<CatalogProduct[]> {
   const manifest = await readManifest();
 
@@ -120,7 +126,7 @@ export async function loadCatalog(): Promise<CatalogProduct[]> {
       relax_quotes: true,
       relax_column_count: true,
       skip_empty_lines: true,
-    }) as Array<Record<string, unknown>>;
+    }) as Array<Record<string, any>>;
 
     for (const r of records) {
       rowCounter += 1;
@@ -128,14 +134,14 @@ export async function loadCatalog(): Promise<CatalogProduct[]> {
       if (!handle) continue;
 
       const body = typeof r['Body (HTML)'] === 'string' ? r['Body (HTML)'].trim() : '';
-      const title = typeof r.Title === 'string' ? r.Title.trim() : handle;
+      const title = typeof r.Title === 'string' ? r.Title.trim() : '';
 
       const existing =
         byHandle.get(handle) ??
         ({
           id: handle,
           handle,
-          title,
+          title: title || handle,
           descriptionHtml: '',
           vendor: null,
           productType: null,
@@ -143,7 +149,7 @@ export async function loadCatalog(): Promise<CatalogProduct[]> {
           tags: [],
           images: [],
           variants: [],
-          published: csvBool(r.Published),
+          published: isPublished(r),
           seoTitle: null,
           seoDescription: null,
         } satisfies CatalogProduct);
@@ -174,16 +180,17 @@ export async function loadCatalog(): Promise<CatalogProduct[]> {
         existing.tags = Array.from(merged);
       }
 
-      existing.published = existing.published || csvBool(r.Published);
+      // If any row for this handle is active, the whole product is active
+      existing.published = existing.published || isPublished(r);
 
       const imgPos = toInt(r['Image Position']);
       const sortBase = imgPos !== null && imgPos > 0 ? imgPos * 1000 : 1_000_000 + rowCounter;
 
       const imgSrc = typeof r['Image Src'] === 'string' ? r['Image Src'] : '';
-      addImageSlot(imageSlots, handle, imgSrc, sortBase, manifest);
+      if (imgSrc) addImageSlot(imageSlots, handle, imgSrc, sortBase, manifest);
 
       const vImg = typeof r['Variant Image'] === 'string' ? r['Variant Image'] : '';
-      addImageSlot(imageSlots, handle, vImg, sortBase + 1, manifest);
+      if (vImg) addImageSlot(imageSlots, handle, vImg, sortBase + 1, manifest);
 
       const option1 = typeof r['Option1 Value'] === 'string' ? r['Option1 Value'].trim() : null;
       const sku = typeof r['Variant SKU'] === 'string' ? r['Variant SKU'].trim() : null;
@@ -211,16 +218,6 @@ export async function loadCatalog(): Promise<CatalogProduct[]> {
     p.images = slots.map((s) => s.url);
   }
 
-  for (const p of byHandle.values()) {
-    if (p.variants.length === 0) {
-      p.variants.push({
-        id: `${p.handle}:default`,
-        title: p.title,
-        price: 0,
-      });
-    }
-  }
-
   return Array.from(byHandle.values()).filter((p) => p.published);
 }
 
@@ -233,7 +230,7 @@ function normalizeTag(t: string) {
   return t.trim().toLowerCase().replace(/\s+/g, '-');
 }
 
-/** Match CSV products to a Shopify collection handle via tags (e.g. `super-spectrum` or `collection:super-spectrum`). */
+/** Match CSV products to a Shopify collection handle via tags or smart heuristics. */
 export async function getProductsForCollectionHandle(collectionHandle: string, limit: number) {
   const h = collectionHandle.trim().toLowerCase();
   if (!h) return [];
@@ -242,18 +239,21 @@ export async function getProductsForCollectionHandle(collectionHandle: string, l
 
   const matched = catalog.filter((p) => {
     const tags = p.tags.map(normalizeTag);
-    if (
-      tags.includes(h) ||
-      tags.includes(`collection:${h}`) ||
-      tags.some((t) => t.replace(/^collection:/, '') === h)
-    ) {
-      return true;
+    // 1. Direct tag match
+    if (tags.includes(h) || tags.includes(`collection:${h}`)) return true;
+
+    // 2. Multi-word tag/handle decomposition
+    const parts = h.split('-');
+    if (parts.length > 1) {
+      if (parts.every(part => tags.some(t => t.includes(part)))) return true;
     }
 
-    const keywords = h.split('-').filter((k) => k.length >= 4);
-    const hay = normalizeTag([p.title, p.vendor ?? '', p.productType ?? '', p.productCategory ?? '', p.tags.join(' ')].join(' '));
-    if (keywords.length === 0) return false;
-    return keywords.some((k) => hay.includes(k));
+    // 3. Keyword heuristic on title/type/vendor
+    const keywords = h.split('-').filter((k) => k.length >= 3);
+    const searchable = normalizeTag([p.title, p.vendor ?? '', p.productType ?? '', p.tags.join(' ')].join(' '));
+    if (keywords.length > 0 && keywords.every(k => searchable.includes(k))) return true;
+
+    return false;
   });
 
   return matched.slice(0, Math.max(0, limit));

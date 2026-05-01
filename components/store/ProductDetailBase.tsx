@@ -14,6 +14,12 @@ import { ReturnPolicyBadge } from "./TrustBadges";
 import { ClothingOverlay } from "./ClothingOverlay";
 import { ArtOverlay } from "./ArtOverlay";
 import { EngineeredOverlay } from "./EngineeredOverlay";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, ExpressCheckoutElement } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+);
 
 // Type helper for the server-passed related products
 type RelatedProd = any;
@@ -326,6 +332,15 @@ export function ProductDetailBase({
               </div>
               <WishlistButton productHandle={product.handle} />
             </div>
+
+            {/* Express Checkout (Apple Pay / Google Pay) */}
+            {mounted && price > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <Elements stripe={stripePromise} options={{ amount: Math.round(price * 100), currency: 'usd' }}>
+                  <ExpressCheckoutElement onConfirm={() => {}} />
+                </Elements>
+              </div>
+            )}
 
             {/* Return Policy */}
             <div style={{ marginBottom: 12 }}>

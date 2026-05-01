@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 
 export async function POST(req: Request) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error("STRIPE ERROR: STRIPE_SECRET_KEY is missing from environment variables.");
+  }
   try {
     const { cart, email, address, discountCode } = await req.json();
 

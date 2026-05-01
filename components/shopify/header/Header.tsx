@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { ThemeSettings } from "@/lib/shopify/themeSettings";
 import { Icon } from "@/components/shopify/icons/Icon";
 import Image from "next/image";
@@ -10,14 +10,6 @@ import { HeaderSidebarToggle } from "@/components/store/HeaderSidebarToggle";
 
 type MenuLink = { title: string; url: string; active?: boolean };
 
-/**
- * Header component — matches `sections/header.liquid` from the Prestige theme.
- *
- * Layout: "center" navigation style.
- * - Logo is centered.
- * - Nav links centered below or beside.
- * - Account / search / cart icons on the right.
- */
 export function Header({
   settings,
   sectionSettings,
@@ -25,21 +17,22 @@ export function Header({
   menu = [...MAIN_NAV_LINKS],
 }: {
   settings: ThemeSettings;
-  sectionSettings: Record<string, unknown>;
+  sectionSettings: Record<string, any>;
   shopName?: string;
   menu?: MenuLink[];
 }) {
-  const useStickyHeader = Boolean(sectionSettings.use_sticky_header ?? false);
+  const useStickyHeader = Boolean(sectionSettings.use_sticky_header ?? true);
   const navigationStyle = String(sectionSettings.navigation_style ?? "center");
-  const logo =
-    typeof sectionSettings.logo === "string" ? sectionSettings.logo : null;
-  const logoMaxWidth = Number(sectionSettings.logo_max_width ?? 305);
+  const logo = typeof sectionSettings.logo === "string" ? sectionSettings.logo : null;
+  const logoMaxWidth = Number(sectionSettings.logo_max_width ?? 140);
   const mobileLogoMaxWidth = Number(sectionSettings.mobile_logo_max_width ?? 90);
 
-  // Set --header-height dynamically as in the original Shopify theme
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
+    setIsInitialized(true);
     const updateHeaderHeight = () => {
-      const header = document.getElementById("section-header");
+      const header = document.getElementById("shopify-section-header");
       if (header) {
         document.documentElement.style.setProperty(
           "--header-height",
@@ -55,25 +48,14 @@ export function Header({
 
   return (
     <>
-      {/* ── Search overlay (matches header.liquid) ── */}
       <div id="Search" className="Search" aria-hidden="true">
         <div className="Search__Inner">
           <div className="Search__SearchBar">
-            <form
-              action="/search"
-              name="GET"
-              role="search"
-              className="Search__Form"
-            >
+            <form action="/search" name="GET" role="search" className="Search__Form">
               <div className="Search__InputIconWrapper">
-                <span className="hidden-tablet-and-up">
-                  <Icon icon="search" />
-                </span>
-                <span className="hidden-phone">
-                  <Icon icon="search-desktop" />
-                </span>
+                <span className="hidden-tablet-and-up"><Icon icon="search" /></span>
+                <span className="hidden-phone"><Icon icon="search-desktop" /></span>
               </div>
-
               <input
                 type="search"
                 className="Search__Input Heading"
@@ -83,144 +65,96 @@ export function Header({
                 autoCapitalize="off"
                 aria-label="Search"
                 placeholder="Search"
-                autoFocus
               />
               <input type="hidden" name="type" value="product" />
             </form>
-
-            <button
-              className="Search__Close Link Link--primary"
-              data-action="close-search"
-              aria-label="Close search"
-            >
+            <button className="Search__Close Link Link--primary" data-action="close-search">
               <Icon icon="close" />
             </button>
-          </div>
-
-          <div className="Search__Results" aria-hidden="true">
-            {settings.search_mode !== "product" ? (
-              <div className="PageLayout PageLayout--breakLap">
-                <div className="PageLayout__Section"></div>
-                <div className="PageLayout__Section PageLayout__Section--secondary"></div>
-              </div>
-            ) : null}
           </div>
         </div>
       </div>
 
-      {/* ── Header (matches header.liquid) ── */}
       <header
-        id="section-header"
-        className={`Header ${navigationStyle === "inline" ? "Header--inline" : ""} ${navigationStyle === "logoLeft" ? "Header--logoLeft" : ""} ${navigationStyle === "center" ? "Header--center" : ""}`}
+        id="shopify-section-header"
+        className={`Header Header--${navigationStyle} ${useStickyHeader ? "Header--sticky" : ""} ${isInitialized ? "Header--initialized" : ""}`}
         data-section-id="header"
         data-section-type="header"
-        data-section-settings={JSON.stringify({
-          navigationStyle,
-          hasTransparentHeader: false,
-          isSticky: useStickyHeader,
-        })}
       >
         <div className="Header__Wrapper">
-          <div className="Header__FlexItem Header__FlexItem--logo">
+          <div className="Header__FlexItem Header__FlexItem--logo hidden-desk">
             <HeaderSidebarToggle />
           </div>
 
-          {/* Logo */}
-          <div className="Header__LogoContainer">
-            <a href="/" className="Header__Logo">
-              {logo ? (
-                <Image
-                  className="Header__LogoImage"
-                  src={logo}
-                  alt={shopName}
-                  width={logoMaxWidth}
-                  height={Math.round(logoMaxWidth / 3)}
-                  style={{ maxWidth: `${logoMaxWidth}px`, height: "auto" }}
-                  priority
-                  unoptimized
-                />
-              ) : (
-                <span className="Heading u-h4">{shopName}</span>
-              )}
-            </a>
+          <div className="Header__FlexItem Header__FlexItem--logo">
+            <div className="Header__LogoContainer">
+              <a href="/" className="Header__Logo">
+                {logo ? (
+                  <Image
+                    className="Header__LogoImage"
+                    src={logo}
+                    alt={shopName}
+                    width={logoMaxWidth}
+                    height={60}
+                    style={{ maxWidth: `${logoMaxWidth}px`, height: "auto" }}
+                    priority
+                    unoptimized
+                  />
+                ) : (
+                  <span className="Heading u-h4">{shopName}</span>
+                )}
+              </a>
+            </div>
           </div>
 
-          {/* Main Navigation */}
-          <nav className="Header__MainNav" aria-label="Main navigation">
+          <nav className="Header__MainNav hidden-pocket" aria-label="Main navigation">
             <ul className="HorizontalList HorizontalList--spacingLoose">
               {menu.map((link) => (
-                <li
-                  key={`${link.url}-${link.title}`}
-                  className={`HorizontalList__Item ${link.active ? "is-active" : ""}`.trim()}
-                >
-                  <a href={link.url} className="Heading u-h6">
-                    {link.title}
-                  </a>
+                <li key={`${link.url}-${link.title}`} className="HorizontalList__Item">
+                  <a href={link.url} className="Heading u-h6">{link.title}</a>
                 </li>
               ))}
             </ul>
           </nav>
 
-          {/* Secondary Nav: Account, Search, Cart */}
           <div className="Header__SecondaryNav">
-            <a
-              href="/account"
-              className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable hidden-phone"
-              aria-label="Account"
-            >
+            <a href="/account" className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable hidden-phone">
               <Icon icon="account" />
             </a>
-
-            <a
-              href="/search"
-              className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable"
-              data-action="toggle-search"
-              aria-label="Search"
-            >
+            <a href="/search" className="Header__Icon Icon-Wrapper Icon-Wrapper--clickable" data-action="toggle-search">
               <Icon icon="search" />
             </a>
-
             <HeaderCartLink cartType={settings.cart_type} />
           </div>
         </div>
       </header>
 
-      {/* Mobile logo max-width + sticky header CSS vars */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            :root {
-              --use-sticky-header: ${useStickyHeader ? 1 : 0};
-              --use-unsticky-header: ${useStickyHeader ? 0 : 1};
-              --header-is-not-transparent: 1;
-              --header-is-transparent: 0;
-            }
-            #section-header {
-              position: ${useStickyHeader ? "sticky" : "relative"};
-              top: 0;
-              z-index: 10;
-              background-color: var(--header-background);
-            }
-            @media screen and (min-width: 641px) {
-              .Header--center .Header__Wrapper {
-                padding-bottom: 24px;
-              }
-              .Header--center .Header__MainNav {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                text-align: center;
-              }
-            }
-            @media screen and (max-width: 640px) {
-              .Header__LogoImage {
-                max-width: ${mobileLogoMaxWidth}px !important;
-              }
-            }
-          `,
-        }}
-      />
+      <style dangerouslySetInnerHTML={{ __html: `
+        :root {
+          --use-sticky-header: ${useStickyHeader ? 1 : 0};
+          --use-unsticky-header: ${useStickyHeader ? 0 : 1};
+        }
+        @media screen and (min-width: 641px) {
+          .Header--center .Header__Wrapper {
+            padding-bottom: 24px;
+          }
+          .Header--center .Header__MainNav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+          }
+          .Header--center .Header__FlexItem {
+            margin-bottom: 40px;
+          }
+        }
+        @media screen and (max-width: 640px) {
+          .Header__LogoImage {
+            max-width: ${mobileLogoMaxWidth}px !important;
+          }
+        }
+      `}} />
     </>
   );
 }

@@ -5,12 +5,27 @@
    This file supplies only project-specific overrides.
    ================================================================ */
 
+:root {
+  --heading-color: #ffffff;
+  --text-color: #ffffff;
+  --text-light-color: #939393;
+  --link-color: #c3922e;
+  --background: #000000;
+  --button-background: #e22120;
+  --button-text-color: #c3922e;
+  --header-background: #000000;
+  --footer-background: #000000;
+  --navigation-text-color: #c3922e;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  background-color: #000000 !important;
+  background-color: transparent !important;
   color: #ffffff;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 #main,
@@ -130,7 +145,59 @@ main#main {
 }
 
 /* ----------------------------------------------------------------
-   Add-to-cart button: solid, clean, matches the Prestige style
+   Brand Color Enforcement (Fixes invisible text)
+   ---------------------------------------------------------------- */
+:root, [data-theme="dark"] {
+  --heading-color: #ffffff !important;
+  --text-color: #ffffff !important;
+  --link-color: #c3922e !important;
+  --button-background: #e22120 !important;
+  --button-text-color: #c3922e !important;
+  --navigation-text-color: #c3922e !important;
+}
+
+.Heading, .SectionHeader__Heading, .ProductItem__Title, .ProductMeta__Title {
+  color: var(--heading-color) !important;
+}
+
+.Button, .Button--primary, .Button--secondary {
+  background-color: var(--button-background) !important;
+  color: var(--button-text-color) !important;
+  border: 1px solid var(--button-text-color) !important;
+}
+
+.Link, a:not(.Button) {
+  color: var(--link-color);
+}
+
+.Header__MainNav .HorizontalList__Item a {
+  color: var(--navigation-text-color) !important;
+}
+
+/* ----------------------------------------------------------------
+   Transparency Enforcement (For background effects)
+   ---------------------------------------------------------------- */
+#main,
+.PageContainer,
+.PageContent,
+.Section,
+.Collection,
+.Page,
+.Product,
+.Container {
+  background-color: transparent !important;
+}
+
+.PageContainer {
+  background: transparent !important;
+}
+
+main#main {
+  background: transparent !important;
+}
+
+/* ----------------------------------------------------------------
+   Add-to-cart button: match Prestige style exactly
    ---------------------------------------------------------------- */
 main#main button.AddToCartButton--storefront.Button.Button--primary {
   position: relative;
