@@ -76,7 +76,7 @@ export function ProductItem({
         quantity: 1,
         title: product.title,
         price: v.price,
-        image: product.images[0],
+        image: product.images?.[0] || "",
         variantTitle: v.title,
       });
       trackEvent("add_to_cart", {
@@ -108,7 +108,7 @@ export function ProductItem({
       quantity: 1,
       title: product.title,
       price: variantPrice,
-      image: product.images[0],
+      image: product.images?.[0] || "",
       variantTitle,
     });
     trackEvent("add_to_cart", {
@@ -131,9 +131,11 @@ export function ProductItem({
     cellClassName ? <div className={cellClassName}>{inner}</div> : inner;
 
   const imageToShow =
-    isHovered && product.images.length > 1
-      ? product.images[1]
-      : product.images[0];
+    product.images && product.images.length > 0
+      ? isHovered && product.images.length > 1
+        ? product.images[1]
+        : product.images[0]
+      : null;
 
   return wrap(
     <div

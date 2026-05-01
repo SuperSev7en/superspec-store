@@ -118,7 +118,8 @@ export function SidebarMenu({
                   <div key={link.url} className="Collapsible">
                     <a
                       href={link.url}
-                      className="Collapsible__Button Heading Link Link--primary u-h6"
+                      className="Collapsible__Button Heading Link Link--primary u-h4"
+                      style={{ color: "var(--navigation-text-color)", display: "block", padding: "12px 0" }}
                     >
                       {link.title}
                     </a>
@@ -126,12 +127,13 @@ export function SidebarMenu({
                 ))}
               </nav>
 
-              <nav className="SidebarMenu__Nav SidebarMenu__Nav--secondary">
+              <nav className="SidebarMenu__Nav SidebarMenu__Nav--secondary" style={{ marginTop: "40px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px" }}>
                 <ul className="Linklist Linklist--spacingLoose">
                   <li className="Linklist__Item">
                     <a
                       href="/account"
-                      className="Text--subdued Link Link--primary"
+                      className="Heading u-h6 Link Link--primary"
+                      style={{ color: "var(--text-color)" }}
                     >
                       Account
                     </a>

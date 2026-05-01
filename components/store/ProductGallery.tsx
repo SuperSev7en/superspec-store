@@ -15,6 +15,24 @@ export function ProductGallery({
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const containerRef = useRef<HTMLDivElement>(null);
 
+  if (!images || images.length === 0) {
+    return (
+      <div
+        className="ProductGallery__Placeholder"
+        style={{
+          aspectRatio: "1",
+          background: "#111",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          border: "1px solid #333",
+        }}
+      >
+        <span className="Text--subdued">No Image Available</span>
+      </div>
+    );
+  }
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

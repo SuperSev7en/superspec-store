@@ -86,14 +86,7 @@ export function FeaturedCollectionsClient({
             hidden={i !== active}
           >
             <div className="ProductListWrapper">
-              {t.products.length === 0 ? (
-                <PlaceholderGrid
-                  count={t.limit}
-                  layoutMode={t.layoutMode}
-                  mobileCols={m}
-                  desktopCols={d}
-                />
-              ) : t.layoutMode === "carousel" ? (
+              {t.layoutMode === "carousel" ? (
                 <div className="ProductList ProductList--carousel Carousel">
                   {t.products.map((p) => (
                     <div key={p.handle} className="Carousel__Cell">
@@ -129,64 +122,5 @@ export function FeaturedCollectionsClient({
         );
       })}
     </section>
-  );
-}
-
-function PlaceholderGrid({
-  count,
-  layoutMode,
-  mobileCols,
-  desktopCols,
-}: {
-  count: number;
-  layoutMode: string;
-  mobileCols: string;
-  desktopCols: string;
-}) {
-  const n = Math.min(8, Math.max(1, count));
-  const cellGrid = `Grid__Cell 1/${mobileCols}--phone 1/2--tablet-and-up 1/${desktopCols}--lap-and-up`;
-  const cells = Array.from({ length: n }, (_, idx) => (
-    <div
-      key={idx}
-      className={layoutMode === "grid" ? cellGrid : "Carousel__Cell"}
-    >
-      <div className="ProductItem">
-        <div className="ProductItem__Wrapper">
-          <a
-            href="#"
-            className="ProductItem__ImageWrapper"
-            onClick={(e) => e.preventDefault()}
-          >
-            <div
-              className="ProductItem__Image PlaceholderSvg PlaceholderSvg--dark"
-              style={{ minHeight: 200, background: "rgba(255,255,255,0.06)" }}
-            />
-          </a>
-          <div className="ProductItem__Info ProductItem__Info--left">
-            <h2 className="ProductItem__Title Heading" style={{ opacity: 0.3 }}>&nbsp;</h2>
-            <div className="ProductItem__PriceList Heading">
-              <span className="ProductItem__Price Price Text--subdued" style={{ opacity: 0.3 }}>
-                &nbsp;
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  ));
-
-  if (layoutMode === "grid") {
-    return (
-      <div
-        className="ProductList ProductList--grid ProductList--removeMargin Grid"
-        data-mobile-count={mobileCols}
-        data-desktop-count={desktopCols}
-      >
-        {cells}
-      </div>
-    );
-  }
-  return (
-    <div className="ProductList ProductList--carousel Carousel">{cells}</div>
   );
 }

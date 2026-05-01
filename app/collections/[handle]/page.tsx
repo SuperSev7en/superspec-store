@@ -146,7 +146,7 @@ export default async function CollectionPage({
         <ProductCatalogClient
           products={products}
           layout="shop"
-          collectionCellClassName="Grid__Cell 1/2--phone 1/2--tablet 1/3--lap-and-up"
+          collectionCellClassName="Grid__Cell 1/2--phone 1/2--tablet 1/4--lap-and-up"
           collectionType={
             handle.includes("speck") || handle === "clothing"
               ? "clothing"

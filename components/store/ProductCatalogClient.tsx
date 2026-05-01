@@ -18,7 +18,7 @@ type FilterState = {
 export function ProductCatalogClient({
   products,
   layout = "collection",
-  collectionCellClassName = "Grid__Cell 1/2--phone 1/2--tablet 1/3--lap-and-up",
+  collectionCellClassName = "Grid__Cell 1/2--phone 1/2--tablet 1/4--lap-and-up",
   collectionType = "all",
 }: {
   products: CatalogRowProduct[];

@@ -1,11 +1,28 @@
+@import "tailwindcss";
+
 /* ================================================================
    SuperSpec Store – globals.css
    Matches the Prestige v4 Shopify theme (black/gold palette).
-   The Shopify theme.css in /public/assets/ provides nearly all styles.
-   This file supplies only project-specific overrides.
    ================================================================ */
 
+@theme {
+  --color-text-primary: var(--text-color);
+  --color-text-secondary: var(--text-light-color);
+  --color-accent: var(--link-color);
+  --color-accent-hover: #e2c07a;
+  --color-border: rgba(255, 255, 255, 0.15);
+  --color-button-primary-bg: var(--button-background);
+  --color-button-primary-text: var(--button-text-color);
+  
+  --font-heading: var(--font-exo2), Futura, "Century Gothic", sans-serif;
+  --font-body: "Century Gothic", CenturyGothic, Futura, sans-serif;
+
+  --spacing-section: 80px;
+  --header-height: 80px;
+}
+
 :root {
+  /* Brand Tokens */
   --heading-color: #ffffff;
   --text-color: #ffffff;
   --text-light-color: #939393;
@@ -16,46 +33,80 @@
   --header-background: #000000;
   --footer-background: #000000;
   --navigation-text-color: #c3922e;
+  
+  /* Spacing & Borders */
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 8px;
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
-  background-color: transparent !important;
-  color: #ffffff;
+  background-color: var(--background) !important;
+  color: var(--text-color);
+  font-family: var(--font-body);
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-#main,
-.PageContainer,
-.PageContent,
-.Section,
-.Collection,
-.Page,
-.Product,
-.Container {
-  background-color: transparent !important;
+h1, h2, h3, h4, h5, h6, .Heading {
+  font-family: var(--font-heading) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* ----------------------------------------------------------------
-   Element-staggering fix: Prestige hides grid items then reveals
-   via JS.  In Next.js the class split lives on <html> vs <body>.
-   Force-reveal so products always show.
+   CRITICAL: Text Visibility & Overlays
    ---------------------------------------------------------------- */
-.js .features--show-element-staggering main#main .ProductList--grid .ProductItem,
-.js .features--show-element-staggering main#main .ProductList--viewList .ProductItem {
+
+/* Any text over animated/media background */
+.Slideshow__Content, 
+.ImageWithText__Content, 
+.Hero__Content,
+.TextOverBackground {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  border-radius: var(--border-radius-md);
+  padding: 24px !important;
+  color: #FFFFFF !important;
+}
+
+/* Nav Dropdown Menus (Solid Background) */
+.Header__MainNav .HorizontalList__Item .DropdownMenu,
+.Header__SecondaryNav .DropdownMenu,
+.Popover,
+.Drawer {
+  background-color: rgba(0, 0, 0, 0.97) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.Header__MainNav a, 
+.Header__SecondaryNav a {
+  color: var(--navigation-text-color) !important;
+  transition: opacity 0.2s ease;
+}
+
+.Header__MainNav a:hover {
+  opacity: 0.7;
+}
+
+/* ----------------------------------------------------------------
+   Prestige Theme Fixes
+   ---------------------------------------------------------------- */
+
+/* Force-reveal products hidden by Prestige stagger logic */
+.js .features--show-element-staggering .ProductItem {
   visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
-/* ----------------------------------------------------------------
-   Cart badge on header icon
-   ---------------------------------------------------------------- */
-.Header__Icon--cartLink {
-  position: relative;
-}
-
+/* Cart badge */
 .Header__CartBadge {
   position: absolute;
   top: -6px;
@@ -71,291 +122,49 @@ body {
   line-height: 18px;
   text-align: center;
   box-shadow: 0 0 0 2px var(--header-background);
-  transform: scale(1);
-  transition: transform 0.25s ease;
 }
 
-.Header__CartBadge--pop {
-  animation: superspec-cart-badge-pop 0.55s ease;
-}
-
-@keyframes superspec-cart-badge-pop {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.35); }
-  100% { transform: scale(1); }
-}
-
-/* ----------------------------------------------------------------
-   Product page layout fix: two-column grid on desktop so content
-   never overflows under the footer.
-   ---------------------------------------------------------------- */
-@media screen and (min-width: 1008px) {
-  main#main .Product .Product__Wrapper {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
-    column-gap: 50px;
-    align-items: start;
-    max-width: none;
-    width: 100%;
-    margin-left: 0;
-  }
-
-  main#main .Product .Product__InfoWrapper {
-    position: static;
-    height: auto;
-    width: auto;
-  }
-
-  main#main .Product .Product__Info {
-    position: static;
-    top: auto;
-    right: auto;
-    width: auto;
-    max-width: 500px;
-    margin: 0;
-    padding-bottom: 0;
-  }
-
-  main#main .Product .Product__Gallery {
-    margin-bottom: 0;
-    max-width: 100%;
-  }
-}
-
-/* ----------------------------------------------------------------
-   PageContainer layering (for optional Three.js background canvas)
-   ---------------------------------------------------------------- */
-.PageContainer {
-  position: relative;
-  z-index: 2;
-  background: transparent;
-}
-
-main#main {
-  background: transparent;
-}
-
-/* ----------------------------------------------------------------
-   Collection-list tile images: letterbox inside the tile
-   ---------------------------------------------------------------- */
-.CollectionItem__Image.CollectionItem__Image--containFit {
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-color: #000000;
-}
-
-/* ----------------------------------------------------------------
-   Brand Color Enforcement (Fixes invisible text)
-   ---------------------------------------------------------------- */
-:root, [data-theme="dark"] {
-  --heading-color: #ffffff !important;
-  --text-color: #ffffff !important;
-  --link-color: #c3922e !important;
-  --button-background: #e22120 !important;
-  --button-text-color: #c3922e !important;
-  --navigation-text-color: #c3922e !important;
-}
-
-.Heading, .SectionHeader__Heading, .ProductItem__Title, .ProductMeta__Title {
-  color: var(--heading-color) !important;
-}
-
-.Button, .Button--primary, .Button--secondary {
+/* Buttons */
+.Button, .Button--primary {
   background-color: var(--button-background) !important;
   color: var(--button-text-color) !important;
   border: 1px solid var(--button-text-color) !important;
+  border-radius: var(--border-radius-sm);
+  padding: 12px 24px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
 }
 
-.Link, a:not(.Button) {
-  color: var(--link-color);
-}
-
-.Header__MainNav .HorizontalList__Item a {
-  color: var(--navigation-text-color) !important;
-}
-
-/* ----------------------------------------------------------------
-   Transparency Enforcement (For background effects)
-   ---------------------------------------------------------------- */
-#main,
-.PageContainer,
-.PageContent,
-.Section,
-.Collection,
-.Page,
-.Product,
-.Container {
-  background-color: transparent !important;
-}
-
-.PageContainer {
-  background: transparent !important;
-}
-
-main#main {
-  background: transparent !important;
-}
-
-/* ----------------------------------------------------------------
-   Add-to-cart button: match Prestige style exactly
-   ---------------------------------------------------------------- */
-main#main button.AddToCartButton--storefront.Button.Button--primary {
-  position: relative;
-  isolation: isolate;
-  background: var(--button-background) !important;
-  color: var(--button-text-color) !important;
-  border: none !important;
-  border-radius: 4px;
-  box-shadow: none !important;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-main#main button.AddToCartButton--storefront.Button.Button--primary::before,
-main#main button.AddToCartButton--storefront.Button.Button--primary::after {
-  display: none !important;
-  content: none !important;
-  opacity: 0 !important;
-  animation: none !important;
-}
-
-@media (-moz-touch-enabled: 0), (hover: hover) {
-  main#main
-    .features--show-button-transition
-    button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):hover {
-    color: #ffffff !important;
-    background-color: #22c55e !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
-  }
-}
-
-main#main
-  button.AddToCartButton--storefront.Button.Button--primary:not([disabled]):active {
-  background-color: #16a34a !important;
-  transform: translateY(0px);
-}
-
-/* ----------------------------------------------------------------
-   Footer compact layout
-   ---------------------------------------------------------------- */
-.Footer {
-  padding: 30px 0 20px !important;
-}
-
-.Footer__Inner {
-  margin-bottom: 16px !important;
-}
-
-.Footer__Block {
-  margin-bottom: 12px !important;
-}
-
-.Footer__Aside {
-  margin-top: 12px !important;
-  padding-top: 12px !important;
-}
-
-/* ----------------------------------------------------------------
-   Slideshow content overlay for text readability
-   ---------------------------------------------------------------- */
-.Slideshow__Content {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(2px) !important;
-  -webkit-backdrop-filter: blur(2px) !important;
-  padding: 16px 24px !important;
-  border-radius: 8px !important;
-  max-width: fit-content;
-  margin: 20px;
-}
-
-.Slideshow__Content .SectionHeader__Heading {
-  margin-bottom: 8px;
-}
-
-.Slideshow__Content .SectionHeader__SubHeading {
-  margin-bottom: 12px;
-}
-
-/* ----------------------------------------------------------------
-   List-view toggle (catalog page)
-   ---------------------------------------------------------------- */
-.ProductViewToggle__btn--active {
-  box-shadow: 0 0 0 2px var(--link-color);
-}
-
-.ProductList--viewList {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding-left: 0;
-  padding-right: 0;
-  margin-left: 0;
-}
-
-.ProductList--viewList .ProductItem--listRow .ProductItem__Wrapper--listRow {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 20px;
-  text-align: left;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.ProductList--viewList .ProductItem--listRow .ProductItem__ImageWrapper {
-  flex: 0 0 100px;
-  width: 100px;
-  max-width: 100px;
-}
-
-.ProductList--viewList .ProductItem--listRow .ProductItem__Info {
-  margin-top: 0;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.ProductList--viewList .ProductItem--listRow .ProductItem__LabelList {
-  left: 6px;
-  top: 4px;
-}
-
-@media screen and (min-width: 641px) {
-  .ProductList--viewList .ProductItem--listRow .ProductItem__ImageWrapper {
-    flex-basis: 140px;
-    width: 140px;
-    max-width: 140px;
-  }
-}
-
-/* ----------------------------------------------------------------
-   UI Visibility Fixes (Variant Selectors, Inputs, and Buttons)
-   ---------------------------------------------------------------- */
-select, .Form__Input, select.Form__Input, .Form__Select select {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border: 1px solid #333333 !important;
-}
-
-select:focus, .Form__Input:focus {
+.Button:hover {
+  background-color: #ffffff !important;
+  color: #000000 !important;
   border-color: #ffffff !important;
 }
 
-/* Variant overlay buttons */
-.ClothingOverlay button, .ArtOverlay button, .EngineeredOverlay button {
-  background-color: #111111;
-  color: #ffffff;
-  border: 1px solid #333333;
+/* Forms */
+.Form__Input, select {
+  background-color: #111111 !important;
+  color: #ffffff !important;
+  border: 1px solid #333333 !important;
+  padding: 12px;
+  border-radius: var(--border-radius-sm);
 }
 
-/* Add to Cart Text Contrast */
-.ProductForm__AddToCart {
-  color: #000000 !important;
-  background-color: #ffffff !important;
-  font-weight: bold !important;
+.Form__Input:focus {
+  border-color: var(--link-color) !important;
+  outline: none;
 }
 
-/* Faint social proof text fix */
-.Text--subdued {
-  color: #e0e0e0 !important;
-  opacity: 1 !important;
+/* Product Cards */
+.ProductItem__Title {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
+
+.ProductItem__Price {
+  color: var(--text-light-color);
+  font-size: 0.85rem;
 }

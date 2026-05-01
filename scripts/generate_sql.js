@@ -191,13 +191,22 @@ DELETE FROM public.variants WHERE product_id = (SELECT id FROM public.products W
 
   if (prod.images.length > 0) {
     const imgRows = prod.images.map(i => {
-      return `((SELECT id FROM public.products WHERE handle = ${escapeSql(prod.handle)}), ${escapeSql(i.url)}, ${i.position}, ${escapeSql(i.alt)})`;
+      return `((SELECT id FROM public.products WHERE handle = ${escapeSql(prod.handle)}), ${escapeSql(i.url)}, ${i.position}, ${escapeSql(i.alt)}, ${escapeSql(i.url)})`;
     });
-    sql += `INSERT INTO public.product_images (product_id, url, position, alt) VALUES\n${imgRows.join(',\n')};\n`;
+    sql += `INSERT INTO public.product_images (product_id, url, position, alt, storage_path) VALUES\n${imgRows.join(',\n')};\n`;
   }
 
   sql += `\n`;
 }
+
+// Add global updates for art edition data
+sql += `-- Fix edition data for art products
+UPDATE public.products 
+SET 
+  edition_size = 50, 
+  edition_sold = 0
+WHERE type = 'art';
+`;
 
 fs.writeFileSync(outputPath, sql);
 console.log('Successfully generated ' + outputPath);

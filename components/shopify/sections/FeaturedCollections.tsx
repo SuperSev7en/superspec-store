@@ -40,29 +40,31 @@ export async function FeaturedCollections({
         ? block.settings.title.trim()
         : "";
     const products = handle
-      ? await getProductsForCollectionHandleFromSupabase(handle, limit).then(
-          (db) =>
-            db.length > 0 ? db : getProductsForCollectionHandle(handle, limit),
-        )
+      ? await getProductsForCollectionHandleFromSupabase(handle, limit)
       : [];
-    const displayTitle =
-      blockTitle ||
-      (handle
-        ? handle.replace(/-/g, " ")
-        : sectionTitle || "Featured collection");
 
-    tabs.push({
-      blockId: bid,
-      title: displayTitle.replace(/\b\w/g, (c) => c.toUpperCase()),
-      products,
-      limit,
-      layoutMode,
-      mobileCols,
-      desktopCols,
-      showProductInfo,
-      showVendor,
-    });
+    if (products.length > 0) {
+      const displayTitle =
+        blockTitle ||
+        (handle
+          ? handle.replace(/-/g, " ")
+          : sectionTitle || "Featured collection");
+
+      tabs.push({
+        blockId: bid,
+        title: displayTitle.replace(/\b\w/g, (c) => c.toUpperCase()),
+        products,
+        limit,
+        layoutMode,
+        mobileCols,
+        desktopCols,
+        showProductInfo,
+        showVendor,
+      });
+    }
   }
+
+  if (tabs.length === 0) return null;
 
   return (
     <FeaturedCollectionsClient

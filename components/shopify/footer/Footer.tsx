@@ -33,17 +33,52 @@ export function Footer({
       >
         <div className="Container">
           {/* ── Footer blocks ── */}
-          <div className="Footer__Inner">
-            {/* Links block */}
+            <div className="Footer__Inner">
+            {/* Column 1: Brand */}
+            <div className="Footer__Block Footer__Block--text">
+              <h2 className="Footer__Title Heading u-h6">{shopName}</h2>
+              <div className="Footer__Content Rte">
+                <p>Love, diversity, and individuality through light and color.</p>
+              </div>
+              <div className="Footer__Social" style={{ marginTop: 20 }}>
+                <ul className="HorizontalList HorizontalList--spacingLoose">
+                  {['Instagram', 'TikTok', 'Twitter', 'Pinterest'].map(social => (
+                    <li key={social} className="HorizontalList__Item">
+                      <a href="#" className="Link Link--primary" aria-label={social}>
+                        <span style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{social}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Column 2: Shop */}
             <div className="Footer__Block Footer__Block--links">
-              <h2 className="Footer__Title Heading u-h6">Quick Links</h2>
+              <h2 className="Footer__Title Heading u-h6">Shop</h2>
               <ul className="Linklist">
                 {[
-                  { title: "Shop", url: "/products" },
+                  { title: "Super Spectrum (Art)", url: "/collections/super-spectrum" },
+                  { title: "Super Speck (Clothing)", url: "/collections/super-speck" },
+                  { title: "New Arrivals", url: "/products" },
+                ].map((link) => (
+                  <li key={link.url} className="Linklist__Item">
+                    <a href={link.url} className="Link Link--primary">
+                      {link.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3: Help */}
+            <div className="Footer__Block Footer__Block--links">
+              <h2 className="Footer__Title Heading u-h6">Help</h2>
+              <ul className="Linklist">
+                {[
                   { title: "About", url: "/about" },
+                  { title: "Mission & Sustainability", url: "/mission-and-sustainability" },
                   { title: "Contact", url: "/contact" },
-                  { title: "Shipping Policy", url: "/policies/shipping" },
-                  { title: "Refund Policy", url: "/policies/refund" },
                   { title: "Privacy Policy", url: "/policies/privacy" },
                   { title: "Terms of Service", url: "/policies/terms" },
                 ].map((link) => (
@@ -56,9 +91,9 @@ export function Footer({
               </ul>
             </div>
 
-            {/* Newsletter block */}
+            {/* Column 4: Newsletter */}
             <div className="Footer__Block Footer__Block--newsletter">
-              <h2 className="Footer__Title Heading u-h6">Newsletter</h2>
+              <h2 className="Footer__Title Heading u-h6">Join the Spec</h2>
               <div className="Footer__Content Rte">
                 <p>
                   Subscribe to receive updates, access to exclusive deals, and

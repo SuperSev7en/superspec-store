@@ -193,7 +193,7 @@ export default function CheckoutFlow() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to confirm order");
 
-      window.location.href = `/checkout/success?orderNumber=${data.orderNumber}`;
+      window.location.href = `/checkout/success?orderNumber=${data.orderNumber}&email=${encodeURIComponent(email)}`;
     } catch (err: any) {
       toast.error(err.message);
     }

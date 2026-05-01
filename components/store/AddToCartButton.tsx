@@ -65,7 +65,7 @@ export function AddToCartButton({
       });
     }
 
-    toast.success(added ? "✓ Already in cart" : `Added to cart`);
+    toast.success(added ? `✓ ${title || 'Item'} is in cart` : `Added ${title || 'item'} to cart`);
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   };

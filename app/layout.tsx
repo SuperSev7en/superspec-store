@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeLayout } from "@/components/shopify/ThemeLayout";
 import { getThemeBodyClassName } from "@/lib/shopify/themeUtils";
@@ -14,6 +15,12 @@ import { Toaster } from "sonner";
 import { CartDrawer } from "@/components/store/CartDrawer";
 import { ExitIntentPopup } from "@/components/store/ExitIntentPopup";
 import { PostAddUpsellModal } from "@/components/store/PostAddUpsellModal";
+
+const exo2 = localFont({
+  src: "../Exo_2/Exo2-VariableFont_wght.ttf",
+  variable: "--font-exo2",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "SUPER Spec.",
@@ -36,7 +43,12 @@ export default async function RootLayout({
   const faviconUrl = resolveShopifyAssetUrl(brandAssets.favicon);
 
   return (
-    <html lang="en" className="no-js" data-theme="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`no-js ${exo2.variable}`}
+      data-theme="dark"
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -145,10 +157,7 @@ document.documentElement.style.setProperty("--window-height", window.innerHeight
           src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
           strategy="afterInteractive"
         />
-        <Script
-          src="https://cdn.polyfill.io/v3/polyfill.min.js?unknown=polyfill&features=fetch,Element.prototype.closest,Element.prototype.remove,Element.prototype.classList,Array.prototype.includes,Array.prototype.fill,Object.assign,CustomEvent,IntersectionObserver,IntersectionObserverEntry,URL"
-          strategy="afterInteractive"
-        />
+
         <Script src="/assets/libs.min.js" strategy="afterInteractive" />
         <Script src="/assets/theme.min.js" strategy="afterInteractive" />
         <Script src="/assets/custom.js" strategy="afterInteractive" />
