@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
@@ -17,26 +17,48 @@ export async function POST(req: Request) {
     // Generate order number
     const orderNumber = `SP-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
 
-    // 1. Create order record (Mocking DB insertion handling for now)
-    // In a real app, this would be an RPC call or service role insertion
+    // 1. Create order record
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
         order_number: orderNumber,
         email,
-        total_amount: total,
+        total: total,
         status: 'paid',
-        stripe_payment_intent_id: paymentIntentId,
-        shipping_address: address,
+        stripe_session_id: paymentIntentId,
+        currency: 'USD'
       })
       .select()
       .single();
 
-    // Ignore error if table doesn't exist, we will proceed to show success page
+    if (orderError) {
+      console.error('Order creation error:', orderError);
+      // We continue anyway to show success page, but log it
+    }
 
-    // 2. Decrement inventory and insert order_items
-    for (const item of cart) {
-      // Decrement logic here...
+    // 2. Insert order_items and decrement inventory
+    const orderId = order?.id;
+    if (orderId) {
+      for (const item of cart) {
+        if (item.variantId) {
+          // Insert item
+          await supabase.from('order_items').insert({
+            order_id: orderId,
+            product_id: (await supabase.from('products').select('id').eq('handle', item.handle).single()).data?.id,
+            variant_id: item.variantId,
+            quantity: item.quantity,
+            price: item.price
+          });
+
+          // Decrement inventory
+          const { data: v } = await supabase.from('variants').select('inventory_quantity').eq('id', item.variantId).single();
+          if (v) {
+            await supabase.from('variants').update({ 
+              inventory_quantity: Math.max(0, v.inventory_quantity - item.quantity) 
+            }).eq('id', item.variantId);
+          }
+        }
+      }
     }
 
     // 3. Trigger order confirmation email via Resend

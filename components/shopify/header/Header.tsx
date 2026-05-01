@@ -212,16 +212,27 @@ export function Header({
           .Header--center .Header__Wrapper {
             flex-direction: column;
             align-items: center;
+            padding-top: 30px;
             padding-bottom: 24px;
           }
           .Header--center .Header__LogoContainer {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
           }
           .Header--center .Header__SecondaryNav {
             position: absolute;
-            right: 24px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 40px;
+            top: 40px;
+            transform: none;
+          }
+          .Header--center .Header__FlexItem--logo.hidden-desk {
+             position: absolute;
+             left: 40px;
+             top: 40px;
+          }
+          .Header--center .Header__MainNav {
+            width: 100%;
+            text-align: center;
           }
         }
         

@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { TrustBadges } from "@/components/store/TrustBadges";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
 function CheckoutForm({
