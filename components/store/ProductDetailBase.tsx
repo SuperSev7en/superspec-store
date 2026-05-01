@@ -336,7 +336,7 @@ export function ProductDetailBase({
             {/* Express Checkout (Apple Pay / Google Pay) */}
             {mounted && price > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <Elements stripe={stripePromise} options={{ amount: Math.round(price * 100), currency: 'usd' }}>
+                <Elements stripe={stripePromise} options={{ mode: 'payment', amount: Math.round(price * 100), currency: 'usd' }}>
                   <ExpressCheckoutElement onConfirm={() => {}} />
                 </Elements>
               </div>
